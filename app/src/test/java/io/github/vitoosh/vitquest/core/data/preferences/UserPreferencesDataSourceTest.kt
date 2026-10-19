@@ -9,6 +9,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.job
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -29,6 +31,12 @@ class UserPreferencesDataSourceTest {
         scopes.forEach { it.cancel() }
     }
 
+    /** Waits until every DataStore has released its file, so the next instance can open it. */
+    private suspend fun closeAll() {
+        scopes.forEach { it.coroutineContext.job.cancelAndJoin() }
+        scopes.clear()
+    }
+
     private fun dataSource(file: File): UserPreferencesDataSource {
         val scope = CoroutineScope(Dispatchers.IO + SupervisorJob()).also(scopes::add)
         return UserPreferencesDataSource(PreferenceDataStoreFactory.create(scope = scope) { file })
@@ -46,7 +54,7 @@ class UserPreferencesDataSourceTest {
         val first = dataSource(file)
         first.setThemeMode(ThemeMode.DARK)
         first.setOnboardingCompleted(true)
-        scopes.forEach { it.cancel() }
+        closeAll()
 
         // A new DataStore instance on the same file simulates an app restart.
         val reopened = dataSource(file)
@@ -57,7 +65,7 @@ class UserPreferencesDataSourceTest {
     fun stepSourcePreferenceIsPersisted() = runTest {
         val file = File(tempFolder.root, "steps.preferences_pb")
         dataSource(file).setStepSourcePreference(StepSourcePreference.PHONE_SENSOR)
-        scopes.forEach { it.cancel() }
+        closeAll()
 
         assertEquals(StepSourcePreference.PHONE_SENSOR, dataSource(file).userPreferences.first().stepSourcePreference)
     }

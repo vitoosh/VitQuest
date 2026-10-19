@@ -93,8 +93,13 @@ class OfflineFirstStepsRepository @Inject constructor(
             HealthConnectAvailability.AVAILABLE -> when {
                 !healthConnect.hasStepsPermission() -> HealthConnectStatus.PERMISSION_REQUIRED
                 !StepSourceResolver.usesHealthConnect(pref) -> HealthConnectStatus.CONNECTED
+                // Synced moments ago: keep the last result instead of querying Health Connect again.
                 !force && lastSync != null && Duration.between(lastSync, timeSource.now()) < MIN_SYNC_INTERVAL ->
-                    previous?.healthConnect ?: HealthConnectStatus.CONNECTED
+                    if (previous.healthConnect == HealthConnectStatus.READ_FAILED) {
+                        HealthConnectStatus.READ_FAILED
+                    } else {
+                        HealthConnectStatus.CONNECTED
+                    }
                 else -> when (val result = syncHealthConnect()) {
                     HealthConnectReadResult.Failed -> HealthConnectStatus.READ_FAILED
                     HealthConnectReadResult.PermissionDenied -> HealthConnectStatus.PERMISSION_REQUIRED
