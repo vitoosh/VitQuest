@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name" translatable="false">VitQuest</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_activity">Activity</string>
+    <string name="nav_nutrition">Nutrition</string>
+    <string name="nav_workouts">Workouts</string>
+    <string name="nav_rewards">Rewards</string>
+
+    <!-- Common actions and states -->
+    <string name="action_continue">Continue</string>
+    <string name="action_skip">Skip</string>
+    <string name="action_save">Save</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_navigate_back">Back</string>
+    <string name="action_edit_profile">Edit profile</string>
+    <string name="saving">Saving…</string>
+    <string name="coming_soon">Coming soon</string>
+    <string name="coming_soon_planned_heading">What is planned</string>
+
+    <!-- Data source labels -->
+    <string name="data_source_manual">Entered manually</string>
+    <string name="data_source_estimate">Estimate</string>
+    <string name="data_source_sample">Sample</string>
+    <string name="data_source_device">From device</string>
+
+    <!-- Units and values -->
+    <string name="unit_years">years</string>
+    <string name="unit_cm">cm</string>
+    <string name="unit_kg">kg</string>
+    <string name="unit_ml">ml</string>
+    <string name="unit_steps">steps</string>
+    <string name="value_kg">%1$s kg</string>
+    <string name="value_ml">%1$s ml</string>
+    <string name="value_steps">%1$s steps</string>
+
+    <!-- Validation -->
+    <string name="error_required">This field is required.</string>
+    <string name="error_invalid_number">Enter a valid number.</string>
+    <string name="error_out_of_range">This value is outside the accepted range.</string>
+    <string name="error_fix_fields">Please fix the highlighted fields.</string>
+    <string name="error_save_failed">Could not save. Please try again.</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_welcome_title">Welcome to VitQuest</string>
+    <string name="onboarding_welcome_description">Build healthier habits one small step at a time: move more, eat mindfully, drink enough water and earn rewards for staying consistent.</string>
+    <string name="onboarding_welcome_point_move_title">Move every day</string>
+    <string name="onboarding_welcome_point_move_description">Steps, short calisthenics sessions and movement breaks.</string>
+    <string name="onboarding_welcome_point_eat_title">Eat and drink mindfully</string>
+    <string name="onboarding_welcome_point_eat_description">Food diary with Indonesian meals, recipes and hydration.</string>
+    <string name="onboarding_welcome_point_reward_title">Stay motivated</string>
+    <string name="onboarding_welcome_point_reward_description">XP, levels and rewards you define yourself.</string>
+    <string name="onboarding_disclaimer">VitQuest is not a medical device. Goals and calorie numbers are estimates. Talk to a health professional before making major changes to your diet or exercise.</string>
+    <string name="onboarding_start">Get started</string>
+    <string name="onboarding_finish">Finish</string>
+    <string name="onboarding_step_counter">Step %1$d of %2$d</string>
+    <string name="onboarding_body_title">About you</string>
+    <string name="onboarding_body_description">All fields are optional. Your weight helps suggest a water target; later phases use these values for calorie estimates. Data stays on this device.</string>
+    <string name="onboarding_experience_title">Experience and activity</string>
+    <string name="onboarding_experience_description">This helps set a step goal you can actually reach. Tap a selected option again to clear it.</string>
+    <string name="onboarding_preferences_title">Workout and food preferences</string>
+    <string name="onboarding_preferences_description">Used later to suggest workouts and recipes that fit you. You can change these anytime.</string>
+    <string name="onboarding_goals_title">Your daily goals</string>
+    <string name="onboarding_goals_description">Suggested starting points based on your answers. Adjust them freely; you can change them later in your profile.</string>
+
+    <!-- Profile fields -->
+    <string name="field_age">Age</string>
+    <string name="field_height">Height</string>
+    <string name="field_current_weight">Current weight</string>
+    <string name="field_target_weight">Target weight</string>
+    <string name="field_target_weight_help">Optional. A gradual pace is more sustainable.</string>
+    <string name="field_fitness_experience">Fitness experience</string>
+    <string name="field_activity_level">Typical daily activity</string>
+    <string name="field_workout_location">Preferred workout location</string>
+    <string name="field_equipment">Available equipment</string>
+    <string name="field_equipment_help">Leave empty for bodyweight-only workouts.</string>
+    <string name="field_dietary_preferences">Dietary preferences</string>
+    <string name="field_dietary_preferences_help">Optional.</string>
+    <string name="field_daily_step_goal">Daily step goal</string>
+    <string name="field_daily_step_goal_help">Suggested start: %1$s steps, based on your activity level.</string>
+    <string name="field_daily_water_target">Daily water target</string>
+    <string name="field_daily_water_target_help">Estimated start: %1$s ml (about 30 ml per kg). Needs vary with climate and activity.</string>
+    <string name="field_water_serving">Usual glass or bottle size</string>
+    <string name="field_water_serving_custom">Glass size</string>
+
+    <string name="experience_beginner">Beginner</string>
+    <string name="experience_intermediate">Intermediate</string>
+    <string name="experience_advanced">Advanced</string>
+
+    <string name="activity_sedentary">Mostly sitting</string>
+    <string name="activity_sedentary_description">Desk work, little walking</string>
+    <string name="activity_light">Lightly active</string>
+    <string name="activity_light_description">Some walking during the day</string>
+    <string name="activity_moderate">Moderately active</string>
+    <string name="activity_moderate_description">On your feet often or exercising a few times a week</string>
+    <string name="activity_active">Very active</string>
+    <string name="activity_active_description">Physical work or exercising most days</string>
+
+    <string name="location_home">Home</string>
+    <string name="location_office">Office</string>
+    <string name="location_outdoor">Outdoors</string>
+    <string name="location_mixed">Mixed</string>
+
+    <string name="equipment_resistance_band">Resistance band</string>
+    <string name="equipment_dumbbells">Dumbbells</string>
+    <string name="equipment_pull_up_bar">Pull-up bar</string>
+    <string name="equipment_jump_rope">Jump rope</string>
+    <string name="equipment_exercise_mat">Exercise mat</string>
+    <string name="equipment_chair_or_bench">Chair or bench</string>
+
+    <string name="diet_halal">Halal</string>
+    <string name="diet_vegetarian">Vegetarian</string>
+    <string name="diet_vegan">Vegan</string>
+    <string name="diet_lactose_free">Lactose-free</string>
+    <string name="diet_gluten_free">Gluten-free</string>
+    <string name="diet_low_sugar">Low sugar</string>
+
+    <!-- Edit profile -->
+    <string name="edit_profile_title">Profile and goals</string>
+    <string name="edit_profile_description">Every field except the daily goals is optional.</string>
+    <string name="section_body">About you</string>
+    <string name="section_experience">Experience and activity</string>
+    <string name="section_preferences">Preferences</string>
+    <string name="section_goals">Daily goals</string>
+
+    <!-- Home -->
+    <string name="home_greeting_morning">Good morning</string>
+    <string name="home_greeting_midday">Good day</string>
+    <string name="home_greeting_afternoon">Good afternoon</string>
+    <string name="home_greeting_evening">Good evening</string>
+    <string name="home_complete_profile_title">Complete your profile</string>
+    <string name="home_complete_profile_description">Add your weight to get a personal water suggestion and track progress toward your target.</string>
+    <string name="home_targets_title">Your daily targets</string>
+    <string name="home_target_steps">Step goal</string>
+    <string name="home_target_water">Water target</string>
+    <string name="home_current_weight">Current weight</string>
+    <string name="home_target_weight">Target weight</string>
+    <string name="home_weight_to_lose">%1$s kg to your target</string>
+    <string name="home_weight_to_gain">%1$s kg below your target</string>
+    <string name="home_weight_at_target">You are at your target weight</string>
+    <string name="home_targets_note">Tracking against these targets arrives in upcoming updates. You can change them anytime in your profile.</string>
+    <string name="home_coming_soon_title">Coming to VitQuest</string>
+    <string name="home_coming_soon_description">These features are being built. No numbers are shown until real data is available.</string>
+    <string name="home_local_data_note">Your data is stored only on this device.</string>
+
+    <!-- Feature previews -->
+    <string name="feature_activity_title">Steps and activity</string>
+    <string name="feature_activity_summary">Daily steps from Health Connect, phone sensor or manual entry.</string>
+    <string name="feature_activity_description">Track daily steps and activity with clear labels showing where each number comes from.</string>
+    <string name="feature_activity_planned_1">Health Connect with clear permission explanations</string>
+    <string name="feature_activity_planned_2">Phone step sensor and manual entry as fallbacks</string>
+    <string name="feature_activity_planned_3">Daily and weekly progress toward your step goal</string>
+
+    <string name="feature_nutrition_title">Food and nutrition</string>
+    <string name="feature_nutrition_summary">Food diary with common Indonesian meals and estimated calories.</string>
+    <string name="feature_nutrition_description">Log meals with a starter database of Indonesian foods. Nutrition values are estimates because recipes and portions vary.</string>
+    <string name="feature_nutrition_planned_1">Food diary for breakfast, lunch, dinner and snacks</string>
+    <string name="feature_nutrition_planned_2">Indonesian foods, custom foods and favourites</string>
+    <string name="feature_nutrition_planned_3">Recipes, meal plans and shopping lists</string>
+
+    <string name="feature_hydration_title">Hydration</string>
+    <string name="feature_hydration_summary">Quick water logging and optional reminders.</string>
+
+    <string name="feature_workouts_title">Workouts</string>
+    <string name="feature_workouts_summary">Short no-gym calisthenics sessions for any level.</string>
+    <string name="feature_workouts_description">Bodyweight workouts of 5 to 30 minutes for home, office or outdoors, with beginner modifications.</string>
+    <string name="feature_workouts_planned_1">Exercise library with instructions and safety notes</string>
+    <string name="feature_workouts_planned_2">Workout generator based on time, level and equipment</string>
+    <string name="feature_workouts_planned_3">Guided player with rest timers and history</string>
+
+    <string name="feature_rewards_title">XP and rewards</string>
+    <string name="feature_rewards_summary">Earn XP and Reward Credits for consistency.</string>
+    <string name="feature_rewards_description">Earn XP and in-app Reward Credits for healthy habits and spend them on rewards you define. Credits are virtual and never real money.</string>
+    <string name="feature_rewards_planned_1">Levels with transparent earning rules</string>
+    <string name="feature_rewards_planned_2">Reward catalogue, wishlist and redemption history</string>
+    <string name="feature_rewards_planned_3">Separate tracker for your real-world savings budget</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_section_profile">Profile</string>
+    <string name="settings_profile_description">Body details, preferences and daily goals</string>
+    <string name="settings_section_theme">Theme</string>
+    <string name="settings_section_language">Language</string>
+    <string name="settings_section_privacy">Privacy and data</string>
+    <string name="settings_section_about">About</string>
+    <string name="settings_privacy_description">VitQuest works offline. Your profile and goals are stored only on this device and are not sent anywhere. They are excluded from cloud backups.</string>
+    <string name="settings_delete_all_data">Delete all data</string>
+    <string name="settings_delete_all_data_description">Remove your profile, goals and settings from this device</string>
+    <string name="settings_delete_dialog_title">Delete all data?</string>
+    <string name="settings_delete_dialog_message">Your profile, goals and settings will be permanently removed from this device. This cannot be undone.</string>
+    <string name="settings_delete_dialog_confirm">Delete</string>
+    <string name="settings_version">Version %1$s (build %2$d)</string>
+    <string name="settings_disclaimer">VitQuest provides general wellness guidance, not medical advice. All calorie and goal values are estimates.</string>
+
+    <string name="theme_system">Follow system</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+    <string name="language_system">Follow system</string>
+    <!-- Language names are shown in their own language. -->
+    <string name="language_indonesian" translatable="false">Bahasa Indonesia</string>
+    <string name="language_english" translatable="false">English</string>
+</resources>

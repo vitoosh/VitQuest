@@ -1,0 +1,126 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "1a41d9a5561e0d25395810e76436c893",
+    "entities": [
+      {
+        "tableName": "user_profile",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `age` INTEGER, `height_cm` REAL, `current_weight_kg` REAL, `fitness_experience` TEXT, `activity_level` TEXT, `workout_location` TEXT, `equipment` TEXT NOT NULL, `dietary_preferences` TEXT NOT NULL, `updated_at_epoch_ms` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "age",
+            "columnName": "age",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "heightCm",
+            "columnName": "height_cm",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "currentWeightKg",
+            "columnName": "current_weight_kg",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "fitnessExperience",
+            "columnName": "fitness_experience",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "activityLevel",
+            "columnName": "activity_level",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "workoutLocation",
+            "columnName": "workout_location",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "equipment",
+            "columnName": "equipment",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dietaryPreferences",
+            "columnName": "dietary_preferences",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAtEpochMs",
+            "columnName": "updated_at_epoch_ms",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "goals",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `target_weight_kg` REAL, `daily_step_goal` INTEGER NOT NULL, `daily_water_target_ml` INTEGER NOT NULL, `water_serving_ml` INTEGER NOT NULL, `updated_at_epoch_ms` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "targetWeightKg",
+            "columnName": "target_weight_kg",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "dailyStepGoal",
+            "columnName": "daily_step_goal",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dailyWaterTargetMl",
+            "columnName": "daily_water_target_ml",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "waterServingMl",
+            "columnName": "water_serving_ml",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAtEpochMs",
+            "columnName": "updated_at_epoch_ms",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        }
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '1a41d9a5561e0d25395810e76436c893')"
+    ]
+  }
+}

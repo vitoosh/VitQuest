@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Navigasi -->
+    <string name="nav_home">Beranda</string>
+    <string name="nav_activity">Aktivitas</string>
+    <string name="nav_nutrition">Nutrisi</string>
+    <string name="nav_workouts">Latihan</string>
+    <string name="nav_rewards">Hadiah</string>
+
+    <!-- Aksi dan status umum -->
+    <string name="action_continue">Lanjut</string>
+    <string name="action_skip">Lewati</string>
+    <string name="action_save">Simpan</string>
+    <string name="action_cancel">Batal</string>
+    <string name="action_navigate_back">Kembali</string>
+    <string name="action_edit_profile">Edit profil</string>
+    <string name="saving">Menyimpan…</string>
+    <string name="coming_soon">Segera hadir</string>
+    <string name="coming_soon_planned_heading">Yang sedang disiapkan</string>
+
+    <!-- Label sumber data -->
+    <string name="data_source_manual">Diisi manual</string>
+    <string name="data_source_estimate">Estimasi</string>
+    <string name="data_source_sample">Contoh</string>
+    <string name="data_source_device">Dari perangkat</string>
+
+    <!-- Satuan dan nilai -->
+    <string name="unit_years">tahun</string>
+    <string name="unit_cm">cm</string>
+    <string name="unit_kg">kg</string>
+    <string name="unit_ml">ml</string>
+    <string name="unit_steps">langkah</string>
+    <string name="value_kg">%1$s kg</string>
+    <string name="value_ml">%1$s ml</string>
+    <string name="value_steps">%1$s langkah</string>
+
+    <!-- Validasi -->
+    <string name="error_required">Kolom ini wajib diisi.</string>
+    <string name="error_invalid_number">Masukkan angka yang valid.</string>
+    <string name="error_out_of_range">Nilai ini di luar rentang yang diterima.</string>
+    <string name="error_fix_fields">Periksa kembali kolom yang ditandai.</string>
+    <string name="error_save_failed">Gagal menyimpan. Silakan coba lagi.</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_welcome_title">Selamat datang di VitQuest</string>
+    <string name="onboarding_welcome_description">Bangun kebiasaan sehat sedikit demi sedikit: lebih banyak bergerak, makan dengan sadar, cukup minum air, dan dapatkan hadiah karena konsisten.</string>
+    <string name="onboarding_welcome_point_move_title">Bergerak setiap hari</string>
+    <string name="onboarding_welcome_point_move_description">Langkah harian, sesi kalistenik singkat, dan jeda bergerak.</string>
+    <string name="onboarding_welcome_point_eat_title">Makan dan minum dengan sadar</string>
+    <string name="onboarding_welcome_point_eat_description">Catatan makanan dengan menu Indonesia, resep, dan hidrasi.</string>
+    <string name="onboarding_welcome_point_reward_title">Tetap termotivasi</string>
+    <string name="onboarding_welcome_point_reward_description">XP, level, dan hadiah yang kamu tentukan sendiri.</string>
+    <string name="onboarding_disclaimer">VitQuest bukan alat medis. Target dan angka kalori adalah estimasi. Konsultasikan dengan tenaga kesehatan sebelum mengubah pola makan atau olahraga secara besar.</string>
+    <string name="onboarding_start">Mulai</string>
+    <string name="onboarding_finish">Selesai</string>
+    <string name="onboarding_step_counter">Langkah %1$d dari %2$d</string>
+    <string name="onboarding_body_title">Tentang kamu</string>
+    <string name="onboarding_body_description">Semua kolom opsional. Berat badan dipakai untuk menyarankan target minum; fase berikutnya memakai data ini untuk estimasi kalori. Data tetap tersimpan di perangkat ini.</string>
+    <string name="onboarding_experience_title">Pengalaman dan aktivitas</string>
+    <string name="onboarding_experience_description">Ini membantu menentukan target langkah yang realistis. Ketuk pilihan yang sudah dipilih untuk membatalkannya.</string>
+    <string name="onboarding_preferences_title">Preferensi latihan dan makanan</string>
+    <string name="onboarding_preferences_description">Nantinya dipakai untuk menyarankan latihan dan resep yang cocok. Bisa diubah kapan saja.</string>
+    <string name="onboarding_goals_title">Target harianmu</string>
+    <string name="onboarding_goals_description">Saran awal berdasarkan jawabanmu. Sesuaikan sesukamu; kamu bisa mengubahnya nanti di profil.</string>
+
+    <!-- Kolom profil -->
+    <string name="field_age">Usia</string>
+    <string name="field_height">Tinggi badan</string>
+    <string name="field_current_weight">Berat badan saat ini</string>
+    <string name="field_target_weight">Target berat badan</string>
+    <string name="field_target_weight_help">Opsional. Perubahan bertahap lebih mudah dipertahankan.</string>
+    <string name="field_fitness_experience">Pengalaman olahraga</string>
+    <string name="field_activity_level">Aktivitas harian</string>
+    <string name="field_workout_location">Lokasi latihan favorit</string>
+    <string name="field_equipment">Peralatan yang tersedia</string>
+    <string name="field_equipment_help">Kosongkan untuk latihan tanpa alat (berat badan sendiri).</string>
+    <string name="field_dietary_preferences">Preferensi makanan</string>
+    <string name="field_dietary_preferences_help">Opsional.</string>
+    <string name="field_daily_step_goal">Target langkah harian</string>
+    <string name="field_daily_step_goal_help">Saran awal: %1$s langkah, berdasarkan tingkat aktivitasmu.</string>
+    <string name="field_daily_water_target">Target minum harian</string>
+    <string name="field_daily_water_target_help">Estimasi awal: %1$s ml (sekitar 30 ml per kg). Kebutuhan berbeda tergantung cuaca dan aktivitas.</string>
+    <string name="field_water_serving">Ukuran gelas atau botol biasa</string>
+    <string name="field_water_serving_custom">Ukuran gelas</string>
+
+    <string name="experience_beginner">Pemula</string>
+    <string name="experience_intermediate">Menengah</string>
+    <string name="experience_advanced">Mahir</string>
+
+    <string name="activity_sedentary">Lebih banyak duduk</string>
+    <string name="activity_sedentary_description">Kerja di meja, jarang berjalan</string>
+    <string name="activity_light">Sedikit aktif</string>
+    <string name="activity_light_description">Cukup sering berjalan sepanjang hari</string>
+    <string name="activity_moderate">Cukup aktif</string>
+    <string name="activity_moderate_description">Sering berdiri atau berolahraga beberapa kali seminggu</string>
+    <string name="activity_active">Sangat aktif</string>
+    <string name="activity_active_description">Pekerjaan fisik atau olahraga hampir setiap hari</string>
+
+    <string name="location_home">Rumah</string>
+    <string name="location_office">Kantor</string>
+    <string name="location_outdoor">Luar ruangan</string>
+    <string name="location_mixed">Campuran</string>
+
+    <string name="equipment_resistance_band">Resistance band</string>
+    <string name="equipment_dumbbells">Dumbel</string>
+    <string name="equipment_pull_up_bar">Palang pull-up</string>
+    <string name="equipment_jump_rope">Tali skipping</string>
+    <string name="equipment_exercise_mat">Matras olahraga</string>
+    <string name="equipment_chair_or_bench">Kursi atau bangku</string>
+
+    <string name="diet_halal">Halal</string>
+    <string name="diet_vegetarian">Vegetarian</string>
+    <string name="diet_vegan">Vegan</string>
+    <string name="diet_lactose_free">Bebas laktosa</string>
+    <string name="diet_gluten_free">Bebas gluten</string>
+    <string name="diet_low_sugar">Rendah gula</string>
+
+    <!-- Edit profil -->
+    <string name="edit_profile_title">Profil dan target</string>
+    <string name="edit_profile_description">Semua kolom opsional kecuali target harian.</string>
+    <string name="section_body">Tentang kamu</string>
+    <string name="section_experience">Pengalaman dan aktivitas</string>
+    <string name="section_preferences">Preferensi</string>
+    <string name="section_goals">Target harian</string>
+
+    <!-- Beranda -->
+    <string name="home_greeting_morning">Selamat pagi</string>
+    <string name="home_greeting_midday">Selamat siang</string>
+    <string name="home_greeting_afternoon">Selamat sore</string>
+    <string name="home_greeting_evening">Selamat malam</string>
+    <string name="home_complete_profile_title">Lengkapi profilmu</string>
+    <string name="home_complete_profile_description">Tambahkan berat badan untuk mendapatkan saran minum yang personal dan memantau progres menuju target.</string>
+    <string name="home_targets_title">Target harianmu</string>
+    <string name="home_target_steps">Target langkah</string>
+    <string name="home_target_water">Target minum</string>
+    <string name="home_current_weight">Berat badan saat ini</string>
+    <string name="home_target_weight">Target berat badan</string>
+    <string name="home_weight_to_lose">%1$s kg lagi menuju target</string>
+    <string name="home_weight_to_gain">%1$s kg di bawah target</string>
+    <string name="home_weight_at_target">Berat badanmu sudah sesuai target</string>
+    <string name="home_targets_note">Pelacakan terhadap target ini hadir di pembaruan berikutnya. Kamu bisa mengubahnya kapan saja di profil.</string>
+    <string name="home_coming_soon_title">Segera hadir di VitQuest</string>
+    <string name="home_coming_soon_description">Fitur-fitur ini sedang dibuat. Tidak ada angka yang ditampilkan sampai data asli tersedia.</string>
+    <string name="home_local_data_note">Datamu hanya disimpan di perangkat ini.</string>
+
+    <!-- Pratinjau fitur -->
+    <string name="feature_activity_title">Langkah dan aktivitas</string>
+    <string name="feature_activity_summary">Langkah harian dari Health Connect, sensor HP, atau input manual.</string>
+    <string name="feature_activity_description">Pantau langkah dan aktivitas harian, lengkap dengan label sumber setiap angka.</string>
+    <string name="feature_activity_planned_1">Health Connect dengan penjelasan izin yang jelas</string>
+    <string name="feature_activity_planned_2">Sensor langkah HP dan input manual sebagai cadangan</string>
+    <string name="feature_activity_planned_3">Progres harian dan mingguan menuju target langkah</string>
+
+    <string name="feature_nutrition_title">Makanan dan nutrisi</string>
+    <string name="feature_nutrition_summary">Catatan makanan dengan menu Indonesia dan estimasi kalori.</string>
+    <string name="feature_nutrition_description">Catat makanan dengan database awal makanan Indonesia. Nilai gizi adalah estimasi karena resep dan porsi berbeda-beda.</string>
+    <string name="feature_nutrition_planned_1">Catatan sarapan, makan siang, makan malam, dan camilan</string>
+    <string name="feature_nutrition_planned_2">Makanan Indonesia, makanan buatan sendiri, dan favorit</string>
+    <string name="feature_nutrition_planned_3">Resep, rencana menu, dan daftar belanja</string>
+
+    <string name="feature_hydration_title">Hidrasi</string>
+    <string name="feature_hydration_summary">Catat minum dengan cepat dan pengingat opsional.</string>
+
+    <string name="feature_workouts_title">Latihan</string>
+    <string name="feature_workouts_summary">Sesi kalistenik singkat tanpa gym untuk semua level.</string>
+    <string name="feature_workouts_description">Latihan berat badan 5 sampai 30 menit untuk di rumah, kantor, atau luar ruangan, dengan modifikasi untuk pemula.</string>
+    <string name="feature_workouts_planned_1">Pustaka gerakan dengan instruksi dan catatan keamanan</string>
+    <string name="feature_workouts_planned_2">Pembuat latihan berdasarkan durasi, level, dan peralatan</string>
+    <string name="feature_workouts_planned_3">Pemandu latihan dengan timer istirahat dan riwayat</string>
+
+    <string name="feature_rewards_title">XP dan hadiah</string>
+    <string name="feature_rewards_summary">Kumpulkan XP dan Reward Credit karena konsisten.</string>
+    <string name="feature_rewards_description">Kumpulkan XP dan Reward Credit dalam aplikasi dari kebiasaan sehat, lalu tukarkan dengan hadiah yang kamu tentukan. Credit bersifat virtual dan bukan uang sungguhan.</string>
+    <string name="feature_rewards_planned_1">Level dengan aturan perolehan yang transparan</string>
+    <string name="feature_rewards_planned_2">Katalog hadiah, wishlist, dan riwayat penukaran</string>
+    <string name="feature_rewards_planned_3">Pelacak terpisah untuk anggaran tabungan nyata</string>
+
+    <!-- Pengaturan -->
+    <string name="settings_title">Pengaturan</string>
+    <string name="settings_section_profile">Profil</string>
+    <string name="settings_profile_description">Data tubuh, preferensi, dan target harian</string>
+    <string name="settings_section_theme">Tema</string>
+    <string name="settings_section_language">Bahasa</string>
+    <string name="settings_section_privacy">Privasi dan data</string>
+    <string name="settings_section_about">Tentang</string>
+    <string name="settings_privacy_description">VitQuest bekerja offline. Profil dan targetmu hanya disimpan di perangkat ini dan tidak dikirim ke mana pun. Data ini tidak ikut cadangan cloud.</string>
+    <string name="settings_delete_all_data">Hapus semua data</string>
+    <string name="settings_delete_all_data_description">Hapus profil, target, dan pengaturan dari perangkat ini</string>
+    <string name="settings_delete_dialog_title">Hapus semua data?</string>
+    <string name="settings_delete_dialog_message">Profil, target, dan pengaturanmu akan dihapus permanen dari perangkat ini. Tindakan ini tidak bisa dibatalkan.</string>
+    <string name="settings_delete_dialog_confirm">Hapus</string>
+    <string name="settings_version">Versi %1$s (build %2$d)</string>
+    <string name="settings_disclaimer">VitQuest memberi panduan kebugaran umum, bukan saran medis. Semua nilai kalori dan target adalah estimasi.</string>
+
+    <string name="theme_system">Ikuti sistem</string>
+    <string name="theme_light">Terang</string>
+    <string name="theme_dark">Gelap</string>
+    <string name="language_system">Ikuti sistem</string>
+</resources>
