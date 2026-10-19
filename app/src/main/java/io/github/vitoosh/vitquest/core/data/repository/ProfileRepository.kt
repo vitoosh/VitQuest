@@ -18,6 +18,8 @@ interface ProfileRepository {
     val goals: Flow<Goals?>
 
     suspend fun saveProfileAndGoals(profile: UserProfile, goals: Goals)
+
+    suspend fun updateDailyStepGoal(steps: Int)
 }
 
 class OfflineProfileRepository @Inject constructor(
@@ -32,5 +34,9 @@ class OfflineProfileRepository @Inject constructor(
     override suspend fun saveProfileAndGoals(profile: UserProfile, goals: Goals) {
         val now = clock.millis()
         profileDao.upsertProfileAndGoals(profile.toEntity(now), goals.toEntity(now))
+    }
+
+    override suspend fun updateDailyStepGoal(steps: Int) {
+        profileDao.updateDailyStepGoal(steps, clock.millis())
     }
 }

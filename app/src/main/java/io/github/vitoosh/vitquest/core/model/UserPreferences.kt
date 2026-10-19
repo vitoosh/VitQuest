@@ -5,4 +5,5 @@ enum class ThemeMode { SYSTEM, LIGHT, DARK }
 data class UserPreferences(
     val themeMode: ThemeMode = ThemeMode.SYSTEM,
     val onboardingCompleted: Boolean = false,
+    val stepSourcePreference: StepSourcePreference = StepSourcePreference.AUTOMATIC,
 )

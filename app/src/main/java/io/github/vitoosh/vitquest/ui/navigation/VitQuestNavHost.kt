@@ -6,6 +6,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import io.github.vitoosh.vitquest.R
+import io.github.vitoosh.vitquest.feature.activity.ActivityRoute as ActivityScreenRoute
 import io.github.vitoosh.vitquest.feature.comingsoon.ComingSoonFeature
 import io.github.vitoosh.vitquest.feature.comingsoon.ComingSoonScreen
 import io.github.vitoosh.vitquest.feature.home.HomeRoute as HomeScreenRoute
@@ -22,10 +23,14 @@ fun VitQuestNavHost(
 
     NavHost(navController = navController, startDestination = HomeRoute, modifier = modifier) {
         composable<HomeRoute> {
-            HomeScreenRoute(onOpenSettings = openSettings, onEditProfile = editProfile)
+            HomeScreenRoute(
+                onOpenSettings = openSettings,
+                onEditProfile = editProfile,
+                onOpenActivity = { navController.navigateToTopLevel(TopLevelDestination.ACTIVITY) },
+            )
         }
         composable<ActivityRoute> {
-            ComingSoonScreen(R.string.nav_activity, ComingSoonFeature.ACTIVITY, onOpenSettings = openSettings)
+            ActivityScreenRoute(onOpenSettings = openSettings)
         }
         composable<NutritionRoute> {
             ComingSoonScreen(R.string.nav_nutrition, ComingSoonFeature.NUTRITION, onOpenSettings = openSettings)

@@ -133,25 +133,18 @@
     <string name="home_complete_profile_title">Complete your profile</string>
     <string name="home_complete_profile_description">Add your weight to get a personal water suggestion and track progress toward your target.</string>
     <string name="home_targets_title">Your daily targets</string>
-    <string name="home_target_steps">Step goal</string>
     <string name="home_target_water">Water target</string>
     <string name="home_current_weight">Current weight</string>
     <string name="home_target_weight">Target weight</string>
     <string name="home_weight_to_lose">%1$s kg to your target</string>
     <string name="home_weight_to_gain">%1$s kg below your target</string>
     <string name="home_weight_at_target">You are at your target weight</string>
-    <string name="home_targets_note">Tracking against these targets arrives in upcoming updates. You can change them anytime in your profile.</string>
+    <string name="home_targets_note">Steps are tracked on the Activity tab. Hydration tracking arrives in an upcoming update. You can change these targets anytime in your profile.</string>
     <string name="home_coming_soon_title">Coming to VitQuest</string>
     <string name="home_coming_soon_description">These features are being built. No numbers are shown until real data is available.</string>
     <string name="home_local_data_note">Your data is stored only on this device.</string>
 
     <!-- Feature previews -->
-    <string name="feature_activity_title">Steps and activity</string>
-    <string name="feature_activity_summary">Daily steps from Health Connect, phone sensor or manual entry.</string>
-    <string name="feature_activity_description">Track daily steps and activity with clear labels showing where each number comes from.</string>
-    <string name="feature_activity_planned_1">Health Connect with clear permission explanations</string>
-    <string name="feature_activity_planned_2">Phone step sensor and manual entry as fallbacks</string>
-    <string name="feature_activity_planned_3">Daily and weekly progress toward your step goal</string>
 
     <string name="feature_nutrition_title">Food and nutrition</string>
     <string name="feature_nutrition_summary">Food diary with common Indonesian meals and estimated calories.</string>
@@ -185,11 +178,11 @@
     <string name="settings_section_language">Language</string>
     <string name="settings_section_privacy">Privacy and data</string>
     <string name="settings_section_about">About</string>
-    <string name="settings_privacy_description">VitQuest works offline. Your profile and goals are stored only on this device and are not sent anywhere. They are excluded from cloud backups.</string>
+    <string name="settings_privacy_description">VitQuest works offline. Your profile, goals and step history are stored only on this device and are not sent anywhere. If you connect Health Connect, VitQuest only reads daily step totals. App data is excluded from cloud backups.</string>
     <string name="settings_delete_all_data">Delete all data</string>
-    <string name="settings_delete_all_data_description">Remove your profile, goals and settings from this device</string>
+    <string name="settings_delete_all_data_description">Remove your profile, goals, step history and settings from this device</string>
     <string name="settings_delete_dialog_title">Delete all data?</string>
-    <string name="settings_delete_dialog_message">Your profile, goals and settings will be permanently removed from this device. This cannot be undone.</string>
+    <string name="settings_delete_dialog_message">Your profile, goals, step history and settings will be permanently removed from this device. Data in Health Connect is not affected. This cannot be undone.</string>
     <string name="settings_delete_dialog_confirm">Delete</string>
     <string name="settings_version">Version %1$s (build %2$d)</string>
     <string name="settings_disclaimer">VitQuest provides general wellness guidance, not medical advice. All calorie and goal values are estimates.</string>
@@ -201,4 +194,78 @@
     <!-- Language names are shown in their own language. -->
     <string name="language_indonesian" translatable="false">Bahasa Indonesia</string>
     <string name="language_english" translatable="false">English</string>
+
+    <!-- Activity (Phase 2) -->
+    <string name="action_change">Change</string>
+    <string name="action_close">Close</string>
+    <string name="action_connect">Connect</string>
+    <string name="action_enable">Enable</string>
+    <string name="action_install">Install</string>
+    <string name="action_manage">Manage</string>
+    <string name="action_not_now">Not now</string>
+    <string name="action_open_settings">Open settings</string>
+    <string name="action_retry">Try again</string>
+    <string name="day_today">Today</string>
+    <string name="day_yesterday">Yesterday</string>
+    <string name="steps_today_title">Steps today</string>
+    <string name="steps_of_goal">%1$s / %2$s steps</string>
+    <string name="steps_goal_reached">Daily goal of %1$s steps reached.</string>
+    <string name="steps_remaining">%1$s more to reach %2$s.</string>
+    <string name="steps_no_data_today">No step data yet today</string>
+    <string name="steps_no_data_today_description">This is not the same as 0 steps: no source has reported steps for today yet. Connect a source below or log your steps manually.</string>
+    <string name="steps_no_data_short">No data</string>
+    <string name="home_steps_no_data">No step data yet today. Tap to connect a step source or log steps manually.</string>
+    <string name="steps_log_manually">Log manually</string>
+    <string name="steps_edit_goal">Change goal</string>
+    <string name="steps_sources_title">Step data sources</string>
+    <string name="step_source_health_connect">Health Connect</string>
+    <string name="step_source_phone_sensor">Phone sensor</string>
+    <string name="step_source_manual">Manual</string>
+    <string name="source_checking">Checking…</string>
+    <string name="source_status_not_used">Allowed, but not used with your current source choice.</string>
+    <string name="hc_status_not_supported">Not supported on this device (requires Android 9 or newer).</string>
+    <string name="hc_status_update_required">Health Connect needs to be installed or updated.</string>
+    <string name="hc_status_permission_required">Not connected. VitQuest needs permission to read your steps.</string>
+    <string name="hc_status_connected">Connected. Reads daily step totals written by your phone or other fitness apps.</string>
+    <string name="hc_status_read_failed">Could not read data from Health Connect. Try again later.</string>
+    <string name="sensor_status_not_available">This phone has no step counter sensor.</string>
+    <string name="sensor_status_permission_required">Needs the Physical activity permission.</string>
+    <string name="sensor_status_denied">Permission was denied. Allow Physical activity for VitQuest in system settings.</string>
+    <string name="sensor_status_active">Active. The phone keeps counting in the background; VitQuest updates the total whenever you open the app.</string>
+    <string name="steps_preference_title">Source in use</string>
+    <string name="step_preference_automatic">Automatic</string>
+    <string name="step_preference_automatic_description">Health Connect when it has data for a day, otherwise the phone sensor.</string>
+    <string name="step_preference_health_connect">Health Connect only</string>
+    <string name="step_preference_health_connect_description">Use step totals from Health Connect only.</string>
+    <string name="step_preference_phone_sensor">Phone sensor only</string>
+    <string name="step_preference_phone_sensor_description">Count steps with this phone\'s step sensor only.</string>
+    <string name="step_preference_manual_only">Manual only</string>
+    <string name="step_preference_manual_only_description">Only the numbers you enter yourself.</string>
+    <string name="steps_no_double_counting">Steps from different sources are never added together. One source is chosen for each day, and a manual entry always replaces automatic data for that day.</string>
+    <string name="steps_week_title">Last 7 days</string>
+    <string name="steps_week_total">Total</string>
+    <string name="steps_week_average">Daily average</string>
+    <string name="steps_week_goal_days">Goal reached</string>
+    <string name="steps_days_fraction">%1$d of %2$d</string>
+    <string name="steps_goal_line">Daily goal: %1$s steps</string>
+    <string name="steps_history_title">Last 30 days</string>
+    <string name="steps_goal_met_description">Goal reached</string>
+    <string name="steps_limitations">The phone sensor starts counting when you enable it, and steps taken before a phone restart that were not yet read can be lost. If VitQuest is not opened across midnight, those steps are split between the days by time. Health Connect shows only data that your phone or other apps write to it.</string>
+    <string name="manual_steps_title">Steps for %1$s</string>
+    <string name="manual_steps_current_auto">Automatic data: %1$s steps from %2$s.</string>
+    <string name="manual_steps_description">A manual entry replaces automatic data for this day. Remove it to go back to automatic data.</string>
+    <string name="manual_steps_field">Steps</string>
+    <string name="manual_steps_remove">Remove</string>
+    <string name="step_goal_dialog_description">Increase your goal gradually as walking becomes easier.</string>
+    <string name="rationale_health_connect_title">Connect Health Connect?</string>
+    <string name="rationale_health_connect_message">VitQuest will only read your daily step count from Health Connect to show your progress. It does not write anything and the data stays on this device. You can remove access at any time in Health Connect.</string>
+    <string name="rationale_sensor_title">Use the phone step sensor?</string>
+    <string name="rationale_sensor_message">Android will ask for the Physical activity permission so VitQuest can read your phone\'s step counter. Steps are stored only on this device. You can turn this off at any time in system settings.</string>
+    <string name="hc_privacy_title">How VitQuest uses health data</string>
+    <string name="hc_privacy_body">VitQuest reads only your daily step totals from Health Connect. They are used to show today\'s steps, your weekly progress and your step history. VitQuest does not write to Health Connect, does not read any other health data, and does not send health data to any server or third party. Data stays on this device and is deleted when you use Delete all data in Settings or uninstall the app. You can withdraw access at any time in Health Connect.</string>
+    <!-- Quantity follows the total number of days shown. -->
+    <plurals name="steps_week_partial">
+        <item quantity="one">Average is based on the %1$d of %2$d day that has data.</item>
+        <item quantity="other">Average is based on the %1$d of %2$d days that have data.</item>
+    </plurals>
 </resources>

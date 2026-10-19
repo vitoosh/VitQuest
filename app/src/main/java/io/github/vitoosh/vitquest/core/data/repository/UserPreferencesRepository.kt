@@ -1,6 +1,7 @@
 package io.github.vitoosh.vitquest.core.data.repository
 
 import io.github.vitoosh.vitquest.core.data.preferences.UserPreferencesDataSource
+import io.github.vitoosh.vitquest.core.model.StepSourcePreference
 import io.github.vitoosh.vitquest.core.model.ThemeMode
 import io.github.vitoosh.vitquest.core.model.UserPreferences
 import javax.inject.Inject
@@ -12,6 +13,8 @@ interface UserPreferencesRepository {
     suspend fun setThemeMode(themeMode: ThemeMode)
 
     suspend fun setOnboardingCompleted(completed: Boolean)
+
+    suspend fun setStepSourcePreference(preference: StepSourcePreference)
 }
 
 class DataStoreUserPreferencesRepository @Inject constructor(
@@ -24,4 +27,7 @@ class DataStoreUserPreferencesRepository @Inject constructor(
 
     override suspend fun setOnboardingCompleted(completed: Boolean) =
         dataSource.setOnboardingCompleted(completed)
+
+    override suspend fun setStepSourcePreference(preference: StepSourcePreference) =
+        dataSource.setStepSourcePreference(preference)
 }

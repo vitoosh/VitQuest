@@ -6,6 +6,8 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.ui.graphics.vector.ImageVector
 import io.github.vitoosh.vitquest.R
 import io.github.vitoosh.vitquest.core.designsystem.icon.VqIcons
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavHostController
 import kotlin.reflect.KClass
 import kotlinx.serialization.Serializable
 
@@ -35,4 +37,13 @@ enum class TopLevelDestination(
     NUTRITION(NutritionRoute, NutritionRoute::class, R.string.nav_nutrition, VqIcons.Restaurant),
     WORKOUTS(WorkoutsRoute, WorkoutsRoute::class, R.string.nav_workouts, VqIcons.FitnessCenter),
     REWARDS(RewardsRoute, RewardsRoute::class, R.string.nav_rewards, VqIcons.Trophy),
+}
+
+/** Switches tabs while keeping each tab's own back stack and scroll state. */
+fun NavHostController.navigateToTopLevel(destination: TopLevelDestination) {
+    navigate(destination.route) {
+        popUpTo(graph.findStartDestination().id) { saveState = true }
+        launchSingleTop = true
+        restoreState = true
+    }
 }

@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
+import io.github.vitoosh.vitquest.core.model.StepSourcePreference
 import io.github.vitoosh.vitquest.core.model.ThemeMode
 import io.github.vitoosh.vitquest.core.model.UserPreferences
 import java.io.IOException
@@ -31,6 +32,9 @@ class UserPreferencesDataSource @Inject constructor(
                     ?.let { stored -> ThemeMode.entries.firstOrNull { it.name == stored } }
                     ?: ThemeMode.SYSTEM,
                 onboardingCompleted = prefs[Keys.ONBOARDING_COMPLETED] ?: false,
+                stepSourcePreference = prefs[Keys.STEP_SOURCE]
+                    ?.let { stored -> StepSourcePreference.entries.firstOrNull { it.name == stored } }
+                    ?: StepSourcePreference.AUTOMATIC,
             )
         }
 
@@ -42,6 +46,10 @@ class UserPreferencesDataSource @Inject constructor(
         dataStore.edit { it[Keys.ONBOARDING_COMPLETED] = completed }
     }
 
+    suspend fun setStepSourcePreference(preference: StepSourcePreference) {
+        dataStore.edit { it[Keys.STEP_SOURCE] = preference.name }
+    }
+
     suspend fun clear() {
         dataStore.edit { it.clear() }
     }
@@ -49,5 +57,6 @@ class UserPreferencesDataSource @Inject constructor(
     private object Keys {
         val THEME_MODE = stringPreferencesKey("theme_mode")
         val ONBOARDING_COMPLETED = booleanPreferencesKey("onboarding_completed")
+        val STEP_SOURCE = stringPreferencesKey("step_source_preference")
     }
 }

@@ -36,6 +36,16 @@ class StringResourcesTest {
     }
 
     @Test
+    fun pluralsExistInBothLanguages() {
+        fun plurals(path: String): Set<String> {
+            val nodes = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(File(path))
+                .getElementsByTagName("plurals")
+            return (0 until nodes.length).map { (nodes.item(it) as Element).getAttribute("name") }.toSet()
+        }
+        assertEquals(plurals("src/main/res/values/strings.xml"), plurals("src/main/res/values-in/strings.xml"))
+    }
+
+    @Test
     fun translationsKeepTheSamePlaceholders() {
         val english = read("src/main/res/values/strings.xml")
         val indonesian = read("src/main/res/values-in/strings.xml")

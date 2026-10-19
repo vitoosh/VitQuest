@@ -20,6 +20,7 @@ import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -33,6 +34,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.vitoosh.vitquest.R
 import io.github.vitoosh.vitquest.core.designsystem.component.CenteredContent
@@ -44,6 +46,9 @@ import io.github.vitoosh.vitquest.core.designsystem.component.SectionHeader
 import io.github.vitoosh.vitquest.core.designsystem.component.VqTopAppBar
 import io.github.vitoosh.vitquest.core.designsystem.icon.VqIcons
 import io.github.vitoosh.vitquest.core.designsystem.theme.VqSpacing
+import io.github.vitoosh.vitquest.core.domain.steps.StepStats
+import io.github.vitoosh.vitquest.core.model.DailySteps
+import io.github.vitoosh.vitquest.feature.activity.StepSourceTag
 import io.github.vitoosh.vitquest.core.ui.currentLocale
 import io.github.vitoosh.vitquest.core.ui.formatDecimal
 import io.github.vitoosh.vitquest.core.ui.formatInteger
@@ -56,10 +61,20 @@ import kotlin.math.abs
 fun HomeRoute(
     onOpenSettings: () -> Unit,
     onEditProfile: () -> Unit,
+    onOpenActivity: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    HomeScreen(uiState = uiState, onOpenSettings = onOpenSettings, onEditProfile = onEditProfile)
+    LifecycleResumeEffect(Unit) {
+        viewModel.refresh()
+        onPauseOrDispose { }
+    }
+    HomeScreen(
+        uiState = uiState,
+        onOpenSettings = onOpenSettings,
+        onEditProfile = onEditProfile,
+        onOpenActivity = onOpenActivity,
+    )
 }
 
 @Composable
@@ -67,6 +82,7 @@ fun HomeScreen(
     uiState: HomeUiState,
     onOpenSettings: () -> Unit,
     onEditProfile: () -> Unit,
+    onOpenActivity: () -> Unit = {},
 ) {
     Scaffold(
         topBar = {
@@ -88,25 +104,26 @@ fun HomeScreen(
             ) { CircularProgressIndicator() }
 
             is HomeUiState.Ready -> CenteredContent(modifier = Modifier.padding(padding)) {
-                HomeContent(state = uiState, onEditProfile = onEditProfile)
+                HomeContent(state = uiState, onEditProfile = onEditProfile, onOpenActivity = onOpenActivity)
             }
         }
     }
 }
 
 @Composable
-private fun HomeContent(state: HomeUiState.Ready, onEditProfile: () -> Unit) {
+private fun HomeContent(state: HomeUiState.Ready, onEditProfile: () -> Unit, onOpenActivity: () -> Unit) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(VqSpacing.lg),
         verticalArrangement = Arrangement.spacedBy(VqSpacing.lg),
     ) {
         item { GreetingHeader() }
+        item { TodayStepsCard(steps = state.todaySteps, goal = state.goals?.dailyStepGoal, onOpenActivity = onOpenActivity) }
         if (state.profile?.currentWeightKg == null) {
             item { CompleteProfileCard(onEditProfile = onEditProfile) }
         }
         state.goals?.let { goals ->
-            item { TargetsCard(state = state, dailySteps = goals.dailyStepGoal, waterMl = goals.dailyWaterTargetMl) }
+            item { TargetsCard(state = state, waterMl = goals.dailyWaterTargetMl) }
         }
         item { ComingSoonCard() }
         item {
@@ -138,6 +155,48 @@ private fun GreetingHeader() {
 }
 
 @Composable
+private fun TodayStepsCard(steps: DailySteps?, goal: Int?, onOpenActivity: () -> Unit) {
+    Card(
+        onClick = onOpenActivity,
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+    ) {
+        Column(modifier = Modifier.padding(VqSpacing.lg), verticalArrangement = Arrangement.spacedBy(VqSpacing.sm)) {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(VqSpacing.md)) {
+                IconBubble(icon = VqIcons.Walk, size = 36)
+                Text(
+                    text = stringResource(R.string.steps_today_title),
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.weight(1f),
+                )
+                if (steps != null) StepSourceTag(steps.source)
+            }
+            if (steps != null) {
+                Text(
+                    text = if (goal != null) {
+                        stringResource(R.string.steps_of_goal, formatInteger(steps.steps), formatInteger(goal))
+                    } else {
+                        stringResource(R.string.value_steps, formatInteger(steps.steps))
+                    },
+                    style = MaterialTheme.typography.headlineSmall,
+                )
+                if (goal != null) {
+                    LinearProgressIndicator(
+                        progress = { StepStats.progress(steps.steps, goal) },
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
+            } else {
+                Text(
+                    text = stringResource(R.string.home_steps_no_data),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
+    }
+}
+
+@Composable
 private fun CompleteProfileCard(onEditProfile: () -> Unit) {
     Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)) {
         Column(
@@ -152,18 +211,13 @@ private fun CompleteProfileCard(onEditProfile: () -> Unit) {
 }
 
 @Composable
-private fun TargetsCard(state: HomeUiState.Ready, dailySteps: Int, waterMl: Int) {
+private fun TargetsCard(state: HomeUiState.Ready, waterMl: Int) {
     Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
         Column(
             modifier = Modifier.padding(VqSpacing.lg),
             verticalArrangement = Arrangement.spacedBy(VqSpacing.md),
         ) {
             SectionHeader(stringResource(R.string.home_targets_title))
-            TargetRow(
-                icon = VqIcons.Walk,
-                label = stringResource(R.string.home_target_steps),
-                value = stringResource(R.string.value_steps, formatInteger(dailySteps)),
-            )
             TargetRow(
                 icon = VqIcons.WaterDrop,
                 label = stringResource(R.string.home_target_water),
@@ -239,16 +293,10 @@ private fun ComingSoonCard() {
                 modifier = Modifier.padding(top = VqSpacing.xs, bottom = VqSpacing.sm),
             )
             FeaturePreviewRow(
-                icon = VqIcons.Walk,
-                title = stringResource(R.string.feature_activity_title),
-                description = stringResource(R.string.feature_activity_summary),
-                // The card title already says these are coming soon.
-                trailing = null,
-            )
-            FeaturePreviewRow(
                 icon = VqIcons.Restaurant,
                 title = stringResource(R.string.feature_nutrition_title),
                 description = stringResource(R.string.feature_nutrition_summary),
+                // The card title already says these are coming soon.
                 trailing = null,
             )
             FeaturePreviewRow(

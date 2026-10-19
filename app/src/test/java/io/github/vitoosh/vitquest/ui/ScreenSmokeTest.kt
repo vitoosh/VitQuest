@@ -91,7 +91,8 @@ class ScreenSmokeTest {
             }
         }
 
-        composeRule.onNodeWithText(string(R.string.value_steps, "8,000")).assertIsDisplayed()
+        // No step source has data, so Home says so instead of showing 0.
+        composeRule.onNodeWithText(string(R.string.home_steps_no_data)).assertIsDisplayed()
         composeRule.onNodeWithText(string(R.string.home_weight_to_lose, "5")).performScrollTo().assertIsDisplayed()
         composeRule.onNodeWithText(string(R.string.data_source_manual)).performScrollTo().assertIsDisplayed()
         // The coming-soon card is a lazy item below the fold.
@@ -118,12 +119,12 @@ class ScreenSmokeTest {
     fun comingSoonTabExplainsPlannedFeature() {
         composeRule.setContent {
             VitQuestTheme {
-                ComingSoonScreen(R.string.nav_activity, ComingSoonFeature.ACTIVITY, onOpenSettings = {})
+                ComingSoonScreen(R.string.nav_workouts, ComingSoonFeature.WORKOUTS, onOpenSettings = {})
             }
         }
 
         composeRule.onNodeWithText(string(R.string.coming_soon)).assertIsDisplayed()
-        composeRule.onNodeWithText(string(R.string.feature_activity_planned_1)).assertIsDisplayed()
+        composeRule.onNodeWithText(string(R.string.feature_workouts_planned_1)).assertIsDisplayed()
     }
 
     @Test

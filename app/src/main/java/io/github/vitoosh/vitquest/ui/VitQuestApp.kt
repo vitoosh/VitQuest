@@ -16,13 +16,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import io.github.vitoosh.vitquest.feature.onboarding.OnboardingRoute
 import io.github.vitoosh.vitquest.ui.navigation.TopLevelDestination
 import io.github.vitoosh.vitquest.ui.navigation.VitQuestNavHost
+import io.github.vitoosh.vitquest.ui.navigation.navigateToTopLevel
 
 /** Root UI: onboarding until it is completed, then the main navigation. */
 @Composable
@@ -64,11 +64,3 @@ private fun MainNavigation(navController: NavHostController = rememberNavControl
 
 private fun NavDestination.isOn(destination: TopLevelDestination): Boolean =
     hierarchy.any { it.hasRoute(destination.routeClass) }
-
-private fun NavHostController.navigateToTopLevel(destination: TopLevelDestination) {
-    navigate(destination.route) {
-        popUpTo(graph.findStartDestination().id) { saveState = true }
-        launchSingleTop = true
-        restoreState = true
-    }
-}

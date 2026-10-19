@@ -10,9 +10,24 @@ Aplikasi ini **offline-first**: semua fitur inti berjalan tanpa server dan tanpa
 
 ## Status pengembangan
 
-Proyek dibangun bertahap. **Saat ini: Fase 1 (fondasi dan build otomatis).**
+Proyek dibangun bertahap. **Saat ini: Fase 2 (pelacakan aktivitas) selesai.**
 
-### Yang sudah berfungsi di Fase 1
+### Yang sudah berfungsi di Fase 2 (Aktivitas)
+
+| Fitur | Status |
+|---|---|
+| Tab **Aktivitas**: langkah hari ini, progres terhadap target, grafik 7 hari, ringkasan mingguan, riwayat 30 hari | ✅ Berfungsi |
+| **Health Connect** (hanya baca total langkah harian). Ada penjelasan sebelum meminta izin, deteksi "tidak didukung / perlu dipasang / belum diizinkan / izin dicabut / gagal baca", serta halaman kebijakan privasi untuk layar izin Health Connect. | ✅ Berfungsi |
+| **Sensor langkah HP** (`TYPE_STEP_COUNTER`) sebagai cadangan, dengan izin Aktivitas fisik. Menangani nilai kumulatif, restart proses, reboot HP, pergantian hari, dan zona waktu. | ✅ Berfungsi |
+| **Input manual** per hari, yang menggantikan data otomatis untuk hari itu dan bisa dihapus lagi | ✅ Berfungsi |
+| **Pilihan sumber**: Otomatis, Hanya Health Connect, Hanya sensor HP, atau Hanya manual. Sumber yang aktif selalu diberi label. | ✅ Berfungsi |
+| **Anti double counting**: untuk setiap hari dipilih satu sumber (manual > Health Connect > sensor). Angka dari sumber berbeda tidak pernah dijumlahkan. | ✅ Berfungsi, ada test-nya |
+| "Tidak ada data" dibedakan dari "0 langkah" di Home, grafik, dan riwayat | ✅ Berfungsi |
+| Target langkah bisa diubah langsung dari tab Aktivitas | ✅ Berfungsi |
+| Home menampilkan langkah hari ini beserta sumbernya | ✅ Berfungsi |
+| Migrasi database v1→v2 tanpa kehilangan data profil | ✅ Ada test migrasinya |
+
+### Yang sudah berfungsi sejak Fase 1
 
 | Fitur | Status |
 |---|---|
@@ -28,16 +43,16 @@ Proyek dibangun bertahap. **Saat ini: Fase 1 (fondasi dan build otomatis).**
 
 ### Yang masih placeholder ("Segera hadir")
 
-- Tab **Aktivitas, Nutrisi, Latihan, Hadiah** hanya menampilkan layar "Segera hadir" berisi rencana fiturnya.
-- Di Home, langkah, kalori, hidrasi, latihan, XP, dan Reward Credit **belum dilacak**. Tidak ada angka contoh atau angka karangan yang ditampilkan.
-- Belum ada Health Connect, sensor langkah, notifikasi, maupun izin apa pun. Aplikasi Fase 1 **tidak meminta izin sama sekali**.
+- Tab **Nutrisi, Latihan, Hadiah** hanya menampilkan layar "Segera hadir" berisi rencana fiturnya.
+- Kalori, hidrasi, latihan, XP, dan Reward Credit **belum dilacak**. Tidak ada angka contoh atau angka karangan yang ditampilkan.
+- Belum ada notifikasi atau pengingat.
 
 ### Rencana fase berikutnya
 
 1. ~~Fase 1: Fondasi dan build otomatis~~
-2. Fase 2: Pelacakan aktivitas (Health Connect, sensor langkah, input manual, riwayat)
+2. ~~Fase 2: Pelacakan aktivitas (Health Connect, sensor langkah, input manual, riwayat)~~
 3. Fase 3: Berat badan, nutrisi (database makanan Indonesia), resep, dan hidrasi
-4. Fase 4: Latihan kalistenik dan kebiasaan
+4. Fase 4: Latihan kalistenik dan kebiasaan, termasuk **tutorial bergambar untuk setiap gerakan** (selain jalan kaki) berupa animasi figur vektor yang digambar app (posisi awal ke posisi akhir, plus penanda otot yang dilatih). Animasi ini offline dan konsisten di tema terang/gelap.
 5. Fase 5: XP, Reward Credit, hadiah, dan pengingat
 6. Fase 6 (opsional): Sinkronisasi cloud dan kesiapan rilis
 
@@ -106,7 +121,8 @@ base64 -w0 vitquest-debug.keystore > keystore-base64.txt   # macOS: base64 -i vi
 | Bahasa pemrograman | Kotlin (built-in Kotlin di AGP 9) |
 | UI | Jetpack Compose + Material 3, Navigation Compose (type-safe routes), Material 3 adaptive navigation suite |
 | Arsitektur | MVVM + Repository, Coroutines/Flow, Hilt (KSP) |
-| Data | Room (profil, target), DataStore Preferences (tema, status onboarding) |
+| Data | Room (profil, target, langkah harian per sumber, checkpoint sensor), DataStore Preferences (tema, status onboarding, pilihan sumber langkah) |
+| Data kesehatan | Health Connect client 1.1.0 (hanya baca `StepsRecord`), Android `SensorManager` (`TYPE_STEP_COUNTER`) |
 | Bahasa UI | Per-app language API Android (AppCompat). Pilihan bahasa disimpan oleh sistem/AppCompat, bukan duplikat di DataStore. |
 | Build | Gradle 9.6.1 (wrapper, checksum terverifikasi), AGP 9.4.1, Kotlin 2.4.20, JDK 17+ (CI memakai 21) |
 | Test | JUnit 4, kotlinx-coroutines-test, Robolectric, Compose UI test, Room in-memory |
@@ -136,7 +152,8 @@ app/src/androidTest/    # Instrumented test (dijalankan di HP/emulator)
 
 ### Database dan migrasi
 
-- Skema Room versi 1 berisi tabel `user_profile` dan `goals` (masing-masing satu baris).
+- Versi 1: tabel `user_profile` dan `goals` (masing-masing satu baris).
+- Versi 2 (Fase 2): `daily_steps` (satu baris per tanggal dan sumber) dan `step_sensor_state` (checkpoint penghitung langkah HP). Migrasi `MIGRATION_1_2` diuji dengan membuat database v1 dari skema JSON yang di-commit, lalu membukanya dengan Room versi terbaru.
 - `exportSchema = true`. File JSON skema ada di `app/schemas/` dan harus di-commit.
 - **Tidak ada destructive fallback**. Setiap perubahan skema wajib menambah `Migration` di `DatabaseMigrations.ALL`. Test `DatabaseSchemaTest` gagal kalau ada versi tanpa migrasi atau tanpa file skema.
 
@@ -163,17 +180,27 @@ Untuk menandatangani build lokal dengan keystore bersama: `export VITQUEST_DEBUG
 
 ## Privasi dan data
 
-- **Disimpan lokal di HP:** profil (usia, tinggi, berat, pengalaman, aktivitas, lokasi latihan, peralatan, preferensi makanan), target harian, pilihan tema, dan status onboarding.
+- **Disimpan lokal di HP:** profil (usia, tinggi, berat, pengalaman, aktivitas, lokasi latihan, peralatan, preferensi makanan), target harian, langkah harian per sumber, checkpoint sensor langkah, pilihan tema, pilihan sumber langkah, dan status onboarding.
+- **Izin yang diminta (hanya jika kamu mengaktifkan sumbernya):**
+  - `android.permission.health.READ_STEPS`: membaca total langkah harian dari Health Connect. VitQuest **tidak menulis** apa pun ke Health Connect dan tidak membaca data kesehatan lain.
+  - `ACTIVITY_RECOGNITION` (Aktivitas fisik): membaca sensor langkah HP (Android 10+).
 - **Tidak ada yang dikirim ke server.** Aplikasi tidak punya akun, analitik, iklan, atau koneksi jaringan untuk data pengguna.
 - **Backup cloud dimatikan** untuk data aplikasi (`allowBackup="false"` dan `data_extraction_rules`). Di Android 12+, transfer langsung ke HP baru (device-to-device) masih diizinkan oleh sistem.
-- Data bisa dilihat dan diubah lewat **Profil**, dan dihapus seluruhnya lewat **Pengaturan → Hapus semua data**.
+- Data bisa dilihat dan diubah lewat **Profil** dan tab **Aktivitas**, dan dihapus seluruhnya lewat **Pengaturan → Hapus semua data**. Data yang ada di Health Connect tidak ikut terhapus; kelola data itu di aplikasi Health Connect.
 - Uninstall aplikasi juga menghapus semua datanya.
 
 ---
 
 ## Batasan yang diketahui
 
-- Aplikasi **belum diuji di perangkat fisik** (termasuk POCO X8 Pro). Verifikasi di Fase 1 dilakukan lewat unit test, Robolectric, UI smoke test, lint, dan build di CI.
+- Aplikasi **belum diuji di perangkat fisik** (termasuk POCO X8 Pro). Verifikasi dilakukan lewat unit test, Robolectric, UI smoke test, lint, dan build di CI. Alur izin Health Connect dan sensor langkah perlu dicoba langsung di HP.
+- **Health Connect hanya berisi data yang ditulis HP atau aplikasi lain.** Kalau tidak ada aplikasi (misalnya aplikasi kebugaran bawaan HP) yang menulis langkah ke Health Connect, tab Aktivitas akan menampilkan "Tidak ada data" untuk Health Connect. Pada mode Otomatis, sensor HP dipakai sebagai cadangan.
+- Health Connect hanya mengizinkan membaca data sekitar 30 hari sebelum izin diberikan, jadi riwayat dibatasi 30 hari.
+- **Sensor HP dibaca hanya saat VitQuest terbuka.** Hardware HP tetap menghitung di latar belakang, jadi tidak ada langkah yang terlewat. Tapi:
+  - penghitungan baru dimulai sejak sensor diaktifkan (langkah sebelumnya tidak diketahui tanggalnya);
+  - jika aplikasi tidak dibuka melewati tengah malam, langkah pada rentang itu dibagi antar hari secara proporsional terhadap waktu (perkiraan);
+  - langkah setelah terakhir kali aplikasi dibuka sampai HP dimatikan/restart bisa hilang.
+- Tidak ada pengumpulan sensor terus-menerus di latar belakang (tidak ada foreground service). Ini disengaja sampai perilakunya diuji di HyperOS.
 - Tidak ada fitur ekspor/impor data. Kalau HP di-reset tanpa transfer device-to-device, data hilang. Fitur ekspor direncanakan di fase berikutnya.
 - Usia disimpan apa adanya (tidak otomatis bertambah). Satuan hanya metrik (kg, cm, ml).
 - Fase berikutnya (notifikasi, sensor langkah) akan terpengaruh pembatasan baterai HyperOS/MIUI. Ini akan didokumentasikan dan diuji di perangkat saat fitur tersebut dibuat.

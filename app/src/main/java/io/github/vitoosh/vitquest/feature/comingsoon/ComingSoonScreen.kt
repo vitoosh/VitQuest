@@ -39,16 +39,6 @@ enum class ComingSoonFeature(
     val plannedRes: List<Int>,
     val icon: ImageVector,
 ) {
-    ACTIVITY(
-        titleRes = R.string.feature_activity_title,
-        descriptionRes = R.string.feature_activity_description,
-        plannedRes = listOf(
-            R.string.feature_activity_planned_1,
-            R.string.feature_activity_planned_2,
-            R.string.feature_activity_planned_3,
-        ),
-        icon = VqIcons.Walk,
-    ),
     NUTRITION(
         titleRes = R.string.feature_nutrition_title,
         descriptionRes = R.string.feature_nutrition_description,

@@ -15,6 +15,9 @@ abstract class ProfileDao {
     @Query("SELECT * FROM goals WHERE id = $SINGLE_ROW_ID")
     abstract fun observeGoals(): Flow<GoalsEntity?>
 
+    @Query("UPDATE goals SET daily_step_goal = :steps, updated_at_epoch_ms = :updatedAtEpochMs WHERE id = $SINGLE_ROW_ID")
+    abstract suspend fun updateDailyStepGoal(steps: Int, updatedAtEpochMs: Long)
+
     @Upsert
     abstract suspend fun upsertProfile(profile: UserProfileEntity)
 

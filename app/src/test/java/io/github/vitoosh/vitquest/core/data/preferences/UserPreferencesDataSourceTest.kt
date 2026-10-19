@@ -1,6 +1,7 @@
 package io.github.vitoosh.vitquest.core.data.preferences
 
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
+import io.github.vitoosh.vitquest.core.model.StepSourcePreference
 import io.github.vitoosh.vitquest.core.model.ThemeMode
 import io.github.vitoosh.vitquest.core.model.UserPreferences
 import java.io.File
@@ -50,6 +51,15 @@ class UserPreferencesDataSourceTest {
         // A new DataStore instance on the same file simulates an app restart.
         val reopened = dataSource(file)
         assertEquals(UserPreferences(ThemeMode.DARK, onboardingCompleted = true), reopened.userPreferences.first())
+    }
+
+    @Test
+    fun stepSourcePreferenceIsPersisted() = runTest {
+        val file = File(tempFolder.root, "steps.preferences_pb")
+        dataSource(file).setStepSourcePreference(StepSourcePreference.PHONE_SENSOR)
+        scopes.forEach { it.cancel() }
+
+        assertEquals(StepSourcePreference.PHONE_SENSOR, dataSource(file).userPreferences.first().stepSourcePreference)
     }
 
     @Test
