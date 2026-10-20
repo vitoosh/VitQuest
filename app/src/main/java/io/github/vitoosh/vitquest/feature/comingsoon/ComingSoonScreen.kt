@@ -39,16 +39,6 @@ enum class ComingSoonFeature(
     val plannedRes: List<Int>,
     val icon: ImageVector,
 ) {
-    WORKOUTS(
-        titleRes = R.string.feature_workouts_title,
-        descriptionRes = R.string.feature_workouts_description,
-        plannedRes = listOf(
-            R.string.feature_workouts_planned_1,
-            R.string.feature_workouts_planned_2,
-            R.string.feature_workouts_planned_3,
-        ),
-        icon = VqIcons.FitnessCenter,
-    ),
     REWARDS(
         titleRes = R.string.feature_rewards_title,
         descriptionRes = R.string.feature_rewards_description,

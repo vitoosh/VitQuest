@@ -36,6 +36,23 @@ import kotlinx.serialization.Serializable
 
 @Serializable data object HydrationRoute
 
+@Serializable data class ExerciseDetailRoute(val key: String)
+
+/** The plan is rebuilt from these values, so the player survives process death without storing it. */
+@Serializable
+data class WorkoutPlayerRoute(
+    val minutes: Int,
+    val level: String,
+    val location: String,
+    val equipment: String,
+    val focus: String,
+    val seed: Long,
+)
+
+@Serializable data object HabitsRoute
+
+@Serializable data object ProgressRoute
+
 /** The five bottom-navigation destinations. */
 enum class TopLevelDestination(
     val route: Any,

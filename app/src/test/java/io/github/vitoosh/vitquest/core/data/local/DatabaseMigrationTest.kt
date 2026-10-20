@@ -53,6 +53,10 @@ class DatabaseMigrationTest {
                 for (i in 0 until entities.length()) {
                     val entity = entities.getJSONObject(i)
                     db.execSQL(entity.getString("createSql").replace("\${TABLE_NAME}", entity.getString("tableName")))
+                    val indices = entity.optJSONArray("indices") ?: continue
+                    for (j in 0 until indices.length()) {
+                        db.execSQL(indices.getJSONObject(j).getString("createSql").replace("\${TABLE_NAME}", entity.getString("tableName")))
+                    }
                 }
                 val setup = schema.getJSONArray("setupQueries")
                 for (i in 0 until setup.length()) db.execSQL(setup.getString(i))
@@ -126,6 +130,43 @@ class DatabaseMigrationTest {
             // New tables accept data.
             database.bodyDao().insertWater(WaterLogEntity(date = "2026-10-19", amountMl = 250, loggedAtEpochMs = 1L))
             assertEquals(1, database.bodyDao().observeWater("2026-10-19", "2026-10-19").first().size)
+        } finally {
+            database.close()
+        }
+    }
+
+    @Test
+    fun migrating3To4KeepsDiaryAndAddsWorkoutsAndHabits() = runTest {
+        createDatabase(version = 3) { db ->
+            insertProfile(db)
+            db.insert(
+                "water_logs",
+                SQLiteDatabase.CONFLICT_REPLACE,
+                ContentValues().apply {
+                    put("date", "2026-10-19")
+                    put("amount_ml", 500)
+                    put("logged_at_epoch_ms", 1L)
+                },
+            )
+        }
+
+        val database = open()
+        try {
+            assertEquals(listOf(DayTotal("2026-10-19", 500)), database.bodyDao().observeWaterTotals("2026-10-19", "2026-10-19").first())
+            val id = database.workoutDao().insertSessionWithExercises(
+                WorkoutSessionEntity(
+                    date = "2026-10-20", startedAtEpochMs = 1L, endedAtEpochMs = 2L, source = "PLAYER", focus = "FULL_BODY",
+                    level = "BEGINNER", location = "HOME", intensity = null, plannedSeconds = 600, activeSeconds = 300,
+                    exercisesCompleted = 4, exercisesTotal = 8, completed = false, estimatedKcal = null, note = null,
+                ),
+                listOf(WorkoutSessionExerciseEntity(sessionId = 0, position = 0, exerciseKey = "plank", nameId = "Plank", nameEn = "Plank", plannedSeconds = 30, workedSeconds = 30, status = "COMPLETED")),
+            )
+            assertEquals(listOf("plank"), database.workoutDao().observeSessions().first().single { it.session.id == id }.exercises.map { it.exerciseKey })
+            val habit = database.habitDao().insertHabit(HabitEntity(name = "Tidur 7 jam", targetDaysPerWeek = 5, createdAtEpochMs = 1L))
+            database.habitDao().insertCheckIn(HabitCheckInEntity(habit, "2026-10-20"))
+            // Checking in twice for the same day is ignored rather than duplicated.
+            database.habitDao().insertCheckIn(HabitCheckInEntity(habit, "2026-10-20"))
+            assertEquals(1, database.habitDao().observeHabits().first().single().checkIns.size)
         } finally {
             database.close()
         }

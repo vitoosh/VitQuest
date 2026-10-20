@@ -4,6 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.vitoosh.vitquest.core.data.repository.BodyRepository
+import io.github.vitoosh.vitquest.core.data.repository.HabitRepository
+import io.github.vitoosh.vitquest.core.data.repository.WorkoutRepository
+import io.github.vitoosh.vitquest.core.domain.habits.HabitStats
+import io.github.vitoosh.vitquest.feature.habits.HabitsOverview
+import io.github.vitoosh.vitquest.feature.habits.HabitsUiState
 import io.github.vitoosh.vitquest.core.data.repository.NutritionRepository
 import io.github.vitoosh.vitquest.core.data.repository.ProfileRepository
 import io.github.vitoosh.vitquest.core.data.repository.StepsRepository
@@ -35,6 +40,10 @@ data class TodaySnapshot(
     val steps: DailySteps?,
     val diary: DiaryTotals,
     val waterMl: Int,
+    val workoutsToday: Int,
+    val workoutSecondsToday: Int,
+    val weekWorkoutDays: Int,
+    val habits: HabitsUiState,
 )
 
 sealed interface HomeUiState {
@@ -47,6 +56,11 @@ sealed interface HomeUiState {
         val todaySteps: DailySteps? = null,
         val diary: DiaryTotals = DiaryTotals.of(emptyList()),
         val waterMl: Int = 0,
+        val workoutsToday: Int = 0,
+        val workoutSecondsToday: Int = 0,
+        val weekWorkoutDays: Int = 0,
+        /** Null until loaded; Home then shows how many habits are done today. */
+        val habits: HabitsUiState? = null,
         val energy: EnergyEstimate = EnergyEstimate.Missing(emptySet()),
         val calorieTarget: CalorieTarget? = null,
         val weight: WeightSummary? = null,
@@ -57,10 +71,12 @@ sealed interface HomeUiState {
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    profileRepository: ProfileRepository,
+    private val profileRepository: ProfileRepository,
     private val stepsRepository: StepsRepository,
     nutritionRepository: NutritionRepository,
     private val bodyRepository: BodyRepository,
+    workoutRepository: WorkoutRepository,
+    habitRepository: HabitRepository,
     private val timeSource: TimeSource,
 ) : ViewModel() {
 
@@ -71,7 +87,20 @@ class HomeViewModel @Inject constructor(
             stepsRepository.observeDailySteps(date, date).map { it[date] },
             nutritionRepository.diary(date).map { DiaryTotals.of(it) },
             bodyRepository.water(date, date).map { logs -> logs.sumOf { it.amountMl } },
-        ) { steps, diary, water -> TodaySnapshot(steps, diary, water) }
+            workoutRepository.sessions(HabitStats.weekStart(date), date),
+            HabitsOverview.observe(date, habitRepository, profileRepository),
+        ) { steps, diary, water, sessions, habits ->
+            val today = sessions.filter { it.date == date }
+            TodaySnapshot(
+                steps = steps,
+                diary = diary,
+                waterMl = water,
+                workoutsToday = today.size,
+                workoutSecondsToday = today.sumOf { it.activeSeconds },
+                weekWorkoutDays = sessions.map { it.date }.distinct().size,
+                habits = habits,
+            )
+        }
     }
 
     val uiState: StateFlow<HomeUiState> =
@@ -93,6 +122,10 @@ class HomeViewModel @Inject constructor(
                 todaySteps = todayData.steps,
                 diary = todayData.diary,
                 waterMl = todayData.waterMl,
+                workoutsToday = todayData.workoutsToday,
+                workoutSecondsToday = todayData.workoutSecondsToday,
+                weekWorkoutDays = todayData.weekWorkoutDays,
+                habits = todayData.habits,
                 energy = energy,
                 calorieTarget = CalorieTarget.resolve(goals?.dailyCalorieTarget, energy),
                 weight = if (weights.isEmpty()) null else WeightStats.summarize(weights, goals?.targetWeightKg, date),

@@ -10,7 +10,22 @@ Aplikasi ini **offline-first**: semua fitur inti berjalan tanpa server dan tanpa
 
 ## Status pengembangan
 
-Proyek dibangun bertahap. **Saat ini: Fase 3 (berat badan, nutrisi, resep, hidrasi) selesai.**
+Proyek dibangun bertahap. **Saat ini: Fase 4 (latihan, tutorial gerakan, kebiasaan, progres) selesai.**
+
+### Yang sudah berfungsi di Fase 4 (Latihan dan kebiasaan)
+
+| Fitur | Status |
+|---|---|
+| **Pustaka 38 gerakan** (pemula, menengah, mahir) untuk rumah, kantor, dan luar ruangan: squat, push-up dinding/lutut/standar, lunge, plank, glute bridge, calf raise, jalan di tempat, step jack, mobilitas, peregangan, plus gerakan dengan resistance band, dumbel, palang, tali skipping, atau kursi. Tiap gerakan punya deskripsi, langkah, otot yang dilatih, level, alat, rekomendasi repetisi/durasi, versi pemula, dan catatan keamanan (ID/EN). | ✅ Berfungsi, ada test-nya |
+| **Tutorial animasi figur vektor** untuk setiap gerakan kecuali jalan cepat: figur digambar app (offline), bergerak dari posisi awal ke akhir, otot yang bekerja diberi warna, dan ada tombol Putar / Awal / Akhir. Jika animasi sistem dimatikan, posisi awal dan akhir ditampilkan sebagai gambar diam. | ✅ Berfungsi, ada test pose |
+| **Generator latihan** berdasarkan durasi (5–30 menit), level, tempat, alat yang tersedia, dan fokus (seluruh tubuh, tubuh atas/bawah, otot inti, kardio, mobilitas): pemanasan, sirkuit inti beberapa putaran, dan pendinginan. Di kantor tidak ada latihan lantai atau lompatan. Tombol "Acak ulang" memberi variasi gerakan. | ✅ Berfungsi, ada test-nya |
+| **Pemutar latihan**: hitung mundur persiapan, timer kerja/istirahat, jeda/lanjut, lewati, kembali/ulangi, "Set selesai" untuk gerakan berbasis repetisi, +15 dtk istirahat, aba-aba "Ganti sisi", getar saat pergantian, layar tetap menyala, dan ringkasan sesi. Status pemutar tetap tersimpan walaupun aplikasi ditutup sistem. | ✅ Berfungsi, ada test-nya |
+| **Riwayat latihan**: ringkasan minggu ini, detail per gerakan (selesai/dilewati/belum dilakukan), hapus sesi, dan **catat latihan manual** (durasi, intensitas, catatan) | ✅ Berfungsi |
+| Perkiraan kalori latihan dari nilai MET × berat badan × waktu aktif, selalu berlabel **perkiraan** dan hanya tampil jika berat badan diketahui | ✅ Berfungsi |
+| **Kebiasaan** mingguan tanpa streak: gerak harian (target langkah), latihan, cukup minum, dan catat makanan dihitung otomatis dari data; kebiasaan pilihan sendiri bisa ditambah, diubah, dihapus, dan dicentang/dibatalkan untuk hari yang sudah lewat | ✅ Berfungsi |
+| **Progres**: minggu ini vs minggu lalu, grafik menit latihan dan rata-rata langkah 8 minggu, tren berat 90 hari, dan **riwayat pencapaian** berbasis konsistensi (tidak ada pencapaian untuk makan lebih sedikit atau turun berat cepat) | ✅ Berfungsi |
+| Home: kartu latihan hari ini, kartu kebiasaan, aksi cepat "Mulai latihan" | ✅ Berfungsi |
+| Migrasi database v3→v4 | ✅ Ada test migrasinya |
 
 ### Yang sudah berfungsi di Fase 3 (Nutrisi, berat badan, hidrasi)
 
@@ -61,8 +76,8 @@ Proyek dibangun bertahap. **Saat ini: Fase 3 (berat badan, nutrisi, resep, hidra
 
 ### Yang masih placeholder ("Segera hadir")
 
-- Tab **Latihan** dan **Hadiah** masih menampilkan layar "Segera hadir" berisi rencana fiturnya.
-- Latihan, XP, dan Reward Credit **belum dilacak**. Tidak ada angka contoh atau angka karangan yang ditampilkan.
+- Tab **Hadiah** masih menampilkan layar "Segera hadir" berisi rencana fiturnya.
+- XP dan Reward Credit **belum dilacak**. Tidak ada angka contoh atau angka karangan yang ditampilkan.
 - Belum ada notifikasi atau pengingat, termasuk pengingat minum (Fase 5).
 
 ### Rencana fase berikutnya
@@ -70,7 +85,7 @@ Proyek dibangun bertahap. **Saat ini: Fase 3 (berat badan, nutrisi, resep, hidra
 1. ~~Fase 1: Fondasi dan build otomatis~~
 2. ~~Fase 2: Pelacakan aktivitas (Health Connect, sensor langkah, input manual, riwayat)~~
 3. ~~Fase 3: Berat badan, nutrisi (database makanan Indonesia), resep, dan hidrasi~~
-4. Fase 4: Latihan kalistenik dan kebiasaan, termasuk **tutorial bergambar untuk setiap gerakan** (selain jalan kaki) berupa animasi figur vektor yang digambar app (posisi awal ke posisi akhir, plus penanda otot yang dilatih). Animasi ini offline dan konsisten di tema terang/gelap.
+4. ~~Fase 4: Latihan kalistenik, tutorial animasi gerakan, kebiasaan, dan progres~~
 5. Fase 5: XP, Reward Credit, hadiah, dan pengingat
 6. Fase 6 (opsional): Sinkronisasi cloud dan kesiapan rilis
 
@@ -139,7 +154,7 @@ base64 -w0 vitquest-debug.keystore > keystore-base64.txt   # macOS: base64 -i vi
 | Bahasa pemrograman | Kotlin (built-in Kotlin di AGP 9) |
 | UI | Jetpack Compose + Material 3, Navigation Compose (type-safe routes), Material 3 adaptive navigation suite |
 | Arsitektur | MVVM + Repository, Coroutines/Flow, Hilt (KSP) |
-| Data | Room (profil, target, langkah harian per sumber, checkpoint sensor), DataStore Preferences (tema, status onboarding, pilihan sumber langkah) |
+| Data | Room (profil, target, langkah, makanan, resep, berat, air, latihan, kebiasaan), DataStore Preferences (tema, status onboarding, pilihan sumber langkah, versi data awal) |
 | Data kesehatan | Health Connect client 1.1.0 (hanya baca `StepsRecord`), Android `SensorManager` (`TYPE_STEP_COUNTER`) |
 | Bahasa UI | Per-app language API Android (AppCompat). Pilihan bahasa disimpan oleh sistem/AppCompat, bukan duplikat di DataStore. |
 | Build | Gradle 9.6.1 (wrapper, checksum terverifikasi), AGP 9.4.1, Kotlin 2.4.20, JDK 17+ (CI memakai 21) |
@@ -154,12 +169,12 @@ app/src/main/java/io/github/vitoosh/vitquest/
 ├── MainActivity.kt, VitQuestApplication.kt
 ├── core/
 │   ├── model/          # Model domain (UserProfile, Goals, ThemeMode, ...)
-│   ├── domain/         # Logika bisnis murni: saran target, parsing input, batas nilai
+│   ├── domain/         # Logika bisnis murni: target, kalori, langkah, berat, latihan (generator, pemutar, pose figur), kebiasaan
 │   ├── data/           # Room (local/), DataStore (preferences/), repository/, Hilt di/
 │   ├── designsystem/   # Tema, warna, spacing, komponen, ikon
 │   ├── locale/         # Pilihan bahasa per-aplikasi
 │   └── ui/             # Label lokal untuk enum dan format angka
-├── feature/            # home, onboarding, profile, settings, comingsoon
+├── feature/            # home, activity, nutrition, weight, hydration, workouts, habits, progress, onboarding, profile, settings
 └── ui/                 # Root app dan navigasi
 app/src/main/res/       # values/ (Inggris, default), values-in/ (Indonesia), values-night/
 app/schemas/            # Skema Room yang diekspor (wajib di-commit untuk migrasi)
@@ -173,8 +188,16 @@ app/src/androidTest/    # Instrumented test (dijalankan di HP/emulator)
 - Versi 1: tabel `user_profile` dan `goals` (masing-masing satu baris).
 - Versi 2 (Fase 2): `daily_steps` (satu baris per tanggal dan sumber) dan `step_sensor_state` (checkpoint penghitung langkah HP).
 - Versi 3 (Fase 3): kolom `user_profile.sex` dan `goals.daily_calorie_target`, plus tabel `foods`, `food_servings`, `food_log_entries`, `recipes`, `recipe_ingredients`, `meal_plan_entries`, `shopping_items`, `weight_entries`, `body_measurements`, dan `water_logs`.
+- Versi 4 (Fase 4): tabel `workout_sessions`, `workout_session_exercises` (salinan nama gerakan dan status tiap langkah), `habits`, dan `habit_check_ins`.
 - Setiap migrasi diuji dengan membuat database versi lama dari skema JSON yang di-commit, lalu membukanya dengan Room versi terbaru. Room memvalidasi semua tabel setelah migrasi.
 - **Catatan makan menyimpan salinan nama dan gizi** saat dicatat. Mengedit atau menghapus makanan buatan sendiri tidak mengubah catatan hari-hari sebelumnya.
+
+### Gerakan latihan dan animasinya
+
+- Pustaka gerakan ada di kode (`core/domain/workout/ExerciseCatalog.kt`), bukan di database, sehingga selalu sama dengan versi aplikasi. Riwayat menyimpan `exercise_key` dan salinan nama gerakan.
+- Pose animasi (`ExercisePoses.kt`) hanya menentukan posisi pinggul/bahu, sudut badan, dan titik tangan/kaki. Siku dan lutut dihitung dengan inverse kinematics dua tulang, sehingga panjang anggota tubuh tetap dan tangan/kaki yang menapak tidak bergeser. `ExercisePosesTest` mengecek jangkauan, panjang tulang, batas frame, dan lantai untuk setiap gerakan.
+- Nilai MET dibulatkan dari Compendium of Physical Activities dan hanya dipakai untuk perkiraan kalori yang diberi label.
+- Generator bersifat deterministik: pengaturan yang sama dengan seed yang sama selalu menghasilkan rencana yang sama, sehingga pemutar bisa membangun ulang rencana dari rutenya.
 
 ### Database makanan dan resep
 
@@ -213,7 +236,7 @@ Untuk menandatangani build lokal dengan keystore bersama: `export VITQUEST_DEBUG
 
 ## Privasi dan data
 
-- **Disimpan lokal di HP:** profil (usia, jenis kelamin opsional, tinggi, berat, pengalaman, aktivitas, lokasi latihan, peralatan, preferensi makanan), target harian (termasuk target kalori), langkah harian per sumber, checkpoint sensor langkah, catatan makan, makanan buatan sendiri dan favorit, rencana menu, daftar belanja, riwayat berat badan, ukuran tubuh, catatan minum, pilihan tema, pilihan sumber langkah, dan status onboarding.
+- **Disimpan lokal di HP:** profil (usia, jenis kelamin opsional, tinggi, berat, pengalaman, aktivitas, lokasi latihan, peralatan, preferensi makanan), target harian (termasuk target kalori), langkah harian per sumber, checkpoint sensor langkah, catatan makan, makanan buatan sendiri dan favorit, rencana menu, daftar belanja, riwayat berat badan, ukuran tubuh, catatan minum, riwayat latihan, kebiasaan dan centangnya, pilihan tema, pilihan sumber langkah, dan status onboarding.
 - **Izin yang diminta (hanya jika kamu mengaktifkan sumbernya):**
   - `android.permission.health.READ_STEPS`: membaca total langkah harian dari Health Connect. VitQuest **tidak menulis** apa pun ke Health Connect dan tidak membaca data kesehatan lain.
   - `ACTIVITY_RECOGNITION` (Aktivitas fisik): membaca sensor langkah HP (Android 10+).
@@ -238,5 +261,9 @@ Untuk menandatangani build lokal dengan keystore bersama: `export VITQUEST_DEBUG
 - Usia disimpan apa adanya (tidak otomatis bertambah), jadi perlu diperbarui manual agar BMR tetap akurat. Satuan hanya metrik (kg, cm, ml).
 - Nilai gizi makanan dan resep adalah estimasi (lihat bagian "Database makanan dan resep"). Belum ada pemindai barcode atau database online.
 - Rencana menu dan daftar belanja mencakup 7 hari ke depan. Resep buatan sendiri belum bisa dibuat.
+- Animasi gerakan adalah ilustrasi figur sederhana tampak samping/depan, bukan video. Gerakan bergantian sisi (misalnya lunge, bird dog) dicontohkan satu sisi; langkah tertulis menjelaskan cara bergantian.
+- Kalori latihan adalah perkiraan kasar (MET), bukan hasil pengukuran. Timer pemutar berjalan selama aplikasi terbuka atau di latar belakang selama proses aplikasi masih hidup; tidak ada notifikasi latihan di latar belakang.
+- Target kebiasaan bawaan (gerak 5, latihan 3, air 5, makanan 5 hari per minggu) belum bisa diubah; kebiasaan pilihan sendiri bisa diatur 1–7 hari.
+- Pencapaian dihitung dari data yang tersimpan. Pencapaian target langkah dan air memakai target yang berlaku sekarang.
 - Fase berikutnya (notifikasi, sensor langkah) akan terpengaruh pembatasan baterai HyperOS/MIUI. Ini akan didokumentasikan dan diuji di perangkat saat fitur tersebut dibuat.
 - Build rilis bertanda tangan (release signing) adalah tugas terpisah dan belum dikonfigurasi.

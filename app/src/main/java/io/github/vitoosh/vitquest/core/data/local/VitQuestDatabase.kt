@@ -19,6 +19,10 @@ import androidx.room.RoomDatabase
         WeightEntryEntity::class,
         BodyMeasurementEntity::class,
         WaterLogEntity::class,
+        WorkoutSessionEntity::class,
+        WorkoutSessionExerciseEntity::class,
+        HabitEntity::class,
+        HabitCheckInEntity::class,
     ],
     version = VitQuestDatabase.VERSION,
     exportSchema = true,
@@ -34,8 +38,12 @@ abstract class VitQuestDatabase : RoomDatabase() {
 
     abstract fun bodyDao(): BodyDao
 
+    abstract fun workoutDao(): WorkoutDao
+
+    abstract fun habitDao(): HabitDao
+
     companion object {
         const val NAME = "vitquest.db"
-        const val VERSION = 3
+        const val VERSION = 4
     }
 }

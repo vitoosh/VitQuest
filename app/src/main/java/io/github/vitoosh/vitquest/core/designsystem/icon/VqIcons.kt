@@ -425,4 +425,365 @@ object VqIcons {
             }
         }
     }
+
+    val Pause: ImageVector by lazy {
+        materialIcon(name = "VitQuest.Pause") {
+            materialPath {
+                moveTo(6.0f, 19.0f)
+                horizontalLineToRelative(4.0f)
+                lineTo(10.0f, 5.0f)
+                lineTo(6.0f, 5.0f)
+                verticalLineToRelative(14.0f)
+                close()
+                moveTo(14.0f, 5.0f)
+                verticalLineToRelative(14.0f)
+                horizontalLineToRelative(4.0f)
+                lineTo(18.0f, 5.0f)
+                horizontalLineToRelative(-4.0f)
+                close()
+            }
+        }
+    }
+
+    val SkipNext: ImageVector by lazy {
+        materialIcon(name = "VitQuest.SkipNext") {
+            materialPath {
+                moveTo(6.0f, 18.0f)
+                lineToRelative(8.5f, -6.0f)
+                lineTo(6.0f, 6.0f)
+                verticalLineToRelative(12.0f)
+                close()
+                moveTo(16.0f, 6.0f)
+                verticalLineToRelative(12.0f)
+                horizontalLineToRelative(2.0f)
+                verticalLineTo(6.0f)
+                horizontalLineToRelative(-2.0f)
+                close()
+            }
+        }
+    }
+
+    val SkipPrevious: ImageVector by lazy {
+        materialIcon(name = "VitQuest.SkipPrevious") {
+            materialPath {
+                moveTo(6.0f, 6.0f)
+                horizontalLineToRelative(2.0f)
+                verticalLineToRelative(12.0f)
+                lineTo(6.0f, 18.0f)
+                close()
+                moveTo(9.5f, 12.0f)
+                lineToRelative(8.5f, 6.0f)
+                lineTo(18.0f, 6.0f)
+                close()
+            }
+        }
+    }
+
+    val Timer: ImageVector by lazy {
+        materialIcon(name = "VitQuest.Timer") {
+            materialPath {
+                moveTo(9.0f, 1.0f)
+                horizontalLineToRelative(6.0f)
+                verticalLineToRelative(2.0f)
+                horizontalLineToRelative(-6.0f)
+                close()
+            }
+            materialPath {
+                moveTo(19.03f, 7.39f)
+                lineToRelative(1.42f, -1.42f)
+                curveToRelative(-0.43f, -0.51f, -0.9f, -0.99f, -1.41f, -1.41f)
+                lineToRelative(-1.42f, 1.42f)
+                curveTo(16.07f, 4.74f, 14.12f, 4.0f, 12.0f, 4.0f)
+                curveToRelative(-4.97f, 0.0f, -9.0f, 4.03f, -9.0f, 9.0f)
+                curveToRelative(0.0f, 4.97f, 4.02f, 9.0f, 9.0f, 9.0f)
+                reflectiveCurveToRelative(9.0f, -4.03f, 9.0f, -9.0f)
+                curveTo(21.0f, 10.88f, 20.26f, 8.93f, 19.03f, 7.39f)
+                close()
+                moveTo(13.0f, 14.0f)
+                horizontalLineToRelative(-2.0f)
+                verticalLineTo(8.0f)
+                horizontalLineToRelative(2.0f)
+                verticalLineTo(14.0f)
+                close()
+            }
+        }
+    }
+
+    val Insights: ImageVector by lazy {
+        materialIcon(name = "VitQuest.Insights") {
+            materialPath {
+                moveTo(21.0f, 8.0f)
+                curveToRelative(-1.45f, 0.0f, -2.26f, 1.44f, -1.93f, 2.51f)
+                lineToRelative(-3.55f, 3.56f)
+                curveToRelative(-0.3f, -0.09f, -0.74f, -0.09f, -1.04f, 0.0f)
+                lineToRelative(-2.55f, -2.55f)
+                curveTo(12.27f, 10.45f, 11.46f, 9.0f, 10.0f, 9.0f)
+                curveToRelative(-1.45f, 0.0f, -2.27f, 1.44f, -1.93f, 2.52f)
+                lineToRelative(-4.56f, 4.55f)
+                curveTo(2.44f, 15.74f, 1.0f, 16.55f, 1.0f, 18.0f)
+                curveToRelative(0.0f, 1.1f, 0.9f, 2.0f, 2.0f, 2.0f)
+                curveToRelative(1.45f, 0.0f, 2.26f, -1.44f, 1.93f, -2.51f)
+                lineToRelative(4.55f, -4.56f)
+                curveToRelative(0.3f, 0.09f, 0.74f, 0.09f, 1.04f, 0.0f)
+                lineToRelative(2.55f, 2.55f)
+                curveTo(12.73f, 16.55f, 13.54f, 18.0f, 15.0f, 18.0f)
+                curveToRelative(1.45f, 0.0f, 2.27f, -1.44f, 1.93f, -2.52f)
+                lineToRelative(3.56f, -3.55f)
+                curveTo(21.56f, 12.26f, 23.0f, 11.45f, 23.0f, 10.0f)
+                curveTo(23.0f, 8.9f, 22.1f, 8.0f, 21.0f, 8.0f)
+                close()
+            }
+            materialPath {
+                moveTo(15.0f, 9.0f)
+                lineToRelative(0.94f, -2.07f)
+                lineToRelative(2.06f, -0.93f)
+                lineToRelative(-2.06f, -0.93f)
+                lineToRelative(-0.94f, -2.07f)
+                lineToRelative(-0.92f, 2.07f)
+                lineToRelative(-2.08f, 0.93f)
+                lineToRelative(2.08f, 0.93f)
+                close()
+            }
+            materialPath {
+                moveTo(3.5f, 11.0f)
+                lineToRelative(0.5f, -2.0f)
+                lineToRelative(2.0f, -0.5f)
+                lineToRelative(-2.0f, -0.5f)
+                lineToRelative(-0.5f, -2.0f)
+                lineToRelative(-0.5f, 2.0f)
+                lineToRelative(-2.0f, 0.5f)
+                lineToRelative(2.0f, 0.5f)
+                close()
+            }
+        }
+    }
+
+    val Checklist: ImageVector by lazy {
+        materialIcon(name = "VitQuest.Checklist") {
+            materialPath {
+                moveTo(22.0f, 7.0f)
+                horizontalLineToRelative(-9.0f)
+                verticalLineToRelative(2.0f)
+                horizontalLineToRelative(9.0f)
+                verticalLineTo(7.0f)
+                close()
+                moveTo(22.0f, 15.0f)
+                horizontalLineToRelative(-9.0f)
+                verticalLineToRelative(2.0f)
+                horizontalLineToRelative(9.0f)
+                verticalLineTo(15.0f)
+                close()
+                moveTo(5.54f, 11.0f)
+                lineTo(2.0f, 7.46f)
+                lineToRelative(1.41f, -1.41f)
+                lineToRelative(2.12f, 2.12f)
+                lineToRelative(4.24f, -4.24f)
+                lineToRelative(1.41f, 1.41f)
+                lineTo(5.54f, 11.0f)
+                close()
+                moveTo(5.54f, 19.0f)
+                lineTo(2.0f, 15.46f)
+                lineToRelative(1.41f, -1.41f)
+                lineToRelative(2.12f, 2.12f)
+                lineToRelative(4.24f, -4.24f)
+                lineToRelative(1.41f, 1.41f)
+                lineTo(5.54f, 19.0f)
+                close()
+            }
+        }
+    }
+
+    val Shuffle: ImageVector by lazy {
+        materialIcon(name = "VitQuest.Shuffle") {
+            materialPath {
+                moveTo(10.59f, 9.17f)
+                lineTo(5.41f, 4.0f)
+                lineTo(4.0f, 5.41f)
+                lineToRelative(5.17f, 5.17f)
+                lineToRelative(1.42f, -1.41f)
+                close()
+                moveTo(14.5f, 4.0f)
+                lineToRelative(2.04f, 2.04f)
+                lineTo(4.0f, 18.59f)
+                lineTo(5.41f, 20.0f)
+                lineTo(17.96f, 7.46f)
+                lineTo(20.0f, 9.5f)
+                lineTo(20.0f, 4.0f)
+                horizontalLineToRelative(-5.5f)
+                close()
+                moveTo(14.83f, 13.41f)
+                lineToRelative(-1.41f, 1.41f)
+                lineToRelative(3.13f, 3.13f)
+                lineTo(14.5f, 20.0f)
+                lineTo(20.0f, 20.0f)
+                verticalLineToRelative(-5.5f)
+                lineToRelative(-2.04f, 2.04f)
+                lineToRelative(-3.13f, -3.13f)
+                close()
+            }
+        }
+    }
+
+    val Replay: ImageVector by lazy {
+        materialIcon(name = "VitQuest.Replay") {
+            materialPath {
+                moveTo(12.0f, 5.0f)
+                verticalLineTo(1.0f)
+                lineTo(7.0f, 6.0f)
+                lineToRelative(5.0f, 5.0f)
+                verticalLineTo(7.0f)
+                curveToRelative(3.31f, 0.0f, 6.0f, 2.69f, 6.0f, 6.0f)
+                reflectiveCurveToRelative(-2.69f, 6.0f, -6.0f, 6.0f)
+                reflectiveCurveToRelative(-6.0f, -2.69f, -6.0f, -6.0f)
+                horizontalLineTo(4.0f)
+                curveToRelative(0.0f, 4.42f, 3.58f, 8.0f, 8.0f, 8.0f)
+                reflectiveCurveToRelative(8.0f, -3.58f, 8.0f, -8.0f)
+                reflectiveCurveToRelative(-3.58f, -8.0f, -8.0f, -8.0f)
+                close()
+            }
+        }
+    }
+
+    val Stop: ImageVector by lazy {
+        materialIcon(name = "VitQuest.Stop") {
+            materialPath {
+                moveTo(6.0f, 6.0f)
+                horizontalLineToRelative(12.0f)
+                verticalLineToRelative(12.0f)
+                horizontalLineTo(6.0f)
+                close()
+            }
+        }
+    }
+
+    val RadioButtonUnchecked: ImageVector by lazy {
+        materialIcon(name = "VitQuest.RadioButtonUnchecked") {
+            materialPath {
+                moveTo(12.0f, 2.0f)
+                curveTo(6.48f, 2.0f, 2.0f, 6.48f, 2.0f, 12.0f)
+                reflectiveCurveToRelative(4.48f, 10.0f, 10.0f, 10.0f)
+                reflectiveCurveToRelative(10.0f, -4.48f, 10.0f, -10.0f)
+                reflectiveCurveTo(17.52f, 2.0f, 12.0f, 2.0f)
+                close()
+                moveTo(12.0f, 20.0f)
+                curveToRelative(-4.42f, 0.0f, -8.0f, -3.58f, -8.0f, -8.0f)
+                reflectiveCurveToRelative(3.58f, -8.0f, 8.0f, -8.0f)
+                reflectiveCurveToRelative(8.0f, 3.58f, 8.0f, 8.0f)
+                reflectiveCurveToRelative(-3.58f, 8.0f, -8.0f, 8.0f)
+                close()
+            }
+        }
+    }
+
+    val SelfImprovement: ImageVector by lazy {
+        materialIcon(name = "VitQuest.SelfImprovement") {
+            materialPath {
+                moveTo(12.0f, 6.0f)
+                moveToRelative(-2.0f, 0.0f)
+                arcToRelative(2.0f, 2.0f, 0.0f, true, true, 4.0f, 0.0f)
+                arcToRelative(2.0f, 2.0f, 0.0f, true, true, -4.0f, 0.0f)
+            }
+            materialPath {
+                moveTo(21.0f, 16.0f)
+                verticalLineToRelative(-2.0f)
+                curveToRelative(-2.24f, 0.0f, -4.16f, -0.96f, -5.6f, -2.68f)
+                lineToRelative(-1.34f, -1.6f)
+                curveTo(13.68f, 9.26f, 13.12f, 9.0f, 12.53f, 9.0f)
+                horizontalLineToRelative(-1.05f)
+                curveToRelative(-0.59f, 0.0f, -1.15f, 0.26f, -1.53f, 0.72f)
+                lineToRelative(-1.34f, 1.6f)
+                curveTo(7.16f, 13.04f, 5.24f, 14.0f, 3.0f, 14.0f)
+                verticalLineToRelative(2.0f)
+                curveToRelative(2.77f, 0.0f, 5.19f, -1.17f, 7.0f, -3.25f)
+                verticalLineTo(15.0f)
+                lineToRelative(-3.88f, 1.55f)
+                curveTo(5.45f, 16.82f, 5.0f, 17.48f, 5.0f, 18.21f)
+                curveTo(5.0f, 19.2f, 5.8f, 20.0f, 6.79f, 20.0f)
+                horizontalLineTo(9.0f)
+                verticalLineToRelative(-0.5f)
+                curveToRelative(0.0f, -1.38f, 1.12f, -2.5f, 2.5f, -2.5f)
+                horizontalLineToRelative(3.0f)
+                curveToRelative(0.28f, 0.0f, 0.5f, 0.22f, 0.5f, 0.5f)
+                reflectiveCurveTo(14.78f, 18.0f, 14.5f, 18.0f)
+                horizontalLineToRelative(-3.0f)
+                curveToRelative(-0.83f, 0.0f, -1.5f, 0.67f, -1.5f, 1.5f)
+                verticalLineTo(20.0f)
+                horizontalLineToRelative(7.21f)
+                curveTo(18.2f, 20.0f, 19.0f, 19.2f, 19.0f, 18.21f)
+                curveToRelative(0.0f, -0.73f, -0.45f, -1.39f, -1.12f, -1.66f)
+                lineTo(14.0f, 15.0f)
+                verticalLineToRelative(-2.25f)
+                curveTo(15.81f, 14.83f, 18.23f, 16.0f, 21.0f, 16.0f)
+                close()
+            }
+        }
+    }
+
+    val History: ImageVector by lazy {
+        materialIcon(name = "VitQuest.History") {
+            materialPath {
+                moveTo(13.0f, 3.0f)
+                curveToRelative(-4.97f, 0.0f, -9.0f, 4.03f, -9.0f, 9.0f)
+                lineTo(1.0f, 12.0f)
+                lineToRelative(3.89f, 3.89f)
+                lineToRelative(0.07f, 0.14f)
+                lineTo(9.0f, 12.0f)
+                lineTo(6.0f, 12.0f)
+                curveToRelative(0.0f, -3.87f, 3.13f, -7.0f, 7.0f, -7.0f)
+                reflectiveCurveToRelative(7.0f, 3.13f, 7.0f, 7.0f)
+                reflectiveCurveToRelative(-3.13f, 7.0f, -7.0f, 7.0f)
+                curveToRelative(-1.93f, 0.0f, -3.68f, -0.79f, -4.94f, -2.06f)
+                lineToRelative(-1.42f, 1.42f)
+                curveTo(8.27f, 19.99f, 10.51f, 21.0f, 13.0f, 21.0f)
+                curveToRelative(4.97f, 0.0f, 9.0f, -4.03f, 9.0f, -9.0f)
+                reflectiveCurveToRelative(-4.03f, -9.0f, -9.0f, -9.0f)
+                close()
+                moveTo(12.0f, 8.0f)
+                verticalLineToRelative(5.0f)
+                lineToRelative(4.28f, 2.54f)
+                lineToRelative(0.72f, -1.21f)
+                lineToRelative(-3.5f, -2.08f)
+                lineTo(13.5f, 8.0f)
+                lineTo(12.0f, 8.0f)
+                close()
+            }
+        }
+    }
+
+    val Run: ImageVector by lazy {
+        materialIcon(name = "VitQuest.Run", autoMirror = true) {
+            materialPath {
+                moveTo(13.49f, 5.48f)
+                curveToRelative(1.1f, 0.0f, 2.0f, -0.9f, 2.0f, -2.0f)
+                reflectiveCurveToRelative(-0.9f, -2.0f, -2.0f, -2.0f)
+                reflectiveCurveToRelative(-2.0f, 0.9f, -2.0f, 2.0f)
+                reflectiveCurveToRelative(0.9f, 2.0f, 2.0f, 2.0f)
+                close()
+                moveTo(9.89f, 19.38f)
+                lineToRelative(1.0f, -4.4f)
+                lineToRelative(2.1f, 2.0f)
+                verticalLineToRelative(6.0f)
+                horizontalLineToRelative(2.0f)
+                verticalLineToRelative(-7.5f)
+                lineToRelative(-2.1f, -2.0f)
+                lineToRelative(0.6f, -3.0f)
+                curveToRelative(1.3f, 1.5f, 3.3f, 2.5f, 5.5f, 2.5f)
+                verticalLineToRelative(-2.0f)
+                curveToRelative(-1.9f, 0.0f, -3.5f, -1.0f, -4.3f, -2.4f)
+                lineToRelative(-1.0f, -1.6f)
+                curveToRelative(-0.4f, -0.6f, -1.0f, -1.0f, -1.7f, -1.0f)
+                curveToRelative(-0.3f, 0.0f, -0.5f, 0.1f, -0.8f, 0.1f)
+                lineToRelative(-5.2f, 2.2f)
+                verticalLineToRelative(4.7f)
+                horizontalLineToRelative(2.0f)
+                verticalLineToRelative(-3.4f)
+                lineToRelative(1.8f, -0.7f)
+                lineToRelative(-1.6f, 8.1f)
+                lineToRelative(-4.9f, -1.0f)
+                lineToRelative(-0.4f, 2.0f)
+                lineToRelative(7.0f, 1.4f)
+                close()
+            }
+        }
+    }
 }

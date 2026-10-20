@@ -9,7 +9,12 @@ out = sys.argv[2]
 icons = [("Walk","automirrored/filled/DirectionsWalk.kt"),("Restaurant","filled/Restaurant.kt"),
  ("FitnessCenter","filled/FitnessCenter.kt"),("Trophy","filled/EmojiEvents.kt"),("WaterDrop","filled/WaterDrop.kt"),
  ("MonitorWeight","filled/MonitorWeight.kt"),("Flag","filled/Flag.kt"),("Language","filled/Language.kt"),
- ("Palette","filled/Palette.kt"),("Shield","filled/Shield.kt"),("Bolt","filled/Bolt.kt"),("Remove","filled/Remove.kt"),("StarBorder","filled/StarBorder.kt")]
+ ("Palette","filled/Palette.kt"),("Shield","filled/Shield.kt"),("Bolt","filled/Bolt.kt"),("Remove","filled/Remove.kt"),("StarBorder","filled/StarBorder.kt"),
+ ("Pause","filled/Pause.kt"),("SkipNext","filled/SkipNext.kt"),("SkipPrevious","filled/SkipPrevious.kt"),
+ ("Timer","filled/Timer.kt"),("Insights","filled/Insights.kt"),("Checklist","filled/Checklist.kt"),
+ ("Shuffle","filled/Shuffle.kt"),("Replay","filled/Replay.kt"),("Stop","filled/Stop.kt"),
+ ("RadioButtonUnchecked","filled/RadioButtonUnchecked.kt"),("SelfImprovement","filled/SelfImprovement.kt"),
+ ("History","filled/History.kt"),("Run","automirrored/filled/DirectionsRun.kt")]
 parts = []
 for name, rel in icons:
     src = open(os.path.join(base, rel)).read()

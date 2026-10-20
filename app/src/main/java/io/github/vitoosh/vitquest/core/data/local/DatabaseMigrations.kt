@@ -64,5 +64,20 @@ object DatabaseMigrations {
         }
     }
 
-    val ALL: Array<Migration> = arrayOf(MIGRATION_1_2, MIGRATION_2_3)
+    /** v4 (Phase 4): workout history and custom habits. */
+    val MIGRATION_3_4 = object : Migration(3, 4) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            listOf(
+                "CREATE TABLE IF NOT EXISTS `workout_sessions` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `date` TEXT NOT NULL, `started_at_epoch_ms` INTEGER NOT NULL, `ended_at_epoch_ms` INTEGER NOT NULL, `source` TEXT NOT NULL, `focus` TEXT, `level` TEXT, `location` TEXT, `intensity` TEXT, `planned_seconds` INTEGER NOT NULL, `active_seconds` INTEGER NOT NULL, `exercises_completed` INTEGER NOT NULL, `exercises_total` INTEGER NOT NULL, `completed` INTEGER NOT NULL, `estimated_kcal` REAL, `note` TEXT)",
+                "CREATE INDEX IF NOT EXISTS `index_workout_sessions_date` ON `workout_sessions` (`date`)",
+                "CREATE TABLE IF NOT EXISTS `workout_session_exercises` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `session_id` INTEGER NOT NULL, `position` INTEGER NOT NULL, `exercise_key` TEXT NOT NULL, `name_id` TEXT NOT NULL, `name_en` TEXT NOT NULL, `planned_seconds` INTEGER NOT NULL, `worked_seconds` INTEGER NOT NULL, `status` TEXT NOT NULL, FOREIGN KEY(`session_id`) REFERENCES `workout_sessions`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+                "CREATE INDEX IF NOT EXISTS `index_workout_session_exercises_session_id` ON `workout_session_exercises` (`session_id`)",
+                "CREATE TABLE IF NOT EXISTS `habits` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `target_days_per_week` INTEGER NOT NULL, `created_at_epoch_ms` INTEGER NOT NULL)",
+                "CREATE TABLE IF NOT EXISTS `habit_check_ins` (`habit_id` INTEGER NOT NULL, `date` TEXT NOT NULL, PRIMARY KEY(`habit_id`, `date`), FOREIGN KEY(`habit_id`) REFERENCES `habits`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+                "CREATE INDEX IF NOT EXISTS `index_habit_check_ins_date` ON `habit_check_ins` (`date`)",
+            ).forEach(db::execSQL)
+        }
+    }
+
+    val ALL: Array<Migration> = arrayOf(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
 }

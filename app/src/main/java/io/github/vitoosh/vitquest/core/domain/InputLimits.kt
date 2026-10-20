@@ -16,4 +16,6 @@ object InputLimits {
     val SERVING_QUANTITY = 0.25..20.0
     val WATER_LOG_ML = 10..3_000
     val BODY_MEASUREMENT_CM = 20.0..250.0
+    val WORKOUT_MINUTES = 1..300
+    val HABIT_NAME_LENGTH = 1..40
 }

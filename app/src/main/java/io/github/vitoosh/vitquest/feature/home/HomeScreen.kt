@@ -26,6 +26,9 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.ui.res.pluralStringResource
+import io.github.vitoosh.vitquest.feature.workouts.minutesText
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -70,6 +73,9 @@ data class HomeActions(
     val logFood: () -> Unit = {},
     val openHydration: () -> Unit = {},
     val openWeight: () -> Unit = {},
+    val openWorkouts: () -> Unit = {},
+    val openHabits: () -> Unit = {},
+    val openProgress: () -> Unit = {},
 )
 
 @Composable
@@ -132,6 +138,8 @@ private fun HomeContent(state: HomeUiState.Ready, actions: HomeActions, onAddWat
         item { TodayStepsCard(steps = state.todaySteps, goal = state.goals?.dailyStepGoal, onOpenActivity = actions.openActivity) }
         item { CaloriesCard(state = state, onOpen = actions.openNutrition) }
         item { WaterCard(state = state, onOpen = actions.openHydration) }
+        item { WorkoutCard(state = state, onOpen = actions.openWorkouts) }
+        item { HabitsCard(state = state, onOpenHabits = actions.openHabits, onOpenProgress = actions.openProgress) }
         item { WeightCard(state = state, onOpen = actions.openWeight) }
         item { ComingSoonCard() }
         item {
@@ -167,6 +175,11 @@ private fun GreetingHeader() {
 private fun QuickActions(state: HomeUiState.Ready, actions: HomeActions, onAddWater: (Int) -> Unit) {
     val serving = state.goals?.waterServingMl ?: DEFAULT_SERVING_ML
     FlowRow(horizontalArrangement = Arrangement.spacedBy(VqSpacing.sm)) {
+        AssistChip(
+            onClick = actions.openWorkouts,
+            label = { Text(stringResource(R.string.quick_start_workout)) },
+            leadingIcon = { Icon(VqIcons.FitnessCenter, contentDescription = null) },
+        )
         AssistChip(
             onClick = actions.logFood,
             label = { Text(stringResource(R.string.quick_log_food)) },
@@ -334,6 +347,44 @@ private fun WeightCard(state: HomeUiState.Ready, onOpen: () -> Unit) {
 }
 
 @Composable
+private fun WorkoutCard(state: HomeUiState.Ready, onOpen: () -> Unit) {
+    HomeCard(icon = VqIcons.FitnessCenter, title = stringResource(R.string.home_workout_title), onClick = onOpen) {
+        if (state.workoutsToday > 0) {
+            Text(
+                text = stringResource(R.string.workout_today_done, minutesText(state.workoutSecondsToday)),
+                style = MaterialTheme.typography.titleLarge,
+            )
+        } else {
+            HintText(stringResource(R.string.home_workout_none))
+        }
+        HintText(pluralStringResource(R.plurals.workout_week_days, state.weekWorkoutDays, state.weekWorkoutDays))
+        if (state.workoutsToday == 0) {
+            FilledTonalButton(onClick = onOpen) { Text(stringResource(R.string.quick_start_workout)) }
+        }
+    }
+}
+
+@Composable
+private fun HabitsCard(state: HomeUiState.Ready, onOpenHabits: () -> Unit, onOpenProgress: () -> Unit) {
+    val habits = state.habits
+    HomeCard(icon = VqIcons.Checklist, title = stringResource(R.string.habits_title), onClick = onOpenHabits) {
+        if (habits != null) {
+            Text(
+                text = stringResource(R.string.habits_today, formatInteger(habits.todayDone), formatInteger(habits.todayTotal)),
+                style = MaterialTheme.typography.titleLarge,
+            )
+            if (habits.todayTotal > 0) {
+                LinearProgressIndicator(progress = { habits.todayDone.toFloat() / habits.todayTotal }, modifier = Modifier.fillMaxWidth())
+            }
+        }
+        TextButton(onClick = onOpenProgress) {
+            Icon(VqIcons.Insights, contentDescription = null)
+            Text(stringResource(R.string.progress_title), modifier = Modifier.padding(start = VqSpacing.xs))
+        }
+    }
+}
+
+@Composable
 private fun signed(value: Double): String {
     val sign = if (value > 0.05) "+" else if (value < -0.05) "−" else "±"
     return sign + stringResource(R.string.value_kg, formatDecimal(abs(value)))
@@ -356,16 +407,10 @@ private fun ComingSoonCard() {
                 modifier = Modifier.padding(top = VqSpacing.xs, bottom = VqSpacing.sm),
             )
             FeaturePreviewRow(
-                icon = VqIcons.FitnessCenter,
-                title = stringResource(R.string.feature_workouts_title),
-                description = stringResource(R.string.feature_workouts_summary),
-                // The card title already says these are coming soon.
-                trailing = null,
-            )
-            FeaturePreviewRow(
                 icon = VqIcons.Trophy,
                 title = stringResource(R.string.feature_rewards_title),
                 description = stringResource(R.string.feature_rewards_summary),
+                // The card title already says this is coming soon.
                 trailing = null,
             )
         }

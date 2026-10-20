@@ -95,6 +95,9 @@ abstract class FoodDao {
     @Query("SELECT * FROM food_log_entries WHERE date BETWEEN :from AND :to ORDER BY date, created_at_epoch_ms")
     abstract fun observeLogRange(from: String, to: String): Flow<List<FoodLogEntity>>
 
+    @Query("SELECT DISTINCT date FROM food_log_entries WHERE date BETWEEN :from AND :to")
+    abstract fun observeLoggedDates(from: String, to: String): Flow<List<String>>
+
     @Query("SELECT * FROM food_log_entries WHERE id = :id")
     abstract suspend fun getLogEntry(id: Long): FoodLogEntity?
 

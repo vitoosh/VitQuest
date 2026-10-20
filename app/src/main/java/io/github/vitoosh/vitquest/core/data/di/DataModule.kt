@@ -18,6 +18,12 @@ import io.github.vitoosh.vitquest.core.data.local.StepsDao
 import io.github.vitoosh.vitquest.core.data.local.FoodDao
 import io.github.vitoosh.vitquest.core.data.local.RecipeDao
 import io.github.vitoosh.vitquest.core.data.local.BodyDao
+import io.github.vitoosh.vitquest.core.data.local.HabitDao
+import io.github.vitoosh.vitquest.core.data.local.WorkoutDao
+import io.github.vitoosh.vitquest.core.data.repository.HabitRepository
+import io.github.vitoosh.vitquest.core.data.repository.OfflineHabitRepository
+import io.github.vitoosh.vitquest.core.data.repository.OfflineWorkoutRepository
+import io.github.vitoosh.vitquest.core.data.repository.WorkoutRepository
 import io.github.vitoosh.vitquest.core.data.repository.BodyRepository
 import io.github.vitoosh.vitquest.core.data.repository.NutritionRepository
 import io.github.vitoosh.vitquest.core.data.repository.OfflineBodyRepository
@@ -69,6 +75,12 @@ object DataProvidersModule {
     fun provideBodyDao(database: VitQuestDatabase): BodyDao = database.bodyDao()
 
     @Provides
+    fun provideWorkoutDao(database: VitQuestDatabase): WorkoutDao = database.workoutDao()
+
+    @Provides
+    fun provideHabitDao(database: VitQuestDatabase): HabitDao = database.habitDao()
+
+    @Provides
     @Singleton
     fun providePreferencesDataStore(@ApplicationContext context: Context): DataStore<Preferences> =
         PreferenceDataStoreFactory.create(
@@ -114,4 +126,10 @@ abstract class DataBindingsModule {
 
     @Binds
     abstract fun bindBodyRepository(impl: OfflineBodyRepository): BodyRepository
+
+    @Binds
+    abstract fun bindWorkoutRepository(impl: OfflineWorkoutRepository): WorkoutRepository
+
+    @Binds
+    abstract fun bindHabitRepository(impl: OfflineHabitRepository): HabitRepository
 }

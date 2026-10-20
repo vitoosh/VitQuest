@@ -6,6 +6,8 @@ import androidx.room.Query
 import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 
+data class DayTotal(val date: String, val total: Int)
+
 @Dao
 abstract class BodyDao {
 
@@ -40,6 +42,9 @@ abstract class BodyDao {
 
     @Query("SELECT * FROM water_logs WHERE date BETWEEN :from AND :to ORDER BY logged_at_epoch_ms")
     abstract fun observeWater(from: String, to: String): Flow<List<WaterLogEntity>>
+
+    @Query("SELECT date, SUM(amount_ml) AS total FROM water_logs WHERE date BETWEEN :from AND :to GROUP BY date")
+    abstract fun observeWaterTotals(from: String, to: String): Flow<List<DayTotal>>
 
     @Insert
     abstract suspend fun insertWater(entry: WaterLogEntity): Long

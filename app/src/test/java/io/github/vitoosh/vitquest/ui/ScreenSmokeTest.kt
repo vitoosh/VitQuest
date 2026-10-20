@@ -128,12 +128,12 @@ class ScreenSmokeTest {
     fun comingSoonTabExplainsPlannedFeature() {
         composeRule.setContent {
             VitQuestTheme {
-                ComingSoonScreen(R.string.nav_workouts, ComingSoonFeature.WORKOUTS, onOpenSettings = {})
+                ComingSoonScreen(R.string.nav_rewards, ComingSoonFeature.REWARDS, onOpenSettings = {})
             }
         }
 
         composeRule.onNodeWithText(string(R.string.coming_soon)).assertIsDisplayed()
-        composeRule.onNodeWithText(string(R.string.feature_workouts_planned_1)).assertIsDisplayed()
+        composeRule.onNodeWithText(string(R.string.feature_rewards_planned_1)).assertIsDisplayed()
     }
 
     @Test
