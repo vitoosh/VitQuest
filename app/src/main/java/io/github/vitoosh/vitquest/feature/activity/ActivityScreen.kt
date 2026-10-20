@@ -72,6 +72,7 @@ import io.github.vitoosh.vitquest.core.domain.steps.StepDay
 import io.github.vitoosh.vitquest.core.domain.steps.StepSourceResolver
 import io.github.vitoosh.vitquest.core.domain.steps.StepStats
 import io.github.vitoosh.vitquest.core.model.StepSourcePreference
+import io.github.vitoosh.vitquest.core.ui.dayLabel
 import io.github.vitoosh.vitquest.core.ui.formatInteger
 import java.time.LocalDate
 

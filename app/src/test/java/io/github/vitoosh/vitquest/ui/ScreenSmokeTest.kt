@@ -22,7 +22,11 @@ import io.github.vitoosh.vitquest.core.model.ThemeMode
 import io.github.vitoosh.vitquest.core.model.UserProfile
 import io.github.vitoosh.vitquest.feature.comingsoon.ComingSoonFeature
 import io.github.vitoosh.vitquest.feature.comingsoon.ComingSoonScreen
+import io.github.vitoosh.vitquest.core.domain.weight.WeightStats
+import io.github.vitoosh.vitquest.core.model.WeightEntry
+import io.github.vitoosh.vitquest.feature.home.HomeActions
 import io.github.vitoosh.vitquest.feature.home.HomeScreen
+import java.time.LocalDate
 import io.github.vitoosh.vitquest.feature.home.HomeUiState
 import io.github.vitoosh.vitquest.feature.onboarding.OnboardingScreen
 import io.github.vitoosh.vitquest.feature.onboarding.OnboardingStep
@@ -84,17 +88,23 @@ class ScreenSmokeTest {
                     uiState = HomeUiState.Ready(
                         profile = UserProfile(currentWeightKg = 80.0),
                         goals = Goals(targetWeightKg = 75.0, dailyStepGoal = 8_000, dailyWaterTargetMl = 2_400, waterServingMl = 250),
+                        weight = WeightStats.summarize(
+                            listOf(WeightEntry(1, LocalDate.parse("2026-10-19"), 80.0, null)),
+                            75.0,
+                            LocalDate.parse("2026-10-19"),
+                        ),
                     ),
-                    onOpenSettings = {},
-                    onEditProfile = {},
+                    actions = HomeActions(),
                 )
             }
         }
 
         // No step source has data, so Home says so instead of showing 0.
+        composeRule.onNode(hasScrollToNodeAction()).performScrollToNode(hasText(string(R.string.home_steps_no_data)))
         composeRule.onNodeWithText(string(R.string.home_steps_no_data)).assertIsDisplayed()
-        composeRule.onNodeWithText(string(R.string.home_weight_to_lose, "5")).performScrollTo().assertIsDisplayed()
-        composeRule.onNodeWithText(string(R.string.data_source_manual)).performScrollTo().assertIsDisplayed()
+        composeRule.onNode(hasScrollToNodeAction()).performScrollToNode(hasText(string(R.string.home_weight_to_lose, "5")))
+        composeRule.onNodeWithText(string(R.string.home_weight_to_lose, "5")).assertIsDisplayed()
+        composeRule.onNodeWithText(string(R.string.data_source_manual)).assertIsDisplayed()
         // The coming-soon card is a lazy item below the fold.
         composeRule.onNode(hasScrollToNodeAction()).performScrollToNode(hasText(string(R.string.feature_rewards_title)))
         composeRule.onNodeWithText(string(R.string.feature_rewards_title)).assertIsDisplayed()
@@ -106,8 +116,7 @@ class ScreenSmokeTest {
             VitQuestTheme {
                 HomeScreen(
                     uiState = HomeUiState.Ready(profile = null, goals = Goals(dailyStepGoal = 7_000, dailyWaterTargetMl = 2_000, waterServingMl = 250)),
-                    onOpenSettings = {},
-                    onEditProfile = {},
+                    actions = HomeActions(),
                 )
             }
         }

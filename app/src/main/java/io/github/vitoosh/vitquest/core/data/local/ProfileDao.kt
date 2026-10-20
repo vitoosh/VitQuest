@@ -18,6 +18,12 @@ abstract class ProfileDao {
     @Query("UPDATE goals SET daily_step_goal = :steps, updated_at_epoch_ms = :updatedAtEpochMs WHERE id = $SINGLE_ROW_ID")
     abstract suspend fun updateDailyStepGoal(steps: Int, updatedAtEpochMs: Long)
 
+    @Query("UPDATE user_profile SET current_weight_kg = :weightKg, updated_at_epoch_ms = :updatedAtEpochMs WHERE id = $SINGLE_ROW_ID")
+    abstract suspend fun updateCurrentWeight(weightKg: Double, updatedAtEpochMs: Long)
+
+    @Query("UPDATE goals SET daily_calorie_target = :kcal, updated_at_epoch_ms = :updatedAtEpochMs WHERE id = $SINGLE_ROW_ID")
+    abstract suspend fun updateDailyCalorieTarget(kcal: Int?, updatedAtEpochMs: Long)
+
     @Upsert
     abstract suspend fun upsertProfile(profile: UserProfileEntity)
 

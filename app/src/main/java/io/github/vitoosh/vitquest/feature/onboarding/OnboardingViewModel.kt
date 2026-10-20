@@ -3,7 +3,9 @@ package io.github.vitoosh.vitquest.feature.onboarding
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.vitoosh.vitquest.core.data.repository.BodyRepository
 import io.github.vitoosh.vitquest.core.data.repository.ProfileRepository
+import io.github.vitoosh.vitquest.core.time.TimeSource
 import io.github.vitoosh.vitquest.core.data.repository.UserPreferencesRepository
 import io.github.vitoosh.vitquest.feature.profile.ProfileFormErrors
 import io.github.vitoosh.vitquest.feature.profile.ProfileFormResult
@@ -35,6 +37,8 @@ data class OnboardingUiState(
 class OnboardingViewModel @Inject constructor(
     private val profileRepository: ProfileRepository,
     private val userPreferencesRepository: UserPreferencesRepository,
+    private val bodyRepository: BodyRepository,
+    private val timeSource: TimeSource,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(OnboardingUiState())
@@ -108,6 +112,8 @@ class OnboardingViewModel @Inject constructor(
                 viewModelScope.launch {
                     try {
                         profileRepository.saveProfileAndGoals(result.profile, result.goals)
+                        // The onboarding weight becomes the first entry of the weight history.
+                        result.profile.currentWeightKg?.let { bodyRepository.logWeight(timeSource.today(), it, null) }
                         // The app switches to the main screens when this flag is observed.
                         userPreferencesRepository.setOnboardingCompleted(true)
                     } catch (e: CancellationException) {

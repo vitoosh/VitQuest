@@ -6,4 +6,6 @@ data class Goals(
     val dailyStepGoal: Int,
     val dailyWaterTargetMl: Int,
     val waterServingMl: Int,
+    /** Manual daily calorie target; null means use the calculated recommendation. */
+    val dailyCalorieTarget: Int? = null,
 )

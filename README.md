@@ -10,7 +10,26 @@ Aplikasi ini **offline-first**: semua fitur inti berjalan tanpa server dan tanpa
 
 ## Status pengembangan
 
-Proyek dibangun bertahap. **Saat ini: Fase 2 (pelacakan aktivitas) selesai.**
+Proyek dibangun bertahap. **Saat ini: Fase 3 (berat badan, nutrisi, resep, hidrasi) selesai.**
+
+### Yang sudah berfungsi di Fase 3 (Nutrisi, berat badan, hidrasi)
+
+| Fitur | Status |
+|---|---|
+| **Penghitung kalori**: target kalori harian, kalori yang sudah dimakan, sisa kalori, serta protein, karbohidrat, dan lemak | ✅ Berfungsi |
+| **BMR dan TDEE** (rumus Mifflin–St Jeor × faktor aktivitas) dengan penjelasan di app. Rekomendasi asupan: defisit maksimal 500 kkal (≤20% TDEE), dengan batas bawah 1.200 kkal (perempuan) / 1.500 kkal (laki-laki). Target juga bisa diatur manual. | ✅ Berfungsi, ada test-nya |
+| Field opsional **jenis kelamin** di profil, hanya untuk rumus BMR. Kalau data belum lengkap, app memberi tahu apa yang kurang, tanpa mengarang angka. | ✅ Berfungsi |
+| Perkiraan energi jalan kaki dari langkah. Hanya ditampilkan sebagai info, **tidak** ditambahkan ke target. | ✅ Berfungsi |
+| **Catatan makan** per hari: Sarapan, Makan siang, Makan malam, Camilan. Navigasi antar hari, ubah jumlah, dan hapus. | ✅ Berfungsi |
+| **Database makanan Indonesia** offline: 98 makanan (nasi, tempe, tahu, telur, ayam, ikan, sayur sop, gado-gado, pecel, buah, minuman, gorengan, dan lain-lain), masing-masing dengan porsi umum dan label sumber | ✅ Berfungsi |
+| Cari makanan (ID/EN), favorit, terakhir dipakai, dan **buat makanan sendiri** (nilai per porsi atau per 100 g) | ✅ Berfungsi |
+| **12 resep sehat** offline (tumis tempe brokoli, pepes nila, sop ayam sayuran, gado-gado rumahan, omelet sayur, oatmeal pisang, dan lain-lain): bahan, pengganti bahan, langkah, waktu, gizi per porsi, dan penyesuaian jumlah porsi | ✅ Berfungsi |
+| Catat resep ke catatan makan, **rencana menu 7 hari**, dan **daftar belanja** otomatis dari rencana (item buatan sendiri tetap disimpan) | ✅ Berfungsi |
+| **Berat badan**: satu catatan per hari dengan catatan opsional, grafik tren (30/90 hari/semua), rata-rata mingguan, perubahan 30 hari, laju per minggu, progres ke target, dan peringatan jika turun lebih dari ±1% per minggu | ✅ Berfungsi |
+| **Ukuran tubuh** opsional: pinggang, pinggul, dada, lengan, dan paha | ✅ Berfungsi |
+| **Hidrasi**: tambah cepat (ukuran gelas, 500 ml, atau jumlah lain), progres harian, riwayat 7 hari. Total dihitung per tanggal, jadi otomatis "reset" setiap hari. | ✅ Berfungsi |
+| Home: langkah, kalori, air, dan berat hari ini, plus aksi cepat (catat makanan, +air, catat berat) | ✅ Berfungsi |
+| Migrasi database v2→v3. Berat badan di profil lama otomatis menjadi entri pertama riwayat berat. | ✅ Ada test migrasinya |
 
 ### Yang sudah berfungsi di Fase 2 (Aktivitas)
 
@@ -34,7 +53,6 @@ Proyek dibangun bertahap. **Saat ini: Fase 2 (pelacakan aktivitas) selesai.**
 | Onboarding 4 langkah (data tubuh, pengalaman/aktivitas, preferensi latihan/makanan, target harian). Semua pertanyaan opsional dan bisa dilewati. | ✅ Berfungsi, tersimpan di Room |
 | Saran target awal: langkah (dari tingkat aktivitas) dan minum (±30 ml/kg berat badan). Bisa diubah. | ✅ Berfungsi |
 | Edit profil dan target kapan saja | ✅ Berfungsi |
-| Home: sapaan, target harian, berat badan saat ini dan target (berlabel "Diisi manual") | ✅ Berfungsi, memakai data asli dari profil |
 | Navigasi 5 tab (Beranda, Aktivitas, Nutrisi, Latihan, Hadiah), dengan rail di layar lebar | ✅ Berfungsi |
 | Bahasa Indonesia dan Inggris (ikut sistem, atau dipilih manual di Pengaturan) | ✅ Berfungsi |
 | Tema Ikuti sistem, Terang, dan Gelap (tersimpan) | ✅ Berfungsi |
@@ -43,15 +61,15 @@ Proyek dibangun bertahap. **Saat ini: Fase 2 (pelacakan aktivitas) selesai.**
 
 ### Yang masih placeholder ("Segera hadir")
 
-- Tab **Nutrisi, Latihan, Hadiah** hanya menampilkan layar "Segera hadir" berisi rencana fiturnya.
-- Kalori, hidrasi, latihan, XP, dan Reward Credit **belum dilacak**. Tidak ada angka contoh atau angka karangan yang ditampilkan.
-- Belum ada notifikasi atau pengingat.
+- Tab **Latihan** dan **Hadiah** masih menampilkan layar "Segera hadir" berisi rencana fiturnya.
+- Latihan, XP, dan Reward Credit **belum dilacak**. Tidak ada angka contoh atau angka karangan yang ditampilkan.
+- Belum ada notifikasi atau pengingat, termasuk pengingat minum (Fase 5).
 
 ### Rencana fase berikutnya
 
 1. ~~Fase 1: Fondasi dan build otomatis~~
 2. ~~Fase 2: Pelacakan aktivitas (Health Connect, sensor langkah, input manual, riwayat)~~
-3. Fase 3: Berat badan, nutrisi (database makanan Indonesia), resep, dan hidrasi
+3. ~~Fase 3: Berat badan, nutrisi (database makanan Indonesia), resep, dan hidrasi~~
 4. Fase 4: Latihan kalistenik dan kebiasaan, termasuk **tutorial bergambar untuk setiap gerakan** (selain jalan kaki) berupa animasi figur vektor yang digambar app (posisi awal ke posisi akhir, plus penanda otot yang dilatih). Animasi ini offline dan konsisten di tema terang/gelap.
 5. Fase 5: XP, Reward Credit, hadiah, dan pengingat
 6. Fase 6 (opsional): Sinkronisasi cloud dan kesiapan rilis
@@ -153,7 +171,22 @@ app/src/androidTest/    # Instrumented test (dijalankan di HP/emulator)
 ### Database dan migrasi
 
 - Versi 1: tabel `user_profile` dan `goals` (masing-masing satu baris).
-- Versi 2 (Fase 2): `daily_steps` (satu baris per tanggal dan sumber) dan `step_sensor_state` (checkpoint penghitung langkah HP). Migrasi `MIGRATION_1_2` diuji dengan membuat database v1 dari skema JSON yang di-commit, lalu membukanya dengan Room versi terbaru.
+- Versi 2 (Fase 2): `daily_steps` (satu baris per tanggal dan sumber) dan `step_sensor_state` (checkpoint penghitung langkah HP).
+- Versi 3 (Fase 3): kolom `user_profile.sex` dan `goals.daily_calorie_target`, plus tabel `foods`, `food_servings`, `food_log_entries`, `recipes`, `recipe_ingredients`, `meal_plan_entries`, `shopping_items`, `weight_entries`, `body_measurements`, dan `water_logs`.
+- Setiap migrasi diuji dengan membuat database versi lama dari skema JSON yang di-commit, lalu membukanya dengan Room versi terbaru. Room memvalidasi semua tabel setelah migrasi.
+- **Catatan makan menyimpan salinan nama dan gizi** saat dicatat. Mengedit atau menghapus makanan buatan sendiri tidak mengubah catatan hari-hari sebelumnya.
+
+### Database makanan dan resep
+
+- Data awal ada di `app/src/main/assets/seed/foods.json` dan `recipes.json`, dibuat dengan `tools/seed/gen_foods.py` dan `tools/seed/gen_recipes.py`. Ubah skripnya, jalankan ulang, lalu naikkan `SeedDataLoader.SEED_VERSION`.
+- Makanan bawaan dicocokkan lewat `seed_key`. Saat versi seed naik, nilainya diperbarui **tanpa** menghapus favorit, makanan buatan sendiri, atau rencana menu.
+- Gizi bahan resep dihitung otomatis dari makanan yang dirujuk, sehingga resep dan database makanan selalu konsisten.
+- **Sumber nilai gizi**: setiap makanan berlabel sumbernya.
+  - `TKPI`: nilai acuan Tabel Komposisi Pangan Indonesia, untuk nasi, nasi merah, tempe, dan tahu.
+  - `USDA`: nilai acuan USDA FoodData Central, untuk bahan dasar, buah, dan sayur.
+  - `ESTIMATE`: perkiraan untuk masakan campuran, misalnya gado-gado, soto, dan gorengan.
+  - Semua nilai dibulatkan dan ditampilkan sebagai **estimasi**. Nilai ini disusun dari referensi umum dan **belum dicocokkan satu per satu** dengan tabel aslinya, karena situs TKPI tidak bisa diakses dari lingkungan pengembangan. Test `SeedDataTest` mengecek konsistensi energi terhadap makro (rumus Atwater).
+  - Kalau ingin akurasi lebih tinggi, nilai di `tools/seed/gen_foods.py` bisa diganti dengan angka dari TKPI resmi.
 - `exportSchema = true`. File JSON skema ada di `app/schemas/` dan harus di-commit.
 - **Tidak ada destructive fallback**. Setiap perubahan skema wajib menambah `Migration` di `DatabaseMigrations.ALL`. Test `DatabaseSchemaTest` gagal kalau ada versi tanpa migrasi atau tanpa file skema.
 
@@ -180,7 +213,7 @@ Untuk menandatangani build lokal dengan keystore bersama: `export VITQUEST_DEBUG
 
 ## Privasi dan data
 
-- **Disimpan lokal di HP:** profil (usia, tinggi, berat, pengalaman, aktivitas, lokasi latihan, peralatan, preferensi makanan), target harian, langkah harian per sumber, checkpoint sensor langkah, pilihan tema, pilihan sumber langkah, dan status onboarding.
+- **Disimpan lokal di HP:** profil (usia, jenis kelamin opsional, tinggi, berat, pengalaman, aktivitas, lokasi latihan, peralatan, preferensi makanan), target harian (termasuk target kalori), langkah harian per sumber, checkpoint sensor langkah, catatan makan, makanan buatan sendiri dan favorit, rencana menu, daftar belanja, riwayat berat badan, ukuran tubuh, catatan minum, pilihan tema, pilihan sumber langkah, dan status onboarding.
 - **Izin yang diminta (hanya jika kamu mengaktifkan sumbernya):**
   - `android.permission.health.READ_STEPS`: membaca total langkah harian dari Health Connect. VitQuest **tidak menulis** apa pun ke Health Connect dan tidak membaca data kesehatan lain.
   - `ACTIVITY_RECOGNITION` (Aktivitas fisik): membaca sensor langkah HP (Android 10+).
@@ -202,6 +235,8 @@ Untuk menandatangani build lokal dengan keystore bersama: `export VITQUEST_DEBUG
   - langkah setelah terakhir kali aplikasi dibuka sampai HP dimatikan/restart bisa hilang.
 - Tidak ada pengumpulan sensor terus-menerus di latar belakang (tidak ada foreground service). Ini disengaja sampai perilakunya diuji di HyperOS.
 - Tidak ada fitur ekspor/impor data. Kalau HP di-reset tanpa transfer device-to-device, data hilang. Fitur ekspor direncanakan di fase berikutnya.
-- Usia disimpan apa adanya (tidak otomatis bertambah). Satuan hanya metrik (kg, cm, ml).
+- Usia disimpan apa adanya (tidak otomatis bertambah), jadi perlu diperbarui manual agar BMR tetap akurat. Satuan hanya metrik (kg, cm, ml).
+- Nilai gizi makanan dan resep adalah estimasi (lihat bagian "Database makanan dan resep"). Belum ada pemindai barcode atau database online.
+- Rencana menu dan daftar belanja mencakup 7 hari ke depan. Resep buatan sendiri belum bisa dibuat.
 - Fase berikutnya (notifikasi, sensor langkah) akan terpengaruh pembatasan baterai HyperOS/MIUI. Ini akan didokumentasikan dan diuji di perangkat saat fitur tersebut dibuat.
 - Build rilis bertanda tangan (release signing) adalah tugas terpisah dan belum dikonfigurasi.

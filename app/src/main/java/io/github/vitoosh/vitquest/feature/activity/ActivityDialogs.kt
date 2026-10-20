@@ -29,6 +29,7 @@ import io.github.vitoosh.vitquest.core.domain.FieldError
 import io.github.vitoosh.vitquest.core.model.DailySteps
 import io.github.vitoosh.vitquest.core.model.StepSource
 import io.github.vitoosh.vitquest.core.model.StepSourcePreference
+import io.github.vitoosh.vitquest.core.ui.dayLabel
 import io.github.vitoosh.vitquest.core.ui.formatInteger
 import io.github.vitoosh.vitquest.core.ui.messageRes
 import java.time.LocalDate

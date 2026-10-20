@@ -5,6 +5,9 @@ import io.github.vitoosh.vitquest.R
 import io.github.vitoosh.vitquest.core.domain.FieldError
 import io.github.vitoosh.vitquest.core.locale.AppLanguage
 import io.github.vitoosh.vitquest.core.model.ActivityLevel
+import io.github.vitoosh.vitquest.core.model.BiologicalSex
+import io.github.vitoosh.vitquest.core.model.MealType
+import io.github.vitoosh.vitquest.core.model.RecipeTag
 import io.github.vitoosh.vitquest.core.model.DietaryPreference
 import io.github.vitoosh.vitquest.core.model.Equipment
 import io.github.vitoosh.vitquest.core.model.FitnessExperience
@@ -68,6 +71,35 @@ val DietaryPreference.labelRes: Int
         DietaryPreference.LACTOSE_FREE -> R.string.diet_lactose_free
         DietaryPreference.GLUTEN_FREE -> R.string.diet_gluten_free
         DietaryPreference.LOW_SUGAR -> R.string.diet_low_sugar
+    }
+
+@get:StringRes
+val BiologicalSex.labelRes: Int
+    get() = when (this) {
+        BiologicalSex.MALE -> R.string.sex_male
+        BiologicalSex.FEMALE -> R.string.sex_female
+    }
+
+@get:StringRes
+val MealType.labelRes: Int
+    get() = when (this) {
+        MealType.BREAKFAST -> R.string.meal_breakfast
+        MealType.LUNCH -> R.string.meal_lunch
+        MealType.DINNER -> R.string.meal_dinner
+        MealType.SNACK -> R.string.meal_snack
+    }
+
+@get:StringRes
+val RecipeTag.labelRes: Int
+    get() = when (this) {
+        RecipeTag.BREAKFAST -> R.string.recipe_tag_breakfast
+        RecipeTag.MAIN -> R.string.recipe_tag_main
+        RecipeTag.SIDE -> R.string.recipe_tag_side
+        RecipeTag.SNACK -> R.string.recipe_tag_snack
+        RecipeTag.HIGH_PROTEIN -> R.string.recipe_tag_high_protein
+        RecipeTag.VEGETARIAN -> R.string.recipe_tag_vegetarian
+        RecipeTag.QUICK -> R.string.recipe_tag_quick
+        RecipeTag.BUDGET -> R.string.recipe_tag_budget
     }
 
 @get:StringRes

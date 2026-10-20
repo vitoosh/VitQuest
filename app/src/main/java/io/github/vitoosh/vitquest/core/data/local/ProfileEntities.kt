@@ -11,6 +11,8 @@ const val SINGLE_ROW_ID = 1
 data class UserProfileEntity(
     @PrimaryKey val id: Int = SINGLE_ROW_ID,
     val age: Int?,
+    /** BiologicalSex enum name, used only for the BMR formula. */
+    val sex: String? = null,
     @ColumnInfo(name = "height_cm") val heightCm: Double?,
     @ColumnInfo(name = "current_weight_kg") val currentWeightKg: Double?,
     @ColumnInfo(name = "fitness_experience") val fitnessExperience: String?,
@@ -30,5 +32,6 @@ data class GoalsEntity(
     @ColumnInfo(name = "daily_step_goal") val dailyStepGoal: Int,
     @ColumnInfo(name = "daily_water_target_ml") val dailyWaterTargetMl: Int,
     @ColumnInfo(name = "water_serving_ml") val waterServingMl: Int,
+    @ColumnInfo(name = "daily_calorie_target") val dailyCalorieTarget: Int? = null,
     @ColumnInfo(name = "updated_at_epoch_ms") val updatedAtEpochMs: Long,
 )

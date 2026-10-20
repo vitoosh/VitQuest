@@ -25,6 +25,17 @@ import kotlinx.serialization.Serializable
 
 @Serializable data object EditProfileRoute
 
+/** Date as ISO-8601 and meal as a MealType name, so the route stays serializable. */
+@Serializable data class AddFoodRoute(val date: String, val meal: String)
+
+@Serializable data class RecipeDetailRoute(val recipeId: Long)
+
+@Serializable data object ShoppingListRoute
+
+@Serializable data object WeightRoute
+
+@Serializable data object HydrationRoute
+
 /** The five bottom-navigation destinations. */
 enum class TopLevelDestination(
     val route: Any,

@@ -7,6 +7,7 @@ package io.github.vitoosh.vitquest.core.model
  */
 data class UserProfile(
     val age: Int? = null,
+    val sex: BiologicalSex? = null,
     val heightCm: Double? = null,
     val currentWeightKg: Double? = null,
     val fitnessExperience: FitnessExperience? = null,

@@ -3,7 +3,9 @@ package io.github.vitoosh.vitquest.feature.profile
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.vitoosh.vitquest.core.data.repository.BodyRepository
 import io.github.vitoosh.vitquest.core.data.repository.ProfileRepository
+import io.github.vitoosh.vitquest.core.time.TimeSource
 import javax.inject.Inject
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,7 +27,11 @@ data class EditProfileUiState(
 @HiltViewModel
 class EditProfileViewModel @Inject constructor(
     private val profileRepository: ProfileRepository,
+    private val bodyRepository: BodyRepository,
+    private val timeSource: TimeSource,
 ) : ViewModel() {
+
+    private var loadedWeightKg: Double? = null
 
     private val _uiState = MutableStateFlow(EditProfileUiState())
     val uiState: StateFlow<EditProfileUiState> = _uiState.asStateFlow()
@@ -33,7 +39,9 @@ class EditProfileViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             // Load once: the form must not be overwritten by later emissions while the user edits.
-            val form = ProfileFormState.from(profileRepository.profile.first(), profileRepository.goals.first())
+            val profile = profileRepository.profile.first()
+            loadedWeightKg = profile?.currentWeightKg
+            val form = ProfileFormState.from(profile, profileRepository.goals.first())
             _uiState.update { it.copy(isLoading = false, form = form) }
         }
     }
@@ -56,6 +64,11 @@ class EditProfileViewModel @Inject constructor(
                 viewModelScope.launch {
                     try {
                         profileRepository.saveProfileAndGoals(result.profile, result.goals)
+                        // A changed weight is recorded for today so it also appears in the weight history.
+                        val weight = result.profile.currentWeightKg
+                        if (weight != null && weight != loadedWeightKg) {
+                            bodyRepository.logWeight(timeSource.today(), weight, null)
+                        }
                         _uiState.update { it.copy(isSaving = false, saved = true) }
                     } catch (e: CancellationException) {
                         throw e

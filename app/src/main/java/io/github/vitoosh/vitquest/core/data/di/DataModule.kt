@@ -15,6 +15,15 @@ import dagger.hilt.components.SingletonComponent
 import io.github.vitoosh.vitquest.core.data.local.DatabaseMigrations
 import io.github.vitoosh.vitquest.core.data.local.ProfileDao
 import io.github.vitoosh.vitquest.core.data.local.StepsDao
+import io.github.vitoosh.vitquest.core.data.local.FoodDao
+import io.github.vitoosh.vitquest.core.data.local.RecipeDao
+import io.github.vitoosh.vitquest.core.data.local.BodyDao
+import io.github.vitoosh.vitquest.core.data.repository.BodyRepository
+import io.github.vitoosh.vitquest.core.data.repository.NutritionRepository
+import io.github.vitoosh.vitquest.core.data.repository.OfflineBodyRepository
+import io.github.vitoosh.vitquest.core.data.repository.OfflineNutritionRepository
+import io.github.vitoosh.vitquest.core.data.repository.OfflineRecipeRepository
+import io.github.vitoosh.vitquest.core.data.repository.RecipeRepository
 import io.github.vitoosh.vitquest.core.data.local.VitQuestDatabase
 import io.github.vitoosh.vitquest.core.data.repository.DataStoreUserPreferencesRepository
 import io.github.vitoosh.vitquest.core.data.repository.LocalUserDataRepository
@@ -49,6 +58,15 @@ object DataProvidersModule {
 
     @Provides
     fun provideStepsDao(database: VitQuestDatabase): StepsDao = database.stepsDao()
+
+    @Provides
+    fun provideFoodDao(database: VitQuestDatabase): FoodDao = database.foodDao()
+
+    @Provides
+    fun provideRecipeDao(database: VitQuestDatabase): RecipeDao = database.recipeDao()
+
+    @Provides
+    fun provideBodyDao(database: VitQuestDatabase): BodyDao = database.bodyDao()
 
     @Provides
     @Singleton
@@ -87,4 +105,13 @@ abstract class DataBindingsModule {
 
     @Binds
     abstract fun bindTimeSource(impl: SystemTimeSource): TimeSource
+
+    @Binds
+    abstract fun bindNutritionRepository(impl: OfflineNutritionRepository): NutritionRepository
+
+    @Binds
+    abstract fun bindRecipeRepository(impl: OfflineRecipeRepository): RecipeRepository
+
+    @Binds
+    abstract fun bindBodyRepository(impl: OfflineBodyRepository): BodyRepository
 }

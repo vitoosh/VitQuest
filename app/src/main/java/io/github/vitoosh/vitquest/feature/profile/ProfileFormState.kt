@@ -7,6 +7,7 @@ import io.github.vitoosh.vitquest.core.domain.InputLimits
 import io.github.vitoosh.vitquest.core.domain.NumberInput
 import io.github.vitoosh.vitquest.core.domain.errorOrNull
 import io.github.vitoosh.vitquest.core.model.ActivityLevel
+import io.github.vitoosh.vitquest.core.model.BiologicalSex
 import io.github.vitoosh.vitquest.core.model.DietaryPreference
 import io.github.vitoosh.vitquest.core.model.Equipment
 import io.github.vitoosh.vitquest.core.model.FitnessExperience
@@ -18,6 +19,7 @@ import java.util.Locale
 /** Form fields shared by onboarding and profile editing. Numbers are kept as typed text. */
 data class ProfileFormState(
     val age: String = "",
+    val sex: BiologicalSex? = null,
     val heightCm: String = "",
     val currentWeightKg: String = "",
     val targetWeightKg: String = "",
@@ -32,10 +34,13 @@ data class ProfileFormState(
     /** Set once the user edits a goal so suggestions stop overwriting it. */
     val stepGoalEdited: Boolean = false,
     val waterTargetEdited: Boolean = false,
+    /** Not edited in this form (set from the nutrition screen) but kept when saving. */
+    val dailyCalorieTarget: Int? = null,
 ) {
     companion object {
         fun from(profile: UserProfile?, goals: Goals?): ProfileFormState = ProfileFormState(
             age = profile?.age?.toString().orEmpty(),
+            sex = profile?.sex,
             heightCm = profile?.heightCm.toInputText(),
             currentWeightKg = profile?.currentWeightKg.toInputText(),
             targetWeightKg = goals?.targetWeightKg.toInputText(),
@@ -49,6 +54,7 @@ data class ProfileFormState(
             waterServingMl = (goals?.waterServingMl ?: GoalSuggestions.DEFAULT_WATER_SERVING_ML).toString(),
             stepGoalEdited = goals != null,
             waterTargetEdited = goals != null,
+            dailyCalorieTarget = goals?.dailyCalorieTarget,
         )
 
         private fun Double?.toInputText(): String = when {
@@ -108,6 +114,7 @@ object ProfileFormValidator {
 
         val profile = UserProfile(
             age = age.valueOrNull(),
+            sex = form.sex,
             heightCm = height.valueOrNull(),
             currentWeightKg = weight.valueOrNull(),
             fitnessExperience = form.fitnessExperience,
@@ -121,6 +128,7 @@ object ProfileFormValidator {
             dailyStepGoal = requireNotNull(steps.valueOrNull()),
             dailyWaterTargetMl = requireNotNull(water.valueOrNull()),
             waterServingMl = requireNotNull(serving.valueOrNull()),
+            dailyCalorieTarget = form.dailyCalorieTarget,
         )
         return ProfileFormResult.Valid(profile, goals)
     }

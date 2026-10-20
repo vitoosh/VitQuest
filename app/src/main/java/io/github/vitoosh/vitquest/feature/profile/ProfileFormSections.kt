@@ -27,6 +27,7 @@ import io.github.vitoosh.vitquest.core.domain.InputLimits
 import io.github.vitoosh.vitquest.core.domain.NumberInput
 import io.github.vitoosh.vitquest.core.domain.FieldResult
 import io.github.vitoosh.vitquest.core.model.ActivityLevel
+import io.github.vitoosh.vitquest.core.model.BiologicalSex
 import io.github.vitoosh.vitquest.core.model.DietaryPreference
 import io.github.vitoosh.vitquest.core.model.Equipment
 import io.github.vitoosh.vitquest.core.model.FitnessExperience
@@ -55,6 +56,18 @@ fun BodyMetricsSection(
             label = stringResource(R.string.field_age),
             unit = stringResource(R.string.unit_years),
             errorText = errors.age?.let { errorMessage(it) },
+        )
+        SingleChoiceChips(
+            title = stringResource(R.string.field_sex),
+            options = BiologicalSex.entries,
+            selected = form.sex,
+            onSelect = { value -> onUpdate { it.copy(sex = value) } },
+            optionLabel = { stringResource(it.labelRes) },
+        )
+        Text(
+            text = stringResource(R.string.field_sex_help),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         NumberField(
             value = form.heightCm,

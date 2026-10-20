@@ -41,10 +41,13 @@ class DatabaseMigrationTest {
         context.deleteDatabase(name)
     }
 
-    private fun createVersion1Database() {
-        val schema = JSONObject(File("schemas/${VitQuestDatabase::class.java.name}/1.json").readText())
+    private fun createVersion1Database() = createDatabase(version = 1)
+
+    /** Builds a database exactly as [version] shipped, from the committed schema JSON. */
+    private fun createDatabase(version: Int, seed: (SupportSQLiteDatabase) -> Unit = ::insertProfile) {
+        val schema = JSONObject(File("schemas/${VitQuestDatabase::class.java.name}/$version.json").readText())
             .getJSONObject("database")
-        val callback = object : SupportSQLiteOpenHelper.Callback(1) {
+        val callback = object : SupportSQLiteOpenHelper.Callback(version) {
             override fun onCreate(db: SupportSQLiteDatabase) {
                 val entities = schema.getJSONArray("entities")
                 for (i in 0 until entities.length()) {
@@ -60,7 +63,11 @@ class DatabaseMigrationTest {
         val helper = FrameworkSQLiteOpenHelperFactory().create(
             SupportSQLiteOpenHelper.Configuration.builder(context).name(name).callback(callback).build(),
         )
-        helper.writableDatabase.use { db ->
+        helper.writableDatabase.use { db -> seed(db) }
+        helper.close()
+    }
+
+    private fun insertProfile(db: SupportSQLiteDatabase) {
             db.insert(
                 "user_profile",
                 SQLiteDatabase.CONFLICT_REPLACE,
@@ -84,18 +91,52 @@ class DatabaseMigrationTest {
                     put("updated_at_epoch_ms", 1L)
                 },
             )
+    }
+
+    private fun open() = Room.databaseBuilder(context, VitQuestDatabase::class.java, name)
+        .addMigrations(*DatabaseMigrations.ALL)
+        .allowMainThreadQueries()
+        .build()
+
+    @Test
+    fun migrating2To3KeepsDataAndStartsWeightHistory() = runTest {
+        createDatabase(version = 2) { db ->
+            insertProfile(db)
+            db.insert(
+                "daily_steps",
+                SQLiteDatabase.CONFLICT_REPLACE,
+                ContentValues().apply {
+                    put("date", "2026-10-18")
+                    put("source", StepSource.PHONE_SENSOR.name)
+                    put("steps", 6_000)
+                    put("updated_at_epoch_ms", 1L)
+                },
+            )
         }
-        helper.close()
+
+        val database = open()
+        try {
+            assertEquals(6_000, database.stepsDao().getSteps("2026-10-18", StepSource.PHONE_SENSOR.name))
+            val profile = database.profileDao().observeProfile().first()
+            assertEquals(null, profile?.sex)
+            assertEquals(null, database.profileDao().observeGoals().first()?.dailyCalorieTarget)
+            // The profile weight became the first weight entry.
+            val weights = database.bodyDao().observeWeights().first()
+            assertEquals(listOf(81.5), weights.map { it.weightKg })
+            // New tables accept data.
+            database.bodyDao().insertWater(WaterLogEntity(date = "2026-10-19", amountMl = 250, loggedAtEpochMs = 1L))
+            assertEquals(1, database.bodyDao().observeWater("2026-10-19", "2026-10-19").first().size)
+        } finally {
+            database.close()
+        }
     }
 
     @Test
-    fun migrating1To2KeepsProfileAndAddsStepTables() = runTest {
+    fun migratingFromVersion1KeepsProfileAndAddsNewTables() = runTest {
         createVersion1Database()
 
-        val database = Room.databaseBuilder(context, VitQuestDatabase::class.java, name)
-            .addMigrations(*DatabaseMigrations.ALL)
-            .allowMainThreadQueries()
-            .build()
+        // Runs every migration from version 1 up to the current schema.
+        val database = open()
         try {
             val profile = database.profileDao().observeProfile().first()
             assertEquals(33, profile?.age)

@@ -36,7 +36,9 @@ import androidx.compose.ui.unit.dp
 import io.github.vitoosh.vitquest.R
 import io.github.vitoosh.vitquest.core.designsystem.theme.VqSpacing
 import io.github.vitoosh.vitquest.core.domain.steps.StepDay
+import io.github.vitoosh.vitquest.core.ui.dayLabel
 import io.github.vitoosh.vitquest.core.ui.formatInteger
+import io.github.vitoosh.vitquest.core.ui.shortWeekday
 import java.time.LocalDate
 import kotlin.math.ceil
 

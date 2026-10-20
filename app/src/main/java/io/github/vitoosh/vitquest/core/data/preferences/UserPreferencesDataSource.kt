@@ -5,6 +5,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import io.github.vitoosh.vitquest.core.model.StepSourcePreference
 import io.github.vitoosh.vitquest.core.model.ThemeMode
@@ -13,6 +14,7 @@ import java.io.IOException
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 /**
@@ -50,6 +52,16 @@ class UserPreferencesDataSource @Inject constructor(
         dataStore.edit { it[Keys.STEP_SOURCE] = preference.name }
     }
 
+    /** Version of the bundled food and recipe data already loaded into the database. */
+    suspend fun seedDataVersion(): Int =
+        dataStore.data.catch { if (it is IOException) emit(emptyPreferences()) else throw it }
+            .map { it[Keys.SEED_VERSION] ?: 0 }
+            .first()
+
+    suspend fun setSeedDataVersion(version: Int) {
+        dataStore.edit { it[Keys.SEED_VERSION] = version }
+    }
+
     suspend fun clear() {
         dataStore.edit { it.clear() }
     }
@@ -58,5 +70,6 @@ class UserPreferencesDataSource @Inject constructor(
         val THEME_MODE = stringPreferencesKey("theme_mode")
         val ONBOARDING_COMPLETED = booleanPreferencesKey("onboarding_completed")
         val STEP_SOURCE = stringPreferencesKey("step_source_preference")
+        val SEED_VERSION = intPreferencesKey("seed_data_version")
     }
 }

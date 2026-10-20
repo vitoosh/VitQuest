@@ -20,6 +20,9 @@ interface ProfileRepository {
     suspend fun saveProfileAndGoals(profile: UserProfile, goals: Goals)
 
     suspend fun updateDailyStepGoal(steps: Int)
+
+    /** Null switches back to the calculated recommendation. */
+    suspend fun updateDailyCalorieTarget(kcal: Int?)
 }
 
 class OfflineProfileRepository @Inject constructor(
@@ -38,5 +41,9 @@ class OfflineProfileRepository @Inject constructor(
 
     override suspend fun updateDailyStepGoal(steps: Int) {
         profileDao.updateDailyStepGoal(steps, clock.millis())
+    }
+
+    override suspend fun updateDailyCalorieTarget(kcal: Int?) {
+        profileDao.updateDailyCalorieTarget(kcal, clock.millis())
     }
 }

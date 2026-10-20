@@ -3,6 +3,8 @@ package io.github.vitoosh.vitquest.feature.home
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
@@ -13,11 +15,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -46,6 +48,8 @@ import io.github.vitoosh.vitquest.core.designsystem.component.SectionHeader
 import io.github.vitoosh.vitquest.core.designsystem.component.VqTopAppBar
 import io.github.vitoosh.vitquest.core.designsystem.icon.VqIcons
 import io.github.vitoosh.vitquest.core.designsystem.theme.VqSpacing
+import io.github.vitoosh.vitquest.core.domain.nutrition.CalorieTarget
+import io.github.vitoosh.vitquest.core.domain.nutrition.EnergyEstimate
 import io.github.vitoosh.vitquest.core.domain.steps.StepStats
 import io.github.vitoosh.vitquest.core.model.DailySteps
 import io.github.vitoosh.vitquest.feature.activity.StepSourceTag
@@ -57,11 +61,20 @@ import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import kotlin.math.abs
 
+/** Navigation callbacks from Home. */
+data class HomeActions(
+    val openSettings: () -> Unit = {},
+    val editProfile: () -> Unit = {},
+    val openActivity: () -> Unit = {},
+    val openNutrition: () -> Unit = {},
+    val logFood: () -> Unit = {},
+    val openHydration: () -> Unit = {},
+    val openWeight: () -> Unit = {},
+)
+
 @Composable
 fun HomeRoute(
-    onOpenSettings: () -> Unit,
-    onEditProfile: () -> Unit,
-    onOpenActivity: () -> Unit,
+    actions: HomeActions,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -69,28 +82,22 @@ fun HomeRoute(
         viewModel.refresh()
         onPauseOrDispose { }
     }
-    HomeScreen(
-        uiState = uiState,
-        onOpenSettings = onOpenSettings,
-        onEditProfile = onEditProfile,
-        onOpenActivity = onOpenActivity,
-    )
+    HomeScreen(uiState = uiState, actions = actions, onAddWater = viewModel::addWater)
 }
 
 @Composable
 fun HomeScreen(
     uiState: HomeUiState,
-    onOpenSettings: () -> Unit,
-    onEditProfile: () -> Unit,
-    onOpenActivity: () -> Unit = {},
+    actions: HomeActions,
+    onAddWater: (Int) -> Unit = {},
 ) {
     Scaffold(
         topBar = {
             VqTopAppBar(title = stringResource(R.string.app_name)) {
-                IconButton(onClick = onEditProfile) {
+                IconButton(onClick = actions.editProfile) {
                     Icon(Icons.Filled.Person, contentDescription = stringResource(R.string.action_edit_profile))
                 }
-                IconButton(onClick = onOpenSettings) {
+                IconButton(onClick = actions.openSettings) {
                     Icon(Icons.Filled.Settings, contentDescription = stringResource(R.string.settings_title))
                 }
             }
@@ -104,27 +111,28 @@ fun HomeScreen(
             ) { CircularProgressIndicator() }
 
             is HomeUiState.Ready -> CenteredContent(modifier = Modifier.padding(padding)) {
-                HomeContent(state = uiState, onEditProfile = onEditProfile, onOpenActivity = onOpenActivity)
+                HomeContent(state = uiState, actions = actions, onAddWater = onAddWater)
             }
         }
     }
 }
 
 @Composable
-private fun HomeContent(state: HomeUiState.Ready, onEditProfile: () -> Unit, onOpenActivity: () -> Unit) {
+private fun HomeContent(state: HomeUiState.Ready, actions: HomeActions, onAddWater: (Int) -> Unit) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(VqSpacing.lg),
         verticalArrangement = Arrangement.spacedBy(VqSpacing.lg),
     ) {
         item { GreetingHeader() }
-        item { TodayStepsCard(steps = state.todaySteps, goal = state.goals?.dailyStepGoal, onOpenActivity = onOpenActivity) }
-        if (state.profile?.currentWeightKg == null) {
-            item { CompleteProfileCard(onEditProfile = onEditProfile) }
+        item { QuickActions(state, actions, onAddWater) }
+        if (state.energy is EnergyEstimate.Missing) {
+            item { CompleteProfileCard(onEditProfile = actions.editProfile) }
         }
-        state.goals?.let { goals ->
-            item { TargetsCard(state = state, waterMl = goals.dailyWaterTargetMl) }
-        }
+        item { TodayStepsCard(steps = state.todaySteps, goal = state.goals?.dailyStepGoal, onOpenActivity = actions.openActivity) }
+        item { CaloriesCard(state = state, onOpen = actions.openNutrition) }
+        item { WaterCard(state = state, onOpen = actions.openHydration) }
+        item { WeightCard(state = state, onOpen = actions.openWeight) }
         item { ComingSoonCard() }
         item {
             Text(
@@ -154,47 +162,30 @@ private fun GreetingHeader() {
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun TodayStepsCard(steps: DailySteps?, goal: Int?, onOpenActivity: () -> Unit) {
-    Card(
-        onClick = onOpenActivity,
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
-    ) {
-        Column(modifier = Modifier.padding(VqSpacing.lg), verticalArrangement = Arrangement.spacedBy(VqSpacing.sm)) {
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(VqSpacing.md)) {
-                IconBubble(icon = VqIcons.Walk, size = 36)
-                Text(
-                    text = stringResource(R.string.steps_today_title),
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.weight(1f),
-                )
-                if (steps != null) StepSourceTag(steps.source)
-            }
-            if (steps != null) {
-                Text(
-                    text = if (goal != null) {
-                        stringResource(R.string.steps_of_goal, formatInteger(steps.steps), formatInteger(goal))
-                    } else {
-                        stringResource(R.string.value_steps, formatInteger(steps.steps))
-                    },
-                    style = MaterialTheme.typography.headlineSmall,
-                )
-                if (goal != null) {
-                    LinearProgressIndicator(
-                        progress = { StepStats.progress(steps.steps, goal) },
-                        modifier = Modifier.fillMaxWidth(),
-                    )
-                }
-            } else {
-                Text(
-                    text = stringResource(R.string.home_steps_no_data),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-        }
+private fun QuickActions(state: HomeUiState.Ready, actions: HomeActions, onAddWater: (Int) -> Unit) {
+    val serving = state.goals?.waterServingMl ?: DEFAULT_SERVING_ML
+    FlowRow(horizontalArrangement = Arrangement.spacedBy(VqSpacing.sm)) {
+        AssistChip(
+            onClick = actions.logFood,
+            label = { Text(stringResource(R.string.quick_log_food)) },
+            leadingIcon = { Icon(VqIcons.Restaurant, contentDescription = null) },
+        )
+        AssistChip(
+            onClick = { onAddWater(serving) },
+            label = { Text(stringResource(R.string.water_add_amount, formatInteger(serving))) },
+            leadingIcon = { Icon(VqIcons.WaterDrop, contentDescription = null) },
+        )
+        AssistChip(
+            onClick = actions.openWeight,
+            label = { Text(stringResource(R.string.quick_log_weight)) },
+            leadingIcon = { Icon(VqIcons.MonitorWeight, contentDescription = null) },
+        )
     }
 }
+
+private const val DEFAULT_SERVING_ML = 250
 
 @Composable
 private fun CompleteProfileCard(onEditProfile: () -> Unit) {
@@ -211,74 +202,146 @@ private fun CompleteProfileCard(onEditProfile: () -> Unit) {
 }
 
 @Composable
-private fun TargetsCard(state: HomeUiState.Ready, waterMl: Int) {
-    Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
-        Column(
-            modifier = Modifier.padding(VqSpacing.lg),
-            verticalArrangement = Arrangement.spacedBy(VqSpacing.md),
-        ) {
-            SectionHeader(stringResource(R.string.home_targets_title))
-            TargetRow(
-                icon = VqIcons.WaterDrop,
-                label = stringResource(R.string.home_target_water),
-                value = stringResource(R.string.value_ml, formatInteger(waterMl)),
-            )
-            val currentWeight = state.profile?.currentWeightKg
-            if (currentWeight != null) {
-                HorizontalDivider()
-                TargetRow(
-                    icon = VqIcons.MonitorWeight,
-                    label = stringResource(R.string.home_current_weight),
-                    value = stringResource(R.string.value_kg, formatDecimal(currentWeight)),
-                    tag = DataSourceKind.MANUAL,
-                )
-                state.goals?.targetWeightKg?.let { target ->
-                    TargetRow(
-                        icon = VqIcons.Flag,
-                        label = stringResource(R.string.home_target_weight),
-                        value = stringResource(R.string.value_kg, formatDecimal(target)),
-                    )
-                }
-                state.kgToTarget?.let { diff ->
-                    Text(
-                        text = when {
-                            abs(diff) < 0.05 -> stringResource(R.string.home_weight_at_target)
-                            diff > 0 -> stringResource(R.string.home_weight_to_lose, formatDecimal(diff))
-                            else -> stringResource(R.string.home_weight_to_gain, formatDecimal(-diff))
-                        },
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
+private fun HomeCard(
+    icon: ImageVector,
+    title: String,
+    onClick: () -> Unit,
+    trailing: @Composable (() -> Unit)? = null,
+    content: @Composable () -> Unit,
+) {
+    Card(onClick = onClick, colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
+        Column(modifier = Modifier.padding(VqSpacing.lg), verticalArrangement = Arrangement.spacedBy(VqSpacing.sm)) {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(VqSpacing.md)) {
+                IconBubble(icon = icon, size = 36)
+                Text(text = title, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
+                trailing?.invoke()
             }
+            content()
+        }
+    }
+}
+
+@Composable
+private fun TodayStepsCard(steps: DailySteps?, goal: Int?, onOpenActivity: () -> Unit) {
+    HomeCard(
+        icon = VqIcons.Walk,
+        title = stringResource(R.string.steps_today_title),
+        onClick = onOpenActivity,
+        trailing = steps?.let { { StepSourceTag(it.source) } },
+    ) {
+        if (steps != null) {
             Text(
-                text = stringResource(R.string.home_targets_note),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                text = if (goal != null) {
+                    stringResource(R.string.steps_of_goal, formatInteger(steps.steps), formatInteger(goal))
+                } else {
+                    stringResource(R.string.value_steps, formatInteger(steps.steps))
+                },
+                style = MaterialTheme.typography.headlineSmall,
+            )
+            if (goal != null) {
+                LinearProgressIndicator(progress = { StepStats.progress(steps.steps, goal) }, modifier = Modifier.fillMaxWidth())
+            }
+        } else {
+            HintText(stringResource(R.string.home_steps_no_data))
+        }
+    }
+}
+
+@Composable
+private fun CaloriesCard(state: HomeUiState.Ready, onOpen: () -> Unit) {
+    val target = state.calorieTarget
+    HomeCard(
+        icon = VqIcons.Restaurant,
+        title = stringResource(R.string.calories_title),
+        onClick = onOpen,
+        trailing = target?.let {
+            { DataSourceTag(if (it is CalorieTarget.Manual) DataSourceKind.MANUAL else DataSourceKind.ESTIMATE) }
+        },
+    ) {
+        if (target != null) {
+            Text(
+                text = stringResource(R.string.calories_eaten_of_target, formatInteger(state.diary.kcal), formatInteger(target.kcal)),
+                style = MaterialTheme.typography.headlineSmall,
+            )
+            LinearProgressIndicator(
+                progress = { (state.diary.kcal.toFloat() / target.kcal).coerceIn(0f, 1f) },
+                modifier = Modifier.fillMaxWidth(),
+            )
+            val remaining = state.diary.remainingKcal(target.kcal)
+            HintText(
+                if (remaining >= 0) {
+                    stringResource(R.string.calories_remaining, formatInteger(remaining))
+                } else {
+                    stringResource(R.string.calories_over, formatInteger(abs(remaining)))
+                },
+            )
+        } else {
+            Text(
+                text = stringResource(R.string.calories_eaten_only, formatInteger(state.diary.kcal)),
+                style = MaterialTheme.typography.headlineSmall,
+            )
+            HintText(stringResource(R.string.calories_no_target))
+        }
+        if (state.diary.entryCount == 0) HintText(stringResource(R.string.home_calories_empty))
+    }
+}
+
+@Composable
+private fun WaterCard(state: HomeUiState.Ready, onOpen: () -> Unit) {
+    val target = state.goals?.dailyWaterTargetMl
+    HomeCard(icon = VqIcons.WaterDrop, title = stringResource(R.string.hydration_title), onClick = onOpen) {
+        Text(
+            text = target?.let { stringResource(R.string.water_of_target, formatInteger(state.waterMl), formatInteger(it)) }
+                ?: stringResource(R.string.value_ml, formatInteger(state.waterMl)),
+            style = MaterialTheme.typography.headlineSmall,
+        )
+        if (target != null && target > 0) {
+            LinearProgressIndicator(progress = { (state.waterMl.toFloat() / target).coerceIn(0f, 1f) }, modifier = Modifier.fillMaxWidth())
+            if (state.waterMl >= target) HintText(stringResource(R.string.water_goal_reached))
+        }
+    }
+}
+
+@Composable
+private fun WeightCard(state: HomeUiState.Ready, onOpen: () -> Unit) {
+    val summary = state.weight
+    val latest = summary?.latest
+    HomeCard(
+        icon = VqIcons.MonitorWeight,
+        title = stringResource(R.string.weight_title),
+        onClick = onOpen,
+        trailing = latest?.let { { DataSourceTag(DataSourceKind.MANUAL) } },
+    ) {
+        if (latest == null) {
+            HintText(stringResource(R.string.weight_empty))
+            return@HomeCard
+        }
+        Text(stringResource(R.string.value_kg, formatDecimal(latest.weightKg)), style = MaterialTheme.typography.headlineSmall)
+        summary.last30DaysChangeKg?.let { change ->
+            HintText(stringResource(R.string.home_weight_change_30, signed(change)))
+        }
+        state.goals?.targetWeightKg?.let { target ->
+            val diff = latest.weightKg - target
+            HintText(
+                when {
+                    abs(diff) < 0.05 -> stringResource(R.string.home_weight_at_target)
+                    diff > 0 -> stringResource(R.string.home_weight_to_lose, formatDecimal(diff))
+                    else -> stringResource(R.string.home_weight_to_gain, formatDecimal(-diff))
+                },
             )
         }
     }
 }
 
 @Composable
-private fun TargetRow(
-    icon: ImageVector,
-    label: String,
-    value: String,
-    tag: DataSourceKind? = null,
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth().semantics(mergeDescendants = true) {},
-        horizontalArrangement = Arrangement.spacedBy(VqSpacing.md),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        IconBubble(icon = icon, size = 36)
-        Column(modifier = Modifier.weight(1f)) {
-            Text(text = label, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            Text(text = value, style = MaterialTheme.typography.titleMedium)
-        }
-        if (tag != null) DataSourceTag(kind = tag)
-    }
+private fun signed(value: Double): String {
+    val sign = if (value > 0.05) "+" else if (value < -0.05) "−" else "±"
+    return sign + stringResource(R.string.value_kg, formatDecimal(abs(value)))
+}
+
+@Composable
+private fun HintText(text: String) {
+    Text(text = text, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
 }
 
 @Composable
@@ -293,22 +356,10 @@ private fun ComingSoonCard() {
                 modifier = Modifier.padding(top = VqSpacing.xs, bottom = VqSpacing.sm),
             )
             FeaturePreviewRow(
-                icon = VqIcons.Restaurant,
-                title = stringResource(R.string.feature_nutrition_title),
-                description = stringResource(R.string.feature_nutrition_summary),
-                // The card title already says these are coming soon.
-                trailing = null,
-            )
-            FeaturePreviewRow(
-                icon = VqIcons.WaterDrop,
-                title = stringResource(R.string.feature_hydration_title),
-                description = stringResource(R.string.feature_hydration_summary),
-                trailing = null,
-            )
-            FeaturePreviewRow(
                 icon = VqIcons.FitnessCenter,
                 title = stringResource(R.string.feature_workouts_title),
                 description = stringResource(R.string.feature_workouts_summary),
+                // The card title already says these are coming soon.
                 trailing = null,
             )
             FeaturePreviewRow(

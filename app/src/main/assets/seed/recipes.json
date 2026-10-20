@@ -1,0 +1,1246 @@
+{
+ "version": 1,
+ "recipes": [
+  {
+   "key": "tumis_tempe_brokoli",
+   "nameId": "Tumis Tempe Brokoli",
+   "nameEn": "Tempeh and Broccoli Stir-fry",
+   "descriptionId": "Lauk tinggi protein nabati yang cepat dan hemat.",
+   "descriptionEn": "A quick, budget-friendly plant-protein dish.",
+   "servings": 2,
+   "prep": 10,
+   "cook": 10,
+   "tags": [
+    "MAIN",
+    "HIGH_PROTEIN",
+    "VEGETARIAN",
+    "QUICK",
+    "BUDGET"
+   ],
+   "ingredients": [
+    {
+     "food": "tempe",
+     "grams": 150,
+     "quantity": 150,
+     "unitId": "g",
+     "unitEn": "g",
+     "nameId": "Tempe, potong dadu",
+     "nameEn": "Tempeh, diced",
+     "substituteId": "Tahu",
+     "substituteEn": "Tofu"
+    },
+    {
+     "food": "brokoli",
+     "grams": 150,
+     "quantity": 150,
+     "unitId": "g",
+     "unitEn": "g",
+     "nameId": "Brokoli, potong per kuntum",
+     "nameEn": "Broccoli florets",
+     "substituteId": "Buncis atau kol",
+     "substituteEn": "Green beans or cabbage"
+    },
+    {
+     "food": "bawang_putih",
+     "grams": 10,
+     "quantity": 2,
+     "unitId": "siung",
+     "unitEn": "clove",
+     "nameId": "Bawang putih, cincang",
+     "nameEn": "Garlic, chopped",
+     "substituteId": null,
+     "substituteEn": null
+    },
+    {
+     "food": "bawang_merah",
+     "grams": 15,
+     "quantity": 3,
+     "unitId": "siung",
+     "unitEn": "clove",
+     "nameId": "Bawang merah, iris",
+     "nameEn": "Shallots, sliced",
+     "substituteId": null,
+     "substituteEn": null
+    },
+    {
+     "food": "kecap_manis",
+     "grams": 18,
+     "quantity": 1,
+     "unitId": "sdm",
+     "unitEn": "tbsp",
+     "nameId": "Kecap manis",
+     "nameEn": "Sweet soy sauce",
+     "substituteId": "Kecap asin (lebih sedikit gula)",
+     "substituteEn": "Light soy sauce (less sugar)"
+    },
+    {
+     "food": "minyak_goreng",
+     "grams": 13,
+     "quantity": 1,
+     "unitId": "sdm",
+     "unitEn": "tbsp",
+     "nameId": "Minyak goreng",
+     "nameEn": "Cooking oil",
+     "substituteId": null,
+     "substituteEn": null
+    },
+    {
+     "food": "garam",
+     "grams": 2,
+     "quantity": 0.25,
+     "unitId": "sdt",
+     "unitEn": "tsp",
+     "nameId": "Garam",
+     "nameEn": "Salt",
+     "substituteId": null,
+     "substituteEn": null
+    }
+   ],
+   "stepsId": [
+    "Kukus tempe 5 menit agar bumbu lebih meresap.",
+    "Tumis bawang merah dan bawang putih dengan minyak sampai harum.",
+    "Masukkan tempe, aduk hingga sedikit kecokelatan.",
+    "Tambahkan brokoli dan 3 sdm air, masak 3–4 menit sampai brokoli empuk tapi masih hijau.",
+    "Bumbui dengan kecap manis dan garam, aduk rata, lalu sajikan."
+   ],
+   "stepsEn": [
+    "Steam the tempeh for 5 minutes so it absorbs the seasoning.",
+    "Sauté the shallots and garlic in the oil until fragrant.",
+    "Add the tempeh and stir until lightly browned.",
+    "Add the broccoli and 3 tbsp water; cook 3–4 minutes until tender but still green.",
+    "Season with sweet soy sauce and salt, stir well and serve."
+   ]
+  },
+  {
+   "key": "pepes_nila",
+   "nameId": "Pepes Ikan Nila",
+   "nameEn": "Steamed Spiced Tilapia (Pepes)",
+   "descriptionId": "Ikan dikukus dalam daun pisang tanpa minyak, rendah lemak dan kaya protein.",
+   "descriptionEn": "Fish steamed in banana leaves without oil: low fat and high protein.",
+   "servings": 3,
+   "prep": 20,
+   "cook": 30,
+   "tags": [
+    "MAIN",
+    "HIGH_PROTEIN"
+   ],
+   "ingredients": [
+    {
+     "food": "ikan_nila_mentah",
+     "grams": 300,
+     "quantity": 1,
+     "unitId": "ekor",
+     "unitEn": "fish",
+     "nameId": "Ikan nila, bersihkan",
+     "nameEn": "Tilapia, cleaned",
+     "substituteId": "Ikan kembung atau patin",
+     "substituteEn": "Mackerel or catfish"
+    },
+    {
+     "food": "bawang_merah",
+     "grams": 25,
+     "quantity": 5,
+     "unitId": "siung",
+     "unitEn": "clove",
+     "nameId": "Bawang merah",
+     "nameEn": "Shallots",
+     "substituteId": null,
+     "substituteEn": null
+    },
+    {
+     "food": "bawang_putih",
+     "grams": 15,
+     "quantity": 3,
+     "unitId": "siung",
+     "unitEn": "clove",
+     "nameId": "Bawang putih",
+     "nameEn": "Garlic",
+     "substituteId": null,
+     "substituteEn": null
+    },
+    {
+     "food": "cabai_merah",
+     "grams": 10,
+     "quantity": 2,
+     "unitId": "buah",
+     "unitEn": "piece",
+     "nameId": "Cabai merah",
+     "nameEn": "Red chilies",
+     "substituteId": "Kurangi atau hilangkan agar tidak pedas",
+     "substituteEn": "Reduce or skip for less heat"
+    },
+    {
+     "food": "jahe",
+     "grams": 10,
+     "quantity": 1,
+     "unitId": "potong",
+     "unitEn": "piece",
+     "nameId": "Jahe",
+     "nameEn": "Ginger",
+     "substituteId": null,
+     "substituteEn": null
+    },
+    {
+     "food": "tomat",
+     "grams": 100,
+     "quantity": 1,
+     "unitId": "buah",
+     "unitEn": "piece",
+     "nameId": "Tomat, iris",
+     "nameEn": "Tomato, sliced",
+     "substituteId": null,
+     "substituteEn": null
+    },
+    {
+     "food": "jeruk_nipis",
+     "grams": 15,
+     "quantity": 1,
+     "unitId": "sdm",
+     "unitEn": "tbsp",
+     "nameId": "Air jeruk nipis",
+     "nameEn": "Lime juice",
+     "substituteId": null,
+     "substituteEn": null
+    },
+    {
+     "food": "garam",
+     "grams": 4,
+     "quantity": 0.75,
+     "unitId": "sdt",
+     "unitEn": "tsp",
+     "nameId": "Garam",
+     "nameEn": "Salt",
+     "substituteId": null,
+     "substituteEn": null
+    }
+   ],
+   "stepsId": [
+    "Lumuri ikan dengan air jeruk nipis dan sedikit garam, diamkan 10 menit.",
+    "Haluskan bawang merah, bawang putih, cabai, jahe, dan garam.",
+    "Balur ikan dengan bumbu halus, tambahkan irisan tomat (dan daun kemangi jika ada).",
+    "Bungkus dengan daun pisang, semat dengan lidi.",
+    "Kukus 30 menit sampai ikan matang. Bisa dipanggang sebentar agar harum."
+   ],
+   "stepsEn": [
+    "Rub the fish with lime juice and a little salt; rest for 10 minutes.",
+    "Blend the shallots, garlic, chilies, ginger and salt into a paste.",
+    "Coat the fish with the paste and add the tomato slices (and basil if available).",
+    "Wrap in banana leaves and secure with toothpicks.",
+    "Steam for 30 minutes until cooked. Optionally grill briefly for extra aroma."
+   ]
+  },
+  {
+   "key": "sop_ayam_sayur",
+   "nameId": "Sop Ayam Sayuran",
+   "nameEn": "Chicken Vegetable Soup",
+   "descriptionId": "Sup bening yang mengenyangkan dengan banyak sayur.",
+   "descriptionEn": "A filling clear soup packed with vegetables.",
+   "servings": 4,
+   "prep": 15,
+   "cook": 30,
+   "tags": [
+    "MAIN",
+    "HIGH_PROTEIN",
+    "BUDGET"
+   ],
+   "ingredients": [
+    {
+     "food": "dada_ayam_mentah",
+     "grams": 200,
+     "quantity": 200,
+     "unitId": "g",
+     "unitEn": "g",
+     "nameId": "Dada ayam tanpa kulit, potong",
+     "nameEn": "Skinless chicken breast, cut",
+     "substituteId": "Tahu atau tempe untuk versi vegetarian",
+     "substituteEn": "Tofu or tempeh for a vegetarian version"
+    },
+    {
+     "food": "wortel",
+     "grams": 100,
+     "quantity": 2,
+     "unitId": "buah",
+     "unitEn": "piece",
+     "nameId": "Wortel, potong",
+     "nameEn": "Carrots, sliced",
+     "substituteId": null,
+     "substituteEn": null
+    },
+    {
+     "food": "kentang_rebus",
+     "grams": 150,
+     "quantity": 1,
+     "unitId": "buah",
+     "unitEn": "piece",
+     "nameId": "Kentang, potong dadu",
+     "nameEn": "Potato, diced",
+     "substituteId": "Labu siam",
+     "substituteEn": "Chayote"
+    },
+    {
+     "food": "buncis",
+     "grams": 80,
+     "quantity": 80,
+     "unitId": "g",
+     "unitEn": "g",
+     "nameId": "Buncis, potong",
+     "nameEn": "Green beans, cut",
+     "substituteId": null,
+     "substituteEn": null
+    },
+    {
+     "food": "kol",
+     "grams": 100,
+     "quantity": 100,
+     "unitId": "g",
+     "unitEn": "g",
+     "nameId": "Kol, iris kasar",
+     "nameEn": "Cabbage, roughly sliced",
+     "substituteId": null,
+     "substituteEn": null
+    },
+    {
+     "food": "bawang_putih",
+     "grams": 15,
+     "quantity": 3,
+     "unitId": "siung",
+     "unitEn": "clove",
+     "nameId": "Bawang putih, geprek",
+     "nameEn": "Garlic, crushed",
+     "substituteId": null,
+     "substituteEn": null
+    },
+    {
+     "food": "bawang_merah",
+     "grams": 15,
+     "quantity": 3,
+     "unitId": "siung",
+     "unitEn": "clove",
+     "nameId": "Bawang merah, iris",
+     "nameEn": "Shallots, sliced",
+     "substituteId": null,
+     "substituteEn": null
+    },
+    {
+     "food": "garam",
+     "grams": 6,
+     "quantity": 1,
+     "unitId": "sdt",
+     "unitEn": "tsp",
+     "nameId": "Garam",
+     "nameEn": "Salt",
+     "substituteId": null,
+     "substituteEn": null
+    }
+   ],
+   "stepsId": [
+    "Rebus ayam dalam 1,5 liter air selama 15 menit, buang busanya.",
+    "Tumis atau sangrai bawang putih dan bawang merah hingga harum, masukkan ke kuah.",
+    "Masukkan wortel dan kentang, masak 10 menit.",
+    "Tambahkan buncis dan kol, masak 5 menit lagi.",
+    "Bumbui dengan garam dan merica, angkat ayam lalu suwir sebelum disajikan."
+   ],
+   "stepsEn": [
+    "Simmer the chicken in 1.5 litres of water for 15 minutes, skimming off the foam.",
+    "Sauté or dry-roast the garlic and shallots until fragrant and add to the broth.",
+    "Add the carrots and potato; cook 10 minutes.",
+    "Add the green beans and cabbage; cook 5 more minutes.",
+    "Season with salt and pepper; shred the chicken before serving."
+   ]
+  },
+  {
+   "key": "gado_gado_rumahan",
+   "nameId": "Gado-gado Rumahan",
+   "nameEn": "Homemade Gado-gado",
+   "descriptionId": "Sayur rebus dengan saus kacang yang lebih ringan dari versi warung.",
+   "descriptionEn": "Boiled vegetables with a lighter peanut sauce than the street version.",
+   "servings": 2,
+   "prep": 15,
+   "cook": 15,
+   "tags": [
+    "MAIN",
+    "VEGETARIAN",
+    "BUDGET"
+   ],
+   "ingredients": [
+    {
+     "food": "kol",
+     "grams": 100,
+     "quantity": 100,
+     "unitId": "g",
+     "unitEn": "g",
+     "nameId": "Kol, iris",
+     "nameEn": "Cabbage, sliced",
+     "substituteId": null,
+     "substituteEn": null
+    },
+    {
+     "food": "buncis",
+     "grams": 80,
+     "quantity": 80,
+     "unitId": "g",
+     "unitEn": "g",
+     "nameId": "Buncis",
+     "nameEn": "Green beans",
+     "substituteId": null,
+     "substituteEn": null
+    },
+    {
+     "food": "wortel",
+     "grams": 60,
+     "quantity": 1,
+     "unitId": "buah",
+     "unitEn": "piece",
+     "nameId": "Wortel",
+     "nameEn": "Carrot",
+     "substituteId": null,
+     "substituteEn": null
+    },
+    {
+     "food": "kangkung",
+     "grams": 100,
+     "quantity": 100,
+     "unitId": "g",
+     "unitEn": "g",
+     "nameId": "Kangkung atau bayam",
+     "nameEn": "Water spinach or spinach",
+     "substituteId": null,
+     "substituteEn": null
+    },
+    {
+     "food": "tahu",
+     "grams": 100,
+     "quantity": 2,
+     "unitId": "potong",
+     "unitEn": "piece",
+     "nameId": "Tahu, kukus",
+     "nameEn": "Tofu, steamed",
+     "substituteId": "Tempe kukus",
+     "substituteEn": "Steamed tempeh"
+    },
+    {
+     "food": "telur_mentah",
+     "grams": 100,
+     "quantity": 2,
+     "unitId": "butir",
+     "unitEn": "egg",
+     "nameId": "Telur, rebus",
+     "nameEn": "Eggs, boiled",
+     "substituteId": "Hilangkan untuk versi vegan",
+     "substituteEn": "Leave out for a vegan version"
+    },
+    {
+     "food": "kacang_tanah",
+     "grams": 50,
+     "quantity": 50,
+     "unitId": "g",
+     "unitEn": "g",
+     "nameId": "Kacang tanah sangrai",
+     "nameEn": "Roasted peanuts",
+     "substituteId": "Selai kacang tanpa gula (3 sdm)",
+     "substituteEn": "Unsweetened peanut butter (3 tbsp)"
+    },
+    {
+     "food": "gula_pasir",
+     "grams": 8,
+     "quantity": 2,
+     "unitId": "sdt",
+     "unitEn": "tsp",
+     "nameId": "Gula",
+     "nameEn": "Sugar",
+     "substituteId": null,
+     "substituteEn": null
+    },
+    {
+     "food": "cabai_merah",
+     "grams": 5,
+     "quantity": 1,
+     "unitId": "buah",
+     "unitEn": "piece",
+     "nameId": "Cabai",
+     "nameEn": "Chili",
+     "substituteId": null,
+     "substituteEn": null
+    },
+    {
+     "food": "bawang_putih",
+     "grams": 5,
+     "quantity": 1,
+     "unitId": "siung",
+     "unitEn": "clove",
+     "nameId": "Bawang putih",
+     "nameEn": "Garlic",
+     "substituteId": null,
+     "substituteEn": null
+    },
+    {
+     "food": "jeruk_nipis",
+     "grams": 15,
+     "quantity": 1,
+     "unitId": "sdm",
+     "unitEn": "tbsp",
+     "nameId": "Air jeruk nipis",
+     "nameEn": "Lime juice",
+     "substituteId": null,
+     "substituteEn": null
+    },
+    {
+     "food": "garam",
+     "grams": 3,
+     "quantity": 0.5,
+     "unitId": "sdt",
+     "unitEn": "tsp",
+     "nameId": "Garam",
+     "nameEn": "Salt",
+     "substituteId": null,
+     "substituteEn": null
+    }
+   ],
+   "stepsId": [
+    "Rebus sayuran satu per satu sampai empuk, tiriskan.",
+    "Rebus telur 10 menit, kupas dan belah.",
+    "Haluskan kacang, bawang putih, cabai, gula, dan garam. Tambahkan air hangat sedikit demi sedikit sampai kental.",
+    "Beri air jeruk nipis pada saus kacang.",
+    "Tata sayur, tahu, dan telur, lalu siram dengan saus kacang."
+   ],
+   "stepsEn": [
+    "Boil each vegetable until tender and drain.",
+    "Boil the eggs for 10 minutes, peel and halve.",
+    "Blend the peanuts, garlic, chili, sugar and salt, adding warm water little by little until thick.",
+    "Stir lime juice into the peanut sauce.",
+    "Arrange the vegetables, tofu and eggs and pour over the sauce."
+   ]
+  },
+  {
+   "key": "omelet_sayur",
+   "nameId": "Omelet Sayur",
+   "nameEn": "Vegetable Omelette",
+   "descriptionId": "Sarapan cepat tinggi protein dengan sayur.",
+   "descriptionEn": "A quick high-protein breakfast with vegetables.",
+   "servings": 1,
+   "prep": 5,
+   "cook": 5,
+   "tags": [
+    "BREAKFAST",
+    "HIGH_PROTEIN",
+    "VEGETARIAN",
+    "QUICK"
+   ],
+   "ingredients": [
+    {
+     "food": "telur_mentah",
+     "grams": 100,
+     "quantity": 2,
+     "unitId": "butir",
+     "unitEn": "egg",
+     "nameId": "Telur",
+     "nameEn": "Eggs",
+     "substituteId": null,
+     "substituteEn": null
+    },
+    {
+     "food": "tomat",
+     "grams": 50,
+     "quantity": 0.5,
+     "unitId": "buah",
+     "unitEn": "piece",
+     "nameId": "Tomat, potong dadu",
+     "nameEn": "Tomato, diced",
+     "substituteId": null,
+     "substituteEn": null
+    },
+    {
+     "food": "bayam",
+     "grams": 30,
+     "quantity": 30,
+     "unitId": "g",
+     "unitEn": "g",
+     "nameId": "Bayam",
+     "nameEn": "Spinach",
+     "substituteId": "Daun bawang atau sawi",
+     "substituteEn": "Spring onion or mustard greens"
+    },
+    {
+     "food": "bawang_merah",
+     "grams": 10,
+     "quantity": 2,
+     "unitId": "siung",
+     "unitEn": "clove",
+     "nameId": "Bawang merah, iris",
+     "nameEn": "Shallots, sliced",
+     "substituteId": null,
+     "substituteEn": null
+    },
+    {
+     "food": "minyak_goreng",
+     "grams": 4,
+     "quantity": 1,
+     "unitId": "sdt",
+     "unitEn": "tsp",
+     "nameId": "Minyak",
+     "nameEn": "Oil",
+     "substituteId": null,
+     "substituteEn": null
+    },
+    {
+     "food": "garam",
+     "grams": 1,
+     "quantity": 0.25,
+     "unitId": "sdt",
+     "unitEn": "tsp",
+     "nameId": "Garam",
+     "nameEn": "Salt",
+     "substituteId": null,
+     "substituteEn": null
+    }
+   ],
+   "stepsId": [
+    "Kocok telur dengan garam.",
+    "Masukkan tomat, bayam, dan bawang merah ke kocokan telur.",
+    "Panaskan minyak di wajan antilengket dengan api kecil.",
+    "Tuang telur, masak 2–3 menit, balik, lalu masak 1 menit lagi."
+   ],
+   "stepsEn": [
+    "Beat the eggs with salt.",
+    "Stir in the tomato, spinach and shallots.",
+    "Heat the oil in a non-stick pan over low heat.",
+    "Pour in the eggs, cook 2–3 minutes, flip and cook 1 more minute."
+   ]
+  },
+  {
+   "key": "oatmeal_pisang",
+   "nameId": "Oatmeal Pisang",
+   "nameEn": "Banana Oatmeal",
+   "descriptionId": "Sarapan hangat yang mengenyangkan.",
+   "descriptionEn": "A warm, filling breakfast.",
+   "servings": 1,
+   "prep": 2,
+   "cook": 5,
+   "tags": [
+    "BREAKFAST",
+    "VEGETARIAN",
+    "QUICK"
+   ],
+   "ingredients": [
+    {
+     "food": "oat_kering",
+     "grams": 40,
+     "quantity": 40,
+     "unitId": "g",
+     "unitEn": "g",
+     "nameId": "Oat",
+     "nameEn": "Rolled oats",
+     "substituteId": null,
+     "substituteEn": null
+    },
+    {
+     "food": "susu_rendah_lemak",
+     "grams": 200,
+     "quantity": 200,
+     "unitId": "ml",
+     "unitEn": "ml",
+     "nameId": "Susu rendah lemak",
+     "nameEn": "Low-fat milk",
+     "substituteId": "Susu kedelai tawar atau air",
+     "substituteEn": "Unsweetened soy milk or water"
+    },
+    {
+     "food": "pisang",
+     "grams": 100,
+     "quantity": 1,
+     "unitId": "buah",
+     "unitEn": "piece",
+     "nameId": "Pisang, iris",
+     "nameEn": "Banana, sliced",
+     "substituteId": null,
+     "substituteEn": null
+    },
+    {
+     "food": "madu",
+     "grams": 7,
+     "quantity": 1,
+     "unitId": "sdt",
+     "unitEn": "tsp",
+     "nameId": "Madu (opsional)",
+     "nameEn": "Honey (optional)",
+     "substituteId": "Hilangkan untuk mengurangi gula",
+     "substituteEn": "Leave out to cut sugar"
+    }
+   ],
+   "stepsId": [
+    "Masak oat dengan susu di api kecil sambil diaduk selama 3–5 menit.",
+    "Tuang ke mangkuk, beri irisan pisang.",
+    "Tambahkan madu jika suka."
+   ],
+   "stepsEn": [
+    "Cook the oats in the milk over low heat, stirring, for 3–5 minutes.",
+    "Pour into a bowl and top with banana slices.",
+    "Add honey if you like."
+   ]
+  },
+  {
+   "key": "ayam_bakar_teflon",
+   "nameId": "Ayam Bakar Teflon",
+   "nameEn": "Pan-grilled Chicken",
+   "descriptionId": "Ayam bakar tanpa arang dengan dada ayam tanpa kulit.",
+   "descriptionEn": "Grilled-style chicken made in a pan with skinless breast.",
+   "servings": 3,
+   "prep": 15,
+   "cook": 20,
+   "tags": [
+    "MAIN",
+    "HIGH_PROTEIN"
+   ],
+   "ingredients": [
+    {
+     "food": "dada_ayam_mentah",
+     "grams": 300,
+     "quantity": 300,
+     "unitId": "g",
+     "unitEn": "g",
+     "nameId": "Dada ayam tanpa kulit",
+     "nameEn": "Skinless chicken breast",
+     "substituteId": "Paha ayam tanpa kulit",
+     "substituteEn": "Skinless chicken thigh"
+    },
+    {
+     "food": "bawang_putih",
+     "grams": 15,
+     "quantity": 3,
+     "unitId": "siung",
+     "unitEn": "clove",
+     "nameId": "Bawang putih",
+     "nameEn": "Garlic",
+     "substituteId": null,
+     "substituteEn": null
+    },
+    {
+     "food": "bawang_merah",
+     "grams": 20,
+     "quantity": 4,
+     "unitId": "siung",
+     "unitEn": "clove",
+     "nameId": "Bawang merah",
+     "nameEn": "Shallots",
+     "substituteId": null,
+     "substituteEn": null
+    },
+    {
+     "food": "kecap_manis",
+     "grams": 36,
+     "quantity": 2,
+     "unitId": "sdm",
+     "unitEn": "tbsp",
+     "nameId": "Kecap manis",
+     "nameEn": "Sweet soy sauce",
+     "substituteId": null,
+     "substituteEn": null
+    },
+    {
+     "food": "jeruk_nipis",
+     "grams": 15,
+     "quantity": 1,
+     "unitId": "sdm",
+     "unitEn": "tbsp",
+     "nameId": "Air jeruk nipis",
+     "nameEn": "Lime juice",
+     "substituteId": null,
+     "substituteEn": null
+    },
+    {
+     "food": "minyak_goreng",
+     "grams": 4,
+     "quantity": 1,
+     "unitId": "sdt",
+     "unitEn": "tsp",
+     "nameId": "Minyak",
+     "nameEn": "Oil",
+     "substituteId": null,
+     "substituteEn": null
+    },
+    {
+     "food": "garam",
+     "grams": 3,
+     "quantity": 0.5,
+     "unitId": "sdt",
+     "unitEn": "tsp",
+     "nameId": "Garam",
+     "nameEn": "Salt",
+     "substituteId": null,
+     "substituteEn": null
+    }
+   ],
+   "stepsId": [
+    "Haluskan bawang putih, bawang merah, dan garam.",
+    "Lumuri ayam dengan bumbu, kecap, dan jeruk nipis. Diamkan minimal 15 menit.",
+    "Ungkep ayam dengan sedikit air sampai matang dan bumbu menyusut.",
+    "Olesi wajan dengan minyak, panggang ayam sambil dibalik sampai kecokelatan."
+   ],
+   "stepsEn": [
+    "Blend the garlic, shallots and salt.",
+    "Marinate the chicken with the paste, soy sauce and lime for at least 15 minutes.",
+    "Simmer the chicken with a little water until cooked and the sauce reduces.",
+    "Brush the pan with oil and grill the chicken, turning, until browned."
+   ]
+  },
+  {
+   "key": "tumis_kangkung_bawang",
+   "nameId": "Tumis Kangkung Bawang Putih",
+   "nameEn": "Garlic Water Spinach",
+   "descriptionId": "Sayur cepat dengan sedikit minyak.",
+   "descriptionEn": "A quick vegetable side with little oil.",
+   "servings": 3,
+   "prep": 5,
+   "cook": 5,
+   "tags": [
+    "SIDE",
+    "VEGETARIAN",
+    "QUICK",
+    "BUDGET"
+   ],
+   "ingredients": [
+    {
+     "food": "kangkung",
+     "grams": 250,
+     "quantity": 1,
+     "unitId": "ikat",
+     "unitEn": "bunch",
+     "nameId": "Kangkung",
+     "nameEn": "Water spinach",
+     "substituteId": "Bayam atau sawi",
+     "substituteEn": "Spinach or mustard greens"
+    },
+    {
+     "food": "bawang_putih",
+     "grams": 15,
+     "quantity": 3,
+     "unitId": "siung",
+     "unitEn": "clove",
+     "nameId": "Bawang putih, iris",
+     "nameEn": "Garlic, sliced",
+     "substituteId": null,
+     "substituteEn": null
+    },
+    {
+     "food": "cabai_merah",
+     "grams": 5,
+     "quantity": 1,
+     "unitId": "buah",
+     "unitEn": "piece",
+     "nameId": "Cabai (opsional)",
+     "nameEn": "Chili (optional)",
+     "substituteId": null,
+     "substituteEn": null
+    },
+    {
+     "food": "minyak_goreng",
+     "grams": 13,
+     "quantity": 1,
+     "unitId": "sdm",
+     "unitEn": "tbsp",
+     "nameId": "Minyak",
+     "nameEn": "Oil",
+     "substituteId": null,
+     "substituteEn": null
+    },
+    {
+     "food": "garam",
+     "grams": 2,
+     "quantity": 0.25,
+     "unitId": "sdt",
+     "unitEn": "tsp",
+     "nameId": "Garam",
+     "nameEn": "Salt",
+     "substituteId": null,
+     "substituteEn": null
+    }
+   ],
+   "stepsId": [
+    "Siangi kangkung dan cuci bersih.",
+    "Tumis bawang putih dan cabai sampai harum.",
+    "Masukkan kangkung, besarkan api, aduk cepat 2 menit.",
+    "Bumbui dengan garam dan segera angkat."
+   ],
+   "stepsEn": [
+    "Trim and wash the water spinach.",
+    "Sauté the garlic and chili until fragrant.",
+    "Add the water spinach, turn up the heat and toss for 2 minutes.",
+    "Season with salt and serve immediately."
+   ]
+  },
+  {
+   "key": "sayur_bening_bayam_jagung",
+   "nameId": "Sayur Bening Bayam Jagung",
+   "nameEn": "Clear Spinach and Corn Soup",
+   "descriptionId": "Sayur kuah ringan dan murah.",
+   "descriptionEn": "A light and inexpensive vegetable soup.",
+   "servings": 3,
+   "prep": 10,
+   "cook": 10,
+   "tags": [
+    "SIDE",
+    "VEGETARIAN",
+    "BUDGET"
+   ],
+   "ingredients": [
+    {
+     "food": "bayam",
+     "grams": 200,
+     "quantity": 1,
+     "unitId": "ikat",
+     "unitEn": "bunch",
+     "nameId": "Bayam",
+     "nameEn": "Spinach",
+     "substituteId": null,
+     "substituteEn": null
+    },
+    {
+     "food": "jagung_rebus",
+     "grams": 100,
+     "quantity": 100,
+     "unitId": "g",
+     "unitEn": "g",
+     "nameId": "Jagung manis pipil",
+     "nameEn": "Sweet corn kernels",
+     "substituteId": null,
+     "substituteEn": null
+    },
+    {
+     "food": "bawang_merah",
+     "grams": 15,
+     "quantity": 3,
+     "unitId": "siung",
+     "unitEn": "clove",
+     "nameId": "Bawang merah, iris",
+     "nameEn": "Shallots, sliced",
+     "substituteId": null,
+     "substituteEn": null
+    },
+    {
+     "food": "garam",
+     "grams": 4,
+     "quantity": 0.75,
+     "unitId": "sdt",
+     "unitEn": "tsp",
+     "nameId": "Garam",
+     "nameEn": "Salt",
+     "substituteId": null,
+     "substituteEn": null
+    }
+   ],
+   "stepsId": [
+    "Didihkan 750 ml air dengan bawang merah.",
+    "Masukkan jagung, masak 5 menit.",
+    "Masukkan bayam dan garam, masak 1–2 menit lalu angkat."
+   ],
+   "stepsEn": [
+    "Bring 750 ml water to a boil with the shallots.",
+    "Add the corn and cook for 5 minutes.",
+    "Add the spinach and salt, cook 1–2 minutes and remove from heat."
+   ]
+  },
+  {
+   "key": "tempe_bacem_panggang",
+   "nameId": "Tempe Bacem Panggang",
+   "nameEn": "Grilled Sweet Braised Tempeh",
+   "descriptionId": "Bacem dipanggang, bukan digoreng, sehingga lebih rendah minyak.",
+   "descriptionEn": "Braised tempeh finished on a grill pan instead of deep-frying.",
+   "servings": 4,
+   "prep": 10,
+   "cook": 35,
+   "tags": [
+    "SIDE",
+    "HIGH_PROTEIN",
+    "VEGETARIAN",
+    "BUDGET"
+   ],
+   "ingredients": [
+    {
+     "food": "tempe",
+     "grams": 200,
+     "quantity": 200,
+     "unitId": "g",
+     "unitEn": "g",
+     "nameId": "Tempe, potong tebal",
+     "nameEn": "Tempeh, thick slices",
+     "substituteId": null,
+     "substituteEn": null
+    },
+    {
+     "food": "kecap_manis",
+     "grams": 36,
+     "quantity": 2,
+     "unitId": "sdm",
+     "unitEn": "tbsp",
+     "nameId": "Kecap manis",
+     "nameEn": "Sweet soy sauce",
+     "substituteId": null,
+     "substituteEn": null
+    },
+    {
+     "food": "gula_pasir",
+     "grams": 12,
+     "quantity": 1,
+     "unitId": "sdm",
+     "unitEn": "tbsp",
+     "nameId": "Gula merah/pasir",
+     "nameEn": "Palm or white sugar",
+     "substituteId": "Kurangi separuh",
+     "substituteEn": "Use half"
+    },
+    {
+     "food": "bawang_putih",
+     "grams": 15,
+     "quantity": 3,
+     "unitId": "siung",
+     "unitEn": "clove",
+     "nameId": "Bawang putih",
+     "nameEn": "Garlic",
+     "substituteId": null,
+     "substituteEn": null
+    },
+    {
+     "food": "bawang_merah",
+     "grams": 20,
+     "quantity": 4,
+     "unitId": "siung",
+     "unitEn": "clove",
+     "nameId": "Bawang merah",
+     "nameEn": "Shallots",
+     "substituteId": null,
+     "substituteEn": null
+    },
+    {
+     "food": "garam",
+     "grams": 3,
+     "quantity": 0.5,
+     "unitId": "sdt",
+     "unitEn": "tsp",
+     "nameId": "Garam",
+     "nameEn": "Salt",
+     "substituteId": null,
+     "substituteEn": null
+    }
+   ],
+   "stepsId": [
+    "Haluskan bawang putih, bawang merah, dan garam.",
+    "Rebus tempe dengan bumbu, kecap, gula, daun salam, dan 300 ml air hingga air habis (sekitar 25 menit).",
+    "Panggang tempe di wajan antilengket sampai kecokelatan di kedua sisi."
+   ],
+   "stepsEn": [
+    "Blend the garlic, shallots and salt.",
+    "Simmer the tempeh with the paste, soy sauce, sugar, bay leaves and 300 ml water until the liquid is absorbed (about 25 minutes).",
+    "Grill in a non-stick pan until browned on both sides."
+   ]
+  },
+  {
+   "key": "salad_buah_yogurt",
+   "nameId": "Salad Buah Yogurt",
+   "nameEn": "Fruit Salad with Yogurt",
+   "descriptionId": "Camilan segar tanpa mayones.",
+   "descriptionEn": "A fresh snack without mayonnaise.",
+   "servings": 2,
+   "prep": 10,
+   "cook": 0,
+   "tags": [
+    "SNACK",
+    "VEGETARIAN",
+    "QUICK"
+   ],
+   "ingredients": [
+    {
+     "food": "pepaya",
+     "grams": 100,
+     "quantity": 100,
+     "unitId": "g",
+     "unitEn": "g",
+     "nameId": "Pepaya",
+     "nameEn": "Papaya",
+     "substituteId": null,
+     "substituteEn": null
+    },
+    {
+     "food": "melon",
+     "grams": 100,
+     "quantity": 100,
+     "unitId": "g",
+     "unitEn": "g",
+     "nameId": "Melon",
+     "nameEn": "Melon",
+     "substituteId": "Semangka",
+     "substituteEn": "Watermelon"
+    },
+    {
+     "food": "apel",
+     "grams": 100,
+     "quantity": 1,
+     "unitId": "buah",
+     "unitEn": "piece",
+     "nameId": "Apel kecil",
+     "nameEn": "Small apple",
+     "substituteId": "Pir",
+     "substituteEn": "Pear"
+    },
+    {
+     "food": "yogurt_plain",
+     "grams": 150,
+     "quantity": 150,
+     "unitId": "g",
+     "unitEn": "g",
+     "nameId": "Yogurt plain",
+     "nameEn": "Plain yogurt",
+     "substituteId": null,
+     "substituteEn": null
+    },
+    {
+     "food": "madu",
+     "grams": 7,
+     "quantity": 1,
+     "unitId": "sdt",
+     "unitEn": "tsp",
+     "nameId": "Madu (opsional)",
+     "nameEn": "Honey (optional)",
+     "substituteId": null,
+     "substituteEn": null
+    }
+   ],
+   "stepsId": [
+    "Potong buah dadu.",
+    "Campur yogurt dengan madu.",
+    "Siram buah dengan yogurt dan sajikan dingin."
+   ],
+   "stepsEn": [
+    "Dice the fruit.",
+    "Mix the yogurt with the honey.",
+    "Pour over the fruit and serve chilled."
+   ]
+  },
+  {
+   "key": "nasi_goreng_merah",
+   "nameId": "Nasi Goreng Nasi Merah",
+   "nameEn": "Brown Rice Fried Rice",
+   "descriptionId": "Nasi goreng dengan nasi merah, telur, dan banyak sayur.",
+   "descriptionEn": "Fried rice made with brown rice, egg and plenty of vegetables.",
+   "servings": 2,
+   "prep": 10,
+   "cook": 10,
+   "tags": [
+    "MAIN",
+    "BREAKFAST"
+   ],
+   "ingredients": [
+    {
+     "food": "nasi_merah",
+     "grams": 300,
+     "quantity": 2,
+     "unitId": "potong",
+     "unitEn": "piece",
+     "nameId": "Nasi merah (2 centong besar)",
+     "nameEn": "Brown rice (2 large scoops)",
+     "substituteId": "Nasi putih",
+     "substituteEn": "White rice"
+    },
+    {
+     "food": "telur_mentah",
+     "grams": 50,
+     "quantity": 1,
+     "unitId": "butir",
+     "unitEn": "egg",
+     "nameId": "Telur",
+     "nameEn": "Egg",
+     "substituteId": null,
+     "substituteEn": null
+    },
+    {
+     "food": "wortel",
+     "grams": 50,
+     "quantity": 1,
+     "unitId": "buah",
+     "unitEn": "piece",
+     "nameId": "Wortel, potong dadu kecil",
+     "nameEn": "Carrot, finely diced",
+     "substituteId": null,
+     "substituteEn": null
+    },
+    {
+     "food": "kol",
+     "grams": 70,
+     "quantity": 70,
+     "unitId": "g",
+     "unitEn": "g",
+     "nameId": "Kol, iris",
+     "nameEn": "Cabbage, sliced",
+     "substituteId": null,
+     "substituteEn": null
+    },
+    {
+     "food": "bawang_putih",
+     "grams": 10,
+     "quantity": 2,
+     "unitId": "siung",
+     "unitEn": "clove",
+     "nameId": "Bawang putih",
+     "nameEn": "Garlic",
+     "substituteId": null,
+     "substituteEn": null
+    },
+    {
+     "food": "bawang_merah",
+     "grams": 15,
+     "quantity": 3,
+     "unitId": "siung",
+     "unitEn": "clove",
+     "nameId": "Bawang merah",
+     "nameEn": "Shallots",
+     "substituteId": null,
+     "substituteEn": null
+    },
+    {
+     "food": "kecap_manis",
+     "grams": 18,
+     "quantity": 1,
+     "unitId": "sdm",
+     "unitEn": "tbsp",
+     "nameId": "Kecap manis",
+     "nameEn": "Sweet soy sauce",
+     "substituteId": null,
+     "substituteEn": null
+    },
+    {
+     "food": "minyak_goreng",
+     "grams": 13,
+     "quantity": 1,
+     "unitId": "sdm",
+     "unitEn": "tbsp",
+     "nameId": "Minyak",
+     "nameEn": "Oil",
+     "substituteId": null,
+     "substituteEn": null
+    },
+    {
+     "food": "garam",
+     "grams": 2,
+     "quantity": 0.25,
+     "unitId": "sdt",
+     "unitEn": "tsp",
+     "nameId": "Garam",
+     "nameEn": "Salt",
+     "substituteId": null,
+     "substituteEn": null
+    }
+   ],
+   "stepsId": [
+    "Tumis bawang putih dan bawang merah dengan minyak hingga harum.",
+    "Masukkan telur, orak-arik sebentar.",
+    "Tambahkan wortel dan kol, masak 2 menit.",
+    "Masukkan nasi, kecap, dan garam. Aduk rata dengan api besar 3–4 menit."
+   ],
+   "stepsEn": [
+    "Sauté the garlic and shallots in the oil until fragrant.",
+    "Add the egg and scramble briefly.",
+    "Add the carrot and cabbage; cook 2 minutes.",
+    "Add the rice, soy sauce and salt. Stir-fry over high heat for 3–4 minutes."
+   ]
+  }
+ ]
+}
