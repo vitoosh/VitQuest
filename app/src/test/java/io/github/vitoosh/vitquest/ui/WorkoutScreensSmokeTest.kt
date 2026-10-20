@@ -4,8 +4,8 @@ import android.content.Context
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasScrollToNodeAction
-import androidx.compose.ui.test.isToggleable
 import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.isToggleable
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
@@ -48,6 +48,7 @@ import io.github.vitoosh.vitquest.feature.workouts.library.ExerciseDetailScreen
 import io.github.vitoosh.vitquest.feature.workouts.player.FinishedWorkout
 import io.github.vitoosh.vitquest.feature.workouts.player.PlayerActions
 import io.github.vitoosh.vitquest.feature.workouts.player.WorkoutPlayerScreen
+import io.github.vitoosh.vitquest.testing.assertAccessible
 import java.time.Instant
 import java.time.LocalDate
 import org.junit.Assert.assertEquals
@@ -97,6 +98,7 @@ class WorkoutScreensSmokeTest {
     fun exerciseDetailHasAnimatedTutorialAndGuidance() {
         val squat = requireNotNull(ExerciseCatalog.find("bodyweight_squat"))
         composeRule.setContent { VitQuestTheme { ExerciseDetailScreen(exercise = squat, onNavigateBack = {}) } }
+        composeRule.assertAccessible()
         composeRule.onNodeWithContentDescription(string(R.string.exercise_animation_description, squat.name.en)).assertIsDisplayed()
         composeRule.onNodeWithText(string(R.string.exercise_end_pose)).performClick()
         composeRule.onNodeWithContentDescription(string(R.string.exercise_end_pose_description, squat.name.en)).assertIsDisplayed()
@@ -127,6 +129,7 @@ class WorkoutScreensSmokeTest {
                 WorkoutPlayerScreen(plan, state, finished = null, actions = PlayerActions(togglePause = { paused = true }, complete = { completed = true }), onDone = {})
             }
         }
+        composeRule.assertAccessible()
         composeRule.onNodeWithText(exercise.name.en).assertIsDisplayed()
         composeRule.onNodeWithContentDescription(string(R.string.player_pause)).performScrollTo().performClick()
         composeRule.onNodeWithText(string(R.string.player_complete_set)).performScrollTo().performClick()
@@ -177,6 +180,7 @@ class WorkoutScreensSmokeTest {
         composeRule.setContent {
             VitQuestTheme { HabitsScreen(state, HabitActions(toggle = { _, date -> toggled = date }), onNavigateBack = {}) }
         }
+        composeRule.assertAccessible()
         composeRule.onNodeWithText(string(R.string.habits_today, "3", "5")).assertIsDisplayed()
         composeRule.onNode(hasScrollToNodeAction()).performScrollToNode(hasText("Sleep 7 hours"))
         assertEquals(3, state.todayDone)
@@ -196,6 +200,7 @@ class WorkoutScreensSmokeTest {
             achievements = Achievements.evaluate(records.values, listOf(session(1, completed = true)), null, emptyList()),
         )
         composeRule.setContent { VitQuestTheme { ProgressScreen(state, onNavigateBack = {}, onOpenWeight = {}) } }
+        composeRule.assertAccessible()
         composeRule.onNodeWithText(string(R.string.progress_this_week)).assertIsDisplayed()
         composeRule.onNode(hasScrollToNodeAction()).performScrollToNode(hasText(string(R.string.achievement_first_workout)))
         composeRule.onNodeWithText(string(R.string.achievement_first_workout)).assertIsDisplayed()

@@ -34,6 +34,7 @@ import io.github.vitoosh.vitquest.feature.nutrition.diary.DiaryContent
 import io.github.vitoosh.vitquest.feature.nutrition.diary.DiaryUiState
 import io.github.vitoosh.vitquest.feature.nutrition.diary.EnergySummary
 import io.github.vitoosh.vitquest.feature.nutrition.recipes.RecipeDetailScreen
+import io.github.vitoosh.vitquest.testing.assertAccessible
 import java.time.Instant
 import java.time.LocalDate
 import org.junit.Assert.assertEquals
@@ -135,6 +136,7 @@ class NutritionScreensSmokeTest {
                 RecipeDetailScreen(recipe, today, SnackbarHostState(), onLog = { _, _ -> }, onPlan = { _, _, _ -> }, onNavigateBack = {})
             }
         }
+        composeRule.assertAccessible()
         composeRule.onNodeWithText(string(R.string.recipe_ingredient_line, "2", "egg", "Eggs", "100")).performScrollTo().assertIsDisplayed()
         composeRule.onNodeWithContentDescription(string(R.string.recipe_servings_increase)).performScrollTo().performClick()
         composeRule.onNodeWithText(string(R.string.recipe_ingredient_line, "4", "egg", "Eggs", "200")).performScrollTo().assertIsDisplayed()
@@ -154,6 +156,7 @@ class NutritionScreensSmokeTest {
                 )
             }
         }
+        composeRule.assertAccessible()
         composeRule.onNodeWithText(string(R.string.water_of_target, "2,500", "2,400")).assertIsDisplayed()
         composeRule.onNodeWithText(string(R.string.water_goal_reached)).assertIsDisplayed()
         composeRule.onNodeWithText(string(R.string.water_add_amount, "500")).performClick()

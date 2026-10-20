@@ -43,8 +43,10 @@ android {
             signingConfig = signingConfigs.getByName("debug")
         }
         release {
-            // Release signing and shrinking are a separate, later task.
-            isMinifyEnabled = false
+            // R8 shrinking is on so CI proves the release build works. Signing is not configured
+            // here: see docs/RELEASE.md. An unsigned release APK cannot be installed.
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
@@ -95,6 +97,11 @@ room {
     schemaDirectory("$projectDir/schemas")
 }
 
+// Restoring a backup made by an older version rebuilds that version's schema, then migrates it.
+// Instrumented migration tests read the same files through MigrationTestHelper.
+android.sourceSets.getByName("main").assets.directories.add("$projectDir/schemas")
+android.sourceSets.getByName("androidTest").assets.directories.add("$projectDir/schemas")
+
 dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
@@ -138,9 +145,13 @@ dependencies {
     testImplementation(libs.androidx.work.testing)
     testImplementation(platform(libs.androidx.compose.bom))
     testImplementation(libs.androidx.compose.ui.test.junit4)
+    testImplementation(libs.androidx.compose.ui.test.junit4.accessibility)
 
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(libs.androidx.room.testing)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+    androidTestImplementation(libs.androidx.compose.ui.test.junit4.accessibility)
 }

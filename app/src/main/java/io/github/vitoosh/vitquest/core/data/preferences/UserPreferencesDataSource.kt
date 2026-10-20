@@ -74,6 +74,30 @@ class UserPreferencesDataSource @Inject constructor(
         }
     }
 
+    /** The settings worth carrying to another phone. The UI language is kept by Android, not here. */
+    suspend fun backup(): PreferencesBackup {
+        val prefs = dataStore.data.catch { if (it is IOException) emit(emptyPreferences()) else throw it }.first()
+        return PreferencesBackup(
+            themeMode = prefs[Keys.THEME_MODE],
+            stepSource = prefs[Keys.STEP_SOURCE],
+            monthlyRewardBudget = prefs[Keys.MONTHLY_REWARD_BUDGET],
+            onboardingCompleted = prefs[Keys.ONBOARDING_COMPLETED] ?: false,
+            seedDataVersion = prefs[Keys.SEED_VERSION] ?: 0,
+        )
+    }
+
+    /** Replaces the stored settings with [backup]; values that do not apply to this version are ignored. */
+    suspend fun restore(backup: PreferencesBackup) {
+        dataStore.edit { prefs ->
+            prefs.clear()
+            backup.themeMode?.takeIf { stored -> ThemeMode.entries.any { it.name == stored } }?.let { prefs[Keys.THEME_MODE] = it }
+            backup.stepSource?.takeIf { stored -> StepSourcePreference.entries.any { it.name == stored } }?.let { prefs[Keys.STEP_SOURCE] = it }
+            backup.monthlyRewardBudget?.takeIf { it > 0 }?.let { prefs[Keys.MONTHLY_REWARD_BUDGET] = it }
+            prefs[Keys.ONBOARDING_COMPLETED] = backup.onboardingCompleted
+            prefs[Keys.SEED_VERSION] = backup.seedDataVersion
+        }
+    }
+
     suspend fun clear() {
         dataStore.edit { it.clear() }
     }
@@ -86,3 +110,11 @@ class UserPreferencesDataSource @Inject constructor(
         val MONTHLY_REWARD_BUDGET = longPreferencesKey("monthly_reward_budget_rupiah")
     }
 }
+
+data class PreferencesBackup(
+    val themeMode: String?,
+    val stepSource: String?,
+    val monthlyRewardBudget: Long?,
+    val onboardingCompleted: Boolean,
+    val seedDataVersion: Int,
+)

@@ -14,7 +14,8 @@ icons = [("Walk","automirrored/filled/DirectionsWalk.kt"),("Restaurant","filled/
  ("Timer","filled/Timer.kt"),("Insights","filled/Insights.kt"),("Checklist","filled/Checklist.kt"),
  ("Shuffle","filled/Shuffle.kt"),("Replay","filled/Replay.kt"),("Stop","filled/Stop.kt"),
  ("RadioButtonUnchecked","filled/RadioButtonUnchecked.kt"),("SelfImprovement","filled/SelfImprovement.kt"),
- ("History","filled/History.kt"),("Run","automirrored/filled/DirectionsRun.kt")]
+ ("History","filled/History.kt"),("Run","automirrored/filled/DirectionsRun.kt"),
+ ("SaveToDevice","filled/SaveAlt.kt"),("Restore","filled/Restore.kt")]
 parts = []
 for name, rel in icons:
     src = open(os.path.join(base, rel)).read()

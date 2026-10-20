@@ -22,6 +22,7 @@ import io.github.vitoosh.vitquest.core.model.StepSourcePreference
 import io.github.vitoosh.vitquest.feature.activity.ActivityPlatformActions
 import io.github.vitoosh.vitquest.feature.activity.ActivityScreen
 import io.github.vitoosh.vitquest.feature.activity.ActivityUiState
+import io.github.vitoosh.vitquest.testing.assertAccessible
 import java.time.LocalDate
 import org.junit.Assert.assertEquals
 import org.junit.Rule
@@ -82,6 +83,7 @@ class ActivityScreenSmokeTest {
             }
         }
 
+        composeRule.assertAccessible()
         composeRule.onNodeWithText("6,540").assertIsDisplayed()
         composeRule.onNodeWithText(string(R.string.steps_remaining, "1,460", "8,000")).assertIsDisplayed()
     }

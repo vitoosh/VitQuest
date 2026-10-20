@@ -10,7 +10,22 @@ Aplikasi ini **offline-first**: semua fitur inti berjalan tanpa server dan tanpa
 
 ## Status pengembangan
 
-Proyek dibangun bertahap. **Saat ini: Fase 5 (XP, hadiah nyata, anggaran, pengingat) selesai.** Reward Credit (poin virtual untuk "menukar" hadiah) sudah dihapus di database v6 karena tidak bisa dipakai di dunia nyata.
+Proyek dibangun bertahap. **Saat ini: Fase 6 (kesiapan rilis, tanpa cloud sync) selesai.** Cloud sync sengaja **belum** dibuat: itu butuh persetujuan eksplisit dan keputusan backend (lihat `docs/SECURITY_PRIVACY.md`). Reward Credit (poin virtual untuk "menukar" hadiah) sudah dihapus di database v6 karena tidak bisa dipakai di dunia nyata.
+
+### Yang sudah berfungsi di Fase 6 (Cadangan, privasi, aksesibilitas, kesiapan rilis)
+
+| Fitur | Status |
+|---|---|
+| **Ekspor cadangan** (Pengaturan → Cadangan): semua catatan dan pengaturan ke satu file JSON di lokasi pilihanmu (penyimpanan HP, Google Drive, dll.) lewat pemilih file Android. VitQuest tidak mengunggah apa pun. | ✅ Berfungsi, ada test-nya |
+| **Pulihkan dari cadangan**: minta konfirmasi, lalu mengganti semua data dalam satu transaksi. File yang bukan cadangan VitQuest, rusak, atau dari versi app yang lebih baru ditolak tanpa mengubah data. Cadangan dari versi lama dimigrasi otomatis. | ✅ Berfungsi, ada test-nya |
+| **Review keamanan dan privasi** (`docs/SECURITY_PRIVACY.md`): tidak ada izin internet, daftar izin dan komponen yang diekspor, isi file cadangan, dan temuan beserta perbaikannya | ✅ Selesai |
+| Notifikasi air/gerak tidak menampilkan angka di layar kunci yang menyembunyikan konten sensitif | ✅ Berfungsi, ada test-nya |
+| Teks privasi dan dialog "Hapus semua data" sekarang menyebut semua jenis data | ✅ Berfungsi |
+| **Pengaman otomatis** (`PrivacyGuardTest`): build gagal jika ada izin baru yang belum ditinjau (termasuk dari library), izin `INTERNET`, cadangan cloud diaktifkan, atau kode log/print di app | ✅ Ada test-nya |
+| **Aksesibilitas**: kontras teks WCAG AA (≥ 4,5:1) untuk tema terang dan gelap; setiap kontrol punya label pembaca layar dan area sentuh ≥ 48 dp yang tidak bertabrakan, dicek di 13 layar | ✅ Ada test-nya |
+| **Test integrasi**: satu hari pemakaian lewat repository dan database asli, ekspor, hapus, pulihkan, lalu sinkronisasi XP tanpa XP ganda | ✅ Ada test-nya |
+| **Build rilis dengan R8** dibangun di CI setiap push (tanpa tanda tangan, tidak diunggah). Proses tanda tangan rilis lewat GitHub Secrets didokumentasikan di `docs/RELEASE.md`. | ✅ Build berhasil; belum dijalankan di HP |
+| Test instrumented (migrasi semua versi dengan `MigrationTestHelper`, Accessibility Test Framework) dikompilasi di CI | ⚠️ Belum dijalankan (butuh HP/emulator) |
 
 ### Yang sudah berfungsi di Fase 5 (Hadiah dan pengingat)
 
@@ -93,7 +108,8 @@ Proyek dibangun bertahap. **Saat ini: Fase 5 (XP, hadiah nyata, anggaran, pengin
 
 ### Yang masih placeholder
 
-- Tidak ada lagi layar "Segera hadir". Fase 6 (sinkronisasi cloud opsional dan kesiapan rilis) hanya dikerjakan setelah ada persetujuan.
+- Tidak ada lagi layar "Segera hadir".
+- **Belum ada:** cloud sync (butuh persetujuan), build rilis bertanda tangan (tugas terpisah), dan integrasi smartwatch (butuh riset kompatibilitas).
 
 ### Rencana fase berikutnya
 
@@ -102,7 +118,7 @@ Proyek dibangun bertahap. **Saat ini: Fase 5 (XP, hadiah nyata, anggaran, pengin
 3. ~~Fase 3: Berat badan, nutrisi (database makanan Indonesia), resep, dan hidrasi~~
 4. ~~Fase 4: Latihan kalistenik, tutorial animasi gerakan, kebiasaan, dan progres~~
 5. ~~Fase 5: XP, hadiah nyata, anggaran, dan pengingat~~
-6. Fase 6 (opsional): Sinkronisasi cloud dan kesiapan rilis
+6. ~~Fase 6: Kesiapan rilis (cadangan lokal, review keamanan/privasi, aksesibilitas, build rilis R8)~~. Cloud sync opsional belum dikerjakan dan menunggu persetujuan.
 
 Integrasi smartwatch sengaja ditunda sampai ada riset kompatibilitas.
 
@@ -206,7 +222,9 @@ app/src/androidTest/    # Instrumented test (dijalankan di HP/emulator)
 - Versi 3 (Fase 3): kolom `user_profile.sex` dan `goals.daily_calorie_target`, plus tabel `foods`, `food_servings`, `food_log_entries`, `recipes`, `recipe_ingredients`, `meal_plan_entries`, `shopping_items`, `weight_entries`, `body_measurements`, dan `water_logs`.
 - Versi 4 (Fase 4): tabel `workout_sessions`, `workout_session_exercises` (salinan nama gerakan dan status tiap langkah), `habits`, dan `habit_check_ins`.
 - Versi 5 (Fase 5): `reward_transactions` (ledger, unik per `currency` + `source_key`), `rewards`, `redemptions` (unik per `request_id`), `budget_entries`, `reminder_settings`, dan `reminder_window`.
-- Setiap migrasi diuji dengan membuat database versi lama dari skema JSON yang di-commit, lalu membukanya dengan Room versi terbaru. Room memvalidasi semua tabel setelah migrasi.
+- Versi 6: Reward Credit dihapus. Baris ledger credit dibuang, `rewards` menjadi `reward_items` (tanpa biaya credit), penukaran yang tidak dibatalkan menjadi `reward_history`, dan `budget_entries` mengikuti tabel baru.
+- Setiap migrasi diuji dengan membuat database versi lama dari skema JSON yang di-commit, lalu membukanya dengan Room versi terbaru. Room memvalidasi semua tabel setelah migrasi. Test instrumented `MigrationInstrumentedTest` menjalankan hal yang sama di SQLite milik HP.
+- Skema JSON juga disertakan di APK (`assets/`), agar cadangan dari versi lama bisa dibangun ulang lalu dimigrasi saat dipulihkan. Saat menaikkan versi database, commit skema barunya dan tambahkan migrasinya ke `DatabaseMigrations.ALL`; test cadangan dan migrasi akan menangkap yang terlewat.
 - **Catatan makan menyimpan salinan nama dan gizi** saat dicatat. Mengedit atau menghapus makanan buatan sendiri tidak mengubah catatan hari-hari sebelumnya.
 
 ### Gerakan latihan dan animasinya
@@ -257,6 +275,7 @@ echo "sdk.dir=/path/to/android-sdk" > local.properties
 ./gradlew testDebugUnitTest      # unit test (JVM + Robolectric)
 ./gradlew lintDebug              # Android Lint
 ./gradlew assembleDebug          # APK di app/build/outputs/apk/debug/
+./gradlew assembleRelease        # cek build rilis R8 (tanpa tanda tangan, tidak bisa diinstall)
 ./gradlew connectedDebugAndroidTest  # instrumented test, butuh HP/emulator terhubung
 ```
 
@@ -271,8 +290,10 @@ Untuk menandatangani build lokal dengan keystore bersama: `export VITQUEST_DEBUG
   - `android.permission.health.READ_STEPS`: membaca total langkah harian dari Health Connect. VitQuest **tidak menulis** apa pun ke Health Connect dan tidak membaca data kesehatan lain.
   - `ACTIVITY_RECOGNITION` (Aktivitas fisik): membaca sensor langkah HP (Android 10+).
   - `POST_NOTIFICATIONS` (Android 13+): menampilkan pengingat yang kamu aktifkan. Isi notifikasi dibuat di HP dan tidak dikirim ke mana pun.
-- **Tidak ada yang dikirim ke server.** Aplikasi tidak punya akun, analitik, iklan, atau koneksi jaringan untuk data pengguna.
+- **Tidak ada yang dikirim ke server.** VitQuest tidak punya izin `INTERNET` (dicek otomatis di setiap build), akun, analitik, atau iklan.
 - **Backup cloud dimatikan** untuk data aplikasi (`allowBackup="false"` dan `data_extraction_rules`). Di Android 12+, transfer langsung ke HP baru (device-to-device) masih diizinkan oleh sistem.
+- **File cadangan** hanya dibuat saat kamu mengetuk Ekspor, disimpan di tempat yang kamu pilih, dan **tidak dienkripsi**: isinya data kesehatanmu, jadi simpan di tempat privat. Langkah sensor dan pilihan bahasa tidak ikut file cadangan.
+- Detail lengkap: `docs/SECURITY_PRIVACY.md`.
 - Data bisa dilihat dan diubah lewat **Profil** dan tab **Aktivitas**, dan dihapus seluruhnya lewat **Pengaturan → Hapus semua data**. Data yang ada di Health Connect tidak ikut terhapus; kelola data itu di aplikasi Health Connect.
 - Uninstall aplikasi juga menghapus semua datanya.
 
@@ -288,7 +309,8 @@ Untuk menandatangani build lokal dengan keystore bersama: `export VITQUEST_DEBUG
   - jika aplikasi tidak dibuka melewati tengah malam, langkah pada rentang itu dibagi antar hari secara proporsional terhadap waktu (perkiraan);
   - langkah setelah terakhir kali aplikasi dibuka sampai HP dimatikan/restart bisa hilang.
 - Tidak ada pengumpulan sensor terus-menerus di latar belakang (tidak ada foreground service). Ini disengaja sampai perilakunya diuji di HyperOS.
-- Tidak ada fitur ekspor/impor data. Kalau HP di-reset tanpa transfer device-to-device, data hilang. Fitur ekspor direncanakan di fase berikutnya.
+- Cadangan bersifat manual: tidak ada cadangan otomatis terjadwal. File cadangan tidak dienkripsi dan tidak dilindungi kata sandi. Memulihkan selalu mengganti semua data (tidak digabung).
+- Pemulihan cadangan dan build rilis R8 belum dicoba di HP sungguhan; pemilih file dan penyedia penyimpanan (misalnya Google Drive) bisa berperilaku berbeda antar HP.
 - Usia disimpan apa adanya (tidak otomatis bertambah), jadi perlu diperbarui manual agar BMR tetap akurat. Satuan hanya metrik (kg, cm, ml).
 - Nilai gizi makanan dan resep adalah estimasi (lihat bagian "Database makanan dan resep"). Belum ada pemindai barcode atau database online.
 - Rencana menu dan daftar belanja mencakup 7 hari ke depan. Resep buatan sendiri belum bisa dibuat.

@@ -786,4 +786,64 @@ object VqIcons {
             }
         }
     }
+
+    val SaveToDevice: ImageVector by lazy {
+        materialIcon(name = "VitQuest.SaveToDevice") {
+            materialPath {
+                moveTo(19.0f, 12.0f)
+                verticalLineToRelative(7.0f)
+                lineTo(5.0f, 19.0f)
+                verticalLineToRelative(-7.0f)
+                lineTo(3.0f, 12.0f)
+                verticalLineToRelative(7.0f)
+                curveToRelative(0.0f, 1.1f, 0.9f, 2.0f, 2.0f, 2.0f)
+                horizontalLineToRelative(14.0f)
+                curveToRelative(1.1f, 0.0f, 2.0f, -0.9f, 2.0f, -2.0f)
+                verticalLineToRelative(-7.0f)
+                horizontalLineToRelative(-2.0f)
+                close()
+                moveTo(13.0f, 12.67f)
+                lineToRelative(2.59f, -2.58f)
+                lineTo(17.0f, 11.5f)
+                lineToRelative(-5.0f, 5.0f)
+                lineToRelative(-5.0f, -5.0f)
+                lineToRelative(1.41f, -1.41f)
+                lineTo(11.0f, 12.67f)
+                lineTo(11.0f, 3.0f)
+                horizontalLineToRelative(2.0f)
+                close()
+            }
+        }
+    }
+
+    val Restore: ImageVector by lazy {
+        materialIcon(name = "VitQuest.Restore") {
+            materialPath {
+                moveTo(13.0f, 3.0f)
+                curveToRelative(-4.97f, 0.0f, -9.0f, 4.03f, -9.0f, 9.0f)
+                lineTo(1.0f, 12.0f)
+                lineToRelative(3.89f, 3.89f)
+                lineToRelative(0.07f, 0.14f)
+                lineTo(9.0f, 12.0f)
+                lineTo(6.0f, 12.0f)
+                curveToRelative(0.0f, -3.87f, 3.13f, -7.0f, 7.0f, -7.0f)
+                reflectiveCurveToRelative(7.0f, 3.13f, 7.0f, 7.0f)
+                reflectiveCurveToRelative(-3.13f, 7.0f, -7.0f, 7.0f)
+                curveToRelative(-1.93f, 0.0f, -3.68f, -0.79f, -4.94f, -2.06f)
+                lineToRelative(-1.42f, 1.42f)
+                curveTo(8.27f, 19.99f, 10.51f, 21.0f, 13.0f, 21.0f)
+                curveToRelative(4.97f, 0.0f, 9.0f, -4.03f, 9.0f, -9.0f)
+                reflectiveCurveToRelative(-4.03f, -9.0f, -9.0f, -9.0f)
+                close()
+                moveTo(12.0f, 8.0f)
+                verticalLineToRelative(5.0f)
+                lineToRelative(4.28f, 2.54f)
+                lineToRelative(0.72f, -1.21f)
+                lineToRelative(-3.5f, -2.08f)
+                lineTo(13.5f, 8.0f)
+                lineTo(12.0f, 8.0f)
+                close()
+            }
+        }
+    }
 }

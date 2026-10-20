@@ -64,6 +64,11 @@ jobs:
       - name: Build debug APK and instrumentation test APK
         run: ./gradlew assembleDebug assembleDebugAndroidTest --stacktrace
 
+      # Checks that R8 shrinking works. The release APK is unsigned, cannot be installed
+      # and is deliberately not uploaded; signed releases are a separate, approved task.
+      - name: Build release APK with R8 (unsigned, not uploaded)
+        run: ./gradlew assembleRelease --stacktrace
+
       - name: Upload debug APK
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:

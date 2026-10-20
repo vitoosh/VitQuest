@@ -149,4 +149,33 @@ class ScreenSmokeTest {
         composeRule.onNodeWithText(string(R.string.settings_delete_dialog_confirm)).performClick()
         assertTrue(deleted)
     }
+
+    @Test
+    fun restoringABackupAsksFirstAndExportIsOneTap() {
+        var exported = 0
+        var pickerOpened = 0
+        composeRule.setContent {
+            VitQuestTheme {
+                SettingsScreen(
+                    themeMode = ThemeMode.SYSTEM,
+                    language = AppLanguage.SYSTEM,
+                    onThemeModeSelected = {},
+                    onLanguageSelected = {},
+                    onEditProfile = {},
+                    onDeleteAllData = {},
+                    onNavigateBack = {},
+                    onExportBackup = { exported++ },
+                    onRestoreBackup = { pickerOpened++ },
+                )
+            }
+        }
+
+        composeRule.onNodeWithText(string(R.string.settings_backup_export)).performScrollTo().performClick()
+        assertEquals(1, exported)
+        composeRule.onNodeWithText(string(R.string.settings_backup_restore)).performScrollTo().performClick()
+        composeRule.onNodeWithText(string(R.string.settings_restore_dialog_message)).assertIsDisplayed()
+        assertEquals(0, pickerOpened)
+        composeRule.onNodeWithText(string(R.string.settings_restore_dialog_confirm)).performClick()
+        assertEquals(1, pickerOpened)
+    }
 }

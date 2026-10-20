@@ -12,45 +12,47 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import io.github.vitoosh.vitquest.core.data.local.DatabaseMigrations
-import io.github.vitoosh.vitquest.core.data.local.ProfileDao
-import io.github.vitoosh.vitquest.core.data.local.StepsDao
-import io.github.vitoosh.vitquest.core.data.local.FoodDao
-import io.github.vitoosh.vitquest.core.data.local.RecipeDao
+import io.github.vitoosh.vitquest.core.data.backup.BackupRepository
+import io.github.vitoosh.vitquest.core.data.backup.LocalBackupRepository
+import io.github.vitoosh.vitquest.core.data.health.AndroidHealthConnectStepsSource
+import io.github.vitoosh.vitquest.core.data.health.HealthConnectStepsSource
 import io.github.vitoosh.vitquest.core.data.local.BodyDao
+import io.github.vitoosh.vitquest.core.data.local.DatabaseMigrations
+import io.github.vitoosh.vitquest.core.data.local.FoodDao
 import io.github.vitoosh.vitquest.core.data.local.HabitDao
+import io.github.vitoosh.vitquest.core.data.local.ProfileDao
+import io.github.vitoosh.vitquest.core.data.local.RecipeDao
 import io.github.vitoosh.vitquest.core.data.local.ReminderDao
 import io.github.vitoosh.vitquest.core.data.local.RewardDao
+import io.github.vitoosh.vitquest.core.data.local.StepsDao
+import io.github.vitoosh.vitquest.core.data.local.VitQuestDatabase
+import io.github.vitoosh.vitquest.core.data.local.WorkoutDao
+import io.github.vitoosh.vitquest.core.data.repository.BodyRepository
+import io.github.vitoosh.vitquest.core.data.repository.DataStoreUserPreferencesRepository
+import io.github.vitoosh.vitquest.core.data.repository.HabitRepository
+import io.github.vitoosh.vitquest.core.data.repository.LocalUserDataRepository
+import io.github.vitoosh.vitquest.core.data.repository.NutritionRepository
+import io.github.vitoosh.vitquest.core.data.repository.OfflineBodyRepository
+import io.github.vitoosh.vitquest.core.data.repository.OfflineFirstStepsRepository
+import io.github.vitoosh.vitquest.core.data.repository.OfflineHabitRepository
+import io.github.vitoosh.vitquest.core.data.repository.OfflineNutritionRepository
+import io.github.vitoosh.vitquest.core.data.repository.OfflineProfileRepository
+import io.github.vitoosh.vitquest.core.data.repository.OfflineRecipeRepository
 import io.github.vitoosh.vitquest.core.data.repository.OfflineReminderRepository
 import io.github.vitoosh.vitquest.core.data.repository.OfflineRewardRepository
+import io.github.vitoosh.vitquest.core.data.repository.OfflineWorkoutRepository
+import io.github.vitoosh.vitquest.core.data.repository.ProfileRepository
+import io.github.vitoosh.vitquest.core.data.repository.RecipeRepository
 import io.github.vitoosh.vitquest.core.data.repository.ReminderRepository
 import io.github.vitoosh.vitquest.core.data.repository.ReminderScheduler
 import io.github.vitoosh.vitquest.core.data.repository.RewardRepository
-import io.github.vitoosh.vitquest.core.reminders.WorkManagerReminderScheduler
-import io.github.vitoosh.vitquest.core.data.local.WorkoutDao
-import io.github.vitoosh.vitquest.core.data.repository.HabitRepository
-import io.github.vitoosh.vitquest.core.data.repository.OfflineHabitRepository
-import io.github.vitoosh.vitquest.core.data.repository.OfflineWorkoutRepository
-import io.github.vitoosh.vitquest.core.data.repository.WorkoutRepository
-import io.github.vitoosh.vitquest.core.data.repository.BodyRepository
-import io.github.vitoosh.vitquest.core.data.repository.NutritionRepository
-import io.github.vitoosh.vitquest.core.data.repository.OfflineBodyRepository
-import io.github.vitoosh.vitquest.core.data.repository.OfflineNutritionRepository
-import io.github.vitoosh.vitquest.core.data.repository.OfflineRecipeRepository
-import io.github.vitoosh.vitquest.core.data.repository.RecipeRepository
-import io.github.vitoosh.vitquest.core.data.local.VitQuestDatabase
-import io.github.vitoosh.vitquest.core.data.repository.DataStoreUserPreferencesRepository
-import io.github.vitoosh.vitquest.core.data.repository.LocalUserDataRepository
-import io.github.vitoosh.vitquest.core.data.repository.OfflineProfileRepository
-import io.github.vitoosh.vitquest.core.data.repository.ProfileRepository
+import io.github.vitoosh.vitquest.core.data.repository.StepsRepository
 import io.github.vitoosh.vitquest.core.data.repository.UserDataRepository
 import io.github.vitoosh.vitquest.core.data.repository.UserPreferencesRepository
-import io.github.vitoosh.vitquest.core.data.repository.OfflineFirstStepsRepository
-import io.github.vitoosh.vitquest.core.data.repository.StepsRepository
-import io.github.vitoosh.vitquest.core.data.health.AndroidHealthConnectStepsSource
-import io.github.vitoosh.vitquest.core.data.health.HealthConnectStepsSource
+import io.github.vitoosh.vitquest.core.data.repository.WorkoutRepository
 import io.github.vitoosh.vitquest.core.data.sensor.AndroidStepSensorSource
 import io.github.vitoosh.vitquest.core.data.sensor.StepSensorSource
+import io.github.vitoosh.vitquest.core.reminders.WorkManagerReminderScheduler
 import io.github.vitoosh.vitquest.core.time.SystemTimeSource
 import io.github.vitoosh.vitquest.core.time.TimeSource
 import java.time.Clock
@@ -119,6 +121,9 @@ abstract class DataBindingsModule {
 
     @Binds
     abstract fun bindUserDataRepository(impl: LocalUserDataRepository): UserDataRepository
+
+    @Binds
+    abstract fun bindBackupRepository(impl: LocalBackupRepository): BackupRepository
 
     @Binds
     abstract fun bindStepsRepository(impl: OfflineFirstStepsRepository): StepsRepository
