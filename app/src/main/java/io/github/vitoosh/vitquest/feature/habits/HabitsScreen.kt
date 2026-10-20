@@ -261,7 +261,7 @@ private fun WeekDots(week: HabitWeek, today: LocalDate, onToggle: ((LocalDate) -
             )
             val canToggle = onToggle != null && status != DayStatus.FUTURE
             val modifier = if (canToggle) {
-                Modifier.toggleable(value = status == DayStatus.DONE, role = Role.Checkbox) { onToggle?.invoke(date) }
+                Modifier.toggleable(value = status == DayStatus.DONE, role = Role.Checkbox) { onToggle(date) }
             } else {
                 Modifier
             }
