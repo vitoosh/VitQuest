@@ -20,8 +20,6 @@ import io.github.vitoosh.vitquest.core.locale.AppLanguage
 import io.github.vitoosh.vitquest.core.model.Goals
 import io.github.vitoosh.vitquest.core.model.ThemeMode
 import io.github.vitoosh.vitquest.core.model.UserProfile
-import io.github.vitoosh.vitquest.feature.comingsoon.ComingSoonFeature
-import io.github.vitoosh.vitquest.feature.comingsoon.ComingSoonScreen
 import io.github.vitoosh.vitquest.core.domain.weight.WeightStats
 import io.github.vitoosh.vitquest.core.model.WeightEntry
 import io.github.vitoosh.vitquest.feature.home.HomeActions
@@ -81,7 +79,7 @@ class ScreenSmokeTest {
     }
 
     @Test
-    fun homeShowsTargetsAndComingSoonWithoutInventedNumbers() {
+    fun homeShowsTargetsAndRewardsWithoutInventedNumbers() {
         composeRule.setContent {
             VitQuestTheme(darkTheme = true) {
                 HomeScreen(
@@ -105,9 +103,9 @@ class ScreenSmokeTest {
         composeRule.onNode(hasScrollToNodeAction()).performScrollToNode(hasText(string(R.string.home_weight_to_lose, "5")))
         composeRule.onNodeWithText(string(R.string.home_weight_to_lose, "5")).assertIsDisplayed()
         composeRule.onNodeWithText(string(R.string.data_source_manual)).assertIsDisplayed()
-        // The coming-soon card is a lazy item below the fold.
-        composeRule.onNode(hasScrollToNodeAction()).performScrollToNode(hasText(string(R.string.feature_rewards_title)))
-        composeRule.onNodeWithText(string(R.string.feature_rewards_title)).assertIsDisplayed()
+        // The rewards card is a lazy item below the fold and starts at level 1 with no credits.
+        composeRule.onNode(hasScrollToNodeAction()).performScrollToNode(hasText(string(R.string.home_rewards_title)))
+        composeRule.onNodeWithText(string(R.string.rewards_level, "1")).assertIsDisplayed()
     }
 
     @Test
@@ -122,18 +120,6 @@ class ScreenSmokeTest {
         }
 
         composeRule.onNodeWithText(string(R.string.home_complete_profile_title)).assertIsDisplayed()
-    }
-
-    @Test
-    fun comingSoonTabExplainsPlannedFeature() {
-        composeRule.setContent {
-            VitQuestTheme {
-                ComingSoonScreen(R.string.nav_rewards, ComingSoonFeature.REWARDS, onOpenSettings = {})
-            }
-        }
-
-        composeRule.onNodeWithText(string(R.string.coming_soon)).assertIsDisplayed()
-        composeRule.onNodeWithText(string(R.string.feature_rewards_planned_1)).assertIsDisplayed()
     }
 
     @Test
@@ -154,7 +140,7 @@ class ScreenSmokeTest {
             }
         }
 
-        composeRule.onNodeWithText(string(R.string.theme_dark)).performClick()
+        composeRule.onNodeWithText(string(R.string.theme_dark)).performScrollTo().performClick()
         assertEquals(ThemeMode.DARK, theme)
 
         composeRule.onNodeWithText(string(R.string.settings_delete_all_data)).performScrollTo().performClick()

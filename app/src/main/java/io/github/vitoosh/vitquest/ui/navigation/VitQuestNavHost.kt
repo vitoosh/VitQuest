@@ -9,8 +9,6 @@ import io.github.vitoosh.vitquest.R
 import io.github.vitoosh.vitquest.core.domain.nutrition.mealForHour
 import io.github.vitoosh.vitquest.core.model.MealType
 import io.github.vitoosh.vitquest.core.model.WorkoutRequest
-import io.github.vitoosh.vitquest.feature.comingsoon.ComingSoonFeature
-import io.github.vitoosh.vitquest.feature.comingsoon.ComingSoonScreen
 import io.github.vitoosh.vitquest.feature.home.HomeActions
 import io.github.vitoosh.vitquest.feature.nutrition.NutritionScreen
 import io.github.vitoosh.vitquest.feature.workouts.WorkoutsScreen
@@ -22,6 +20,8 @@ import io.github.vitoosh.vitquest.feature.home.HomeRoute as HomeScreenRoute
 import io.github.vitoosh.vitquest.feature.habits.HabitsRoute as HabitsScreenRoute
 import io.github.vitoosh.vitquest.feature.hydration.HydrationRoute as HydrationScreenRoute
 import io.github.vitoosh.vitquest.feature.progress.ProgressRoute as ProgressScreenRoute
+import io.github.vitoosh.vitquest.feature.reminders.RemindersRoute as RemindersScreenRoute
+import io.github.vitoosh.vitquest.feature.rewards.RewardsRoute as RewardsScreenRoute
 import io.github.vitoosh.vitquest.feature.workouts.library.ExerciseDetailRoute as ExerciseDetailScreenRoute
 import io.github.vitoosh.vitquest.feature.workouts.player.WorkoutPlayerRoute as WorkoutPlayerScreenRoute
 import io.github.vitoosh.vitquest.feature.nutrition.food.AddFoodRoute as AddFoodScreenRoute
@@ -74,6 +74,7 @@ fun VitQuestNavHost(
                     openWorkouts = { navController.navigateToTopLevel(TopLevelDestination.WORKOUTS) },
                     openHabits = openHabits,
                     openProgress = openProgress,
+                    openRewards = { navController.navigateToTopLevel(TopLevelDestination.REWARDS) },
                 ),
             )
         }
@@ -100,10 +101,14 @@ fun VitQuestNavHost(
             )
         }
         composable<RewardsRoute> {
-            ComingSoonScreen(R.string.nav_rewards, ComingSoonFeature.REWARDS, onOpenSettings = openSettings)
+            RewardsScreenRoute(onOpenSettings = openSettings)
         }
         composable<SettingsRoute> {
-            SettingsScreenRoute(onNavigateBack = navController::navigateUp, onEditProfile = editProfile)
+            SettingsScreenRoute(
+                onNavigateBack = navController::navigateUp,
+                onEditProfile = editProfile,
+                onOpenReminders = { navController.navigate(RemindersRoute) { launchSingleTop = true } },
+            )
         }
         composable<EditProfileRoute> {
             EditProfileScreenRoute(onNavigateBack = navController::navigateUp)
@@ -131,6 +136,9 @@ fun VitQuestNavHost(
         }
         composable<HabitsRoute> {
             HabitsScreenRoute(onNavigateBack = navController::navigateUp)
+        }
+        composable<RemindersRoute> {
+            RemindersScreenRoute(onNavigateBack = navController::navigateUp)
         }
         composable<ProgressRoute> {
             ProgressScreenRoute(onNavigateBack = navController::navigateUp, onOpenWeight = openWeight)

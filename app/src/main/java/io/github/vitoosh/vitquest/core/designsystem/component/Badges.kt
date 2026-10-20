@@ -31,16 +31,6 @@ fun DataSourceTag(kind: DataSourceKind, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun ComingSoonBadge(modifier: Modifier = Modifier) {
-    VqBadge(
-        text = stringResource(R.string.coming_soon),
-        containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-        contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
-        modifier = modifier,
-    )
-}
-
-@Composable
 fun VqBadge(
     text: String,
     containerColor: Color,

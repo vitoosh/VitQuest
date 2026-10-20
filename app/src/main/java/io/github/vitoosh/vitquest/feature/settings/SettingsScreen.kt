@@ -14,6 +14,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.HorizontalDivider
@@ -53,6 +54,7 @@ import io.github.vitoosh.vitquest.core.ui.labelRes
 fun SettingsRoute(
     onNavigateBack: () -> Unit,
     onEditProfile: () -> Unit,
+    onOpenReminders: () -> Unit = {},
     viewModel: SettingsViewModel = hiltViewModel(),
 ) {
     val themeMode by viewModel.themeMode.collectAsStateWithLifecycle()
@@ -67,6 +69,7 @@ fun SettingsRoute(
             AppLocales.apply(selected)
         },
         onEditProfile = onEditProfile,
+        onOpenReminders = onOpenReminders,
         onDeleteAllData = viewModel::deleteAllData,
         onNavigateBack = onNavigateBack,
     )
@@ -81,6 +84,7 @@ fun SettingsScreen(
     onEditProfile: () -> Unit,
     onDeleteAllData: () -> Unit,
     onNavigateBack: () -> Unit,
+    onOpenReminders: () -> Unit = {},
 ) {
     var showDeleteDialog by rememberSaveable { mutableStateOf(false) }
 
@@ -102,6 +106,13 @@ fun SettingsScreen(
                     leadingContent = { Icon(Icons.Filled.Person, contentDescription = null) },
                     trailingContent = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null) },
                     modifier = Modifier.clickable(role = Role.Button, onClick = onEditProfile),
+                )
+                ListItem(
+                    headlineContent = { Text(stringResource(R.string.reminders_title)) },
+                    supportingContent = { Text(stringResource(R.string.settings_reminders_description)) },
+                    leadingContent = { Icon(Icons.Filled.Notifications, contentDescription = null) },
+                    trailingContent = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null) },
+                    modifier = Modifier.clickable(role = Role.Button, onClick = onOpenReminders),
                 )
 
                 HorizontalDivider()

@@ -19,14 +19,14 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import io.github.vitoosh.vitquest.core.designsystem.theme.VqSpacing
 
-/** Icon + title + description row used to preview features that are not built yet. */
+/** Icon + title + description row, used to introduce features on the welcome screen. */
 @Composable
 fun FeaturePreviewRow(
     icon: ImageVector,
     title: String,
     description: String,
     modifier: Modifier = Modifier,
-    trailing: @Composable (() -> Unit)? = { ComingSoonBadge() },
+    trailing: @Composable (() -> Unit)? = null,
 ) {
     Row(
         modifier = modifier

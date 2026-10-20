@@ -16,6 +16,7 @@ class LocalUserDataRepository @Inject constructor(
     private val database: VitQuestDatabase,
     private val preferences: UserPreferencesDataSource,
     private val seedDataLoader: SeedDataLoader,
+    private val reminderScheduler: ReminderScheduler,
 ) : UserDataRepository {
 
     override suspend fun deleteAllUserData() {
@@ -24,5 +25,7 @@ class LocalUserDataRepository @Inject constructor(
         preferences.clear()
         // The bundled food and recipe database is not personal data, so restore it right away.
         seedDataLoader.ensureLoaded()
+        // Reminder settings were deleted too, so cancel everything that was scheduled.
+        reminderScheduler.rescheduleAll()
     }
 }

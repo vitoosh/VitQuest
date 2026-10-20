@@ -23,6 +23,12 @@ import androidx.room.RoomDatabase
         WorkoutSessionExerciseEntity::class,
         HabitEntity::class,
         HabitCheckInEntity::class,
+        RewardTransactionEntity::class,
+        RewardEntity::class,
+        RedemptionEntity::class,
+        BudgetEntryEntity::class,
+        ReminderSettingEntity::class,
+        ReminderWindowEntity::class,
     ],
     version = VitQuestDatabase.VERSION,
     exportSchema = true,
@@ -42,8 +48,12 @@ abstract class VitQuestDatabase : RoomDatabase() {
 
     abstract fun habitDao(): HabitDao
 
+    abstract fun rewardDao(): RewardDao
+
+    abstract fun reminderDao(): ReminderDao
+
     companion object {
         const val NAME = "vitquest.db"
-        const val VERSION = 4
+        const val VERSION = 5
     }
 }

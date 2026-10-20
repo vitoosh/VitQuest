@@ -173,6 +173,35 @@ class DatabaseMigrationTest {
     }
 
     @Test
+    fun migrating4To5KeepsWorkoutsAndAddsTheRewardLedger() = runTest {
+        createDatabase(version = 4) { db ->
+            insertProfile(db)
+            db.insert(
+                "habits",
+                SQLiteDatabase.CONFLICT_REPLACE,
+                ContentValues().apply {
+                    put("name", "Tidur cukup")
+                    put("target_days_per_week", 5)
+                    put("created_at_epoch_ms", 1L)
+                },
+            )
+        }
+
+        val database = open()
+        try {
+            assertEquals("Tidur cukup", database.habitDao().observeHabits().first().single().habit.name)
+            val line = RewardTransactionEntity(currency = "XP", amount = 50, reason = "WORKOUT", sourceKey = "g:workout:1#1", date = "2026-10-21", createdAtEpochMs = 1L)
+            database.rewardDao().insertTransactions(listOf(line, line))
+            // The unique (currency, source_key) index keeps the ledger idempotent.
+            assertEquals(50, database.rewardDao().balance("XP"))
+            database.reminderDao().upsertWindow(ReminderWindowEntity(activeStart = 480, activeEnd = 1200, quietStart = null, quietEnd = null))
+            assertEquals(480, database.reminderDao().getWindow()?.activeStart)
+        } finally {
+            database.close()
+        }
+    }
+
+    @Test
     fun migratingFromVersion1KeepsProfileAndAddsNewTables() = runTest {
         createVersion1Database()
 

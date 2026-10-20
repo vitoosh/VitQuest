@@ -10,7 +10,24 @@ Aplikasi ini **offline-first**: semua fitur inti berjalan tanpa server dan tanpa
 
 ## Status pengembangan
 
-Proyek dibangun bertahap. **Saat ini: Fase 4 (latihan, tutorial gerakan, kebiasaan, progres) selesai.**
+Proyek dibangun bertahap. **Saat ini: Fase 5 (XP, Reward Credit, hadiah, anggaran, pengingat) selesai.**
+
+### Yang sudah berfungsi di Fase 5 (Hadiah dan pengingat)
+
+| Fitur | Status |
+|---|---|
+| **XP dan level**: XP didapat dari latihan (min. 5 menit, maks. 2/hari), target langkah, target air, mencatat makanan, timbang mingguan, centang kebiasaan, dan pencapaian. XP per level naik bertahap (100, 150, 200, ...). Aturan perolehan ditampilkan apa adanya di app. | ✅ Berfungsi, ada test-nya |
+| **Reward Credit (RC)**: poin virtual terpisah dari XP untuk ditukar dengan hadiah. Bukan uang dan tidak bisa dicairkan. Tidak ada poin untuk makan lebih sedikit atau turun berat badan cepat. | ✅ Berfungsi |
+| **Ledger transaksi yang bisa diaudit**: setiap perubahan saldo adalah baris baru (tidak pernah diubah atau dihapus). Kunci unik per transaksi membuat sinkronisasi **idempoten**; aktivitas yang dihapus dikoreksi dengan baris pembalik. Perolehan dihitung dari 30 hari terakhir. | ✅ Berfungsi, ada test-nya |
+| **Katalog hadiah**: 9 saran awal (barang dan pengalaman, tanpa hadiah makanan), hadiah buatan sendiri, edit/hapus, **wishlist**, dan progres credit menuju tiap hadiah | ✅ Berfungsi |
+| **Penukaran atomik** dengan perlindungan **penukaran ganda**: cek saldo, catatan penukaran, dan baris ledger terjadi dalam satu transaksi database; ID permintaan unik membuat ketukan ganda atau retry tidak memotong saldo dua kali. Penukaran bisa dibatalkan sekali (credit dikembalikan dengan baris baru). | ✅ Berfungsi, ada test-nya |
+| **Riwayat** penukaran dan semua transaksi XP/RC, termasuk baris koreksi | ✅ Berfungsi |
+| **Anggaran uang sungguhan (rupiah)**, terpisah total dari Reward Credit: anggaran bulanan, catatan tabungan/pengeluaran, dan progres tabungan menuju hadiah di wishlist yang punya harga asli. Tidak ada pembayaran, transfer, atau pemesanan. | ✅ Berfungsi |
+| **Pengingat** untuk air, jeda bergerak, latihan, catat makanan, dan timbang mingguan, masing-masing bisa dinyalakan/dimatikan. **Jam aktif** dan **jam tenang** diatur sendiri (tidak ada jam bawaan). Air default tiap 30 menit, gerak tiap 60 menit; latihan/makanan/berat memakai jam dan hari pilihanmu. | ✅ Berfungsi, ada test-nya |
+| Pengingat **dilewati jika target hari itu sudah tercapai** dan otomatis mulai lagi besok. Satu jadwal unik per jenis (tidak ada duplikat), dibatalkan saat dimatikan atau saat semua data dihapus. | ✅ Berfungsi, ada test-nya |
+| Izin notifikasi Android 13+ diminta dari layar Pengingat; jika ditolak, app menjelaskan dan membuka pengaturan notifikasi. Ada penjelasan dan tombol ke pengaturan baterai. | ✅ Berfungsi |
+| Home: kartu XP, level, dan saldo RC. Tab Hadiah tidak lagi "Segera hadir". | ✅ Berfungsi |
+| Migrasi database v4→v5 | ✅ Ada test migrasinya |
 
 ### Yang sudah berfungsi di Fase 4 (Latihan dan kebiasaan)
 
@@ -74,11 +91,9 @@ Proyek dibangun bertahap. **Saat ini: Fase 4 (latihan, tutorial gerakan, kebiasa
 | Hapus semua data (dengan konfirmasi) | ✅ Berfungsi |
 | GitHub Actions: unit test, lint, build debug APK, upload APK dan laporan | ✅ Dikonfigurasi |
 
-### Yang masih placeholder ("Segera hadir")
+### Yang masih placeholder
 
-- Tab **Hadiah** masih menampilkan layar "Segera hadir" berisi rencana fiturnya.
-- XP dan Reward Credit **belum dilacak**. Tidak ada angka contoh atau angka karangan yang ditampilkan.
-- Belum ada notifikasi atau pengingat, termasuk pengingat minum (Fase 5).
+- Tidak ada lagi layar "Segera hadir". Fase 6 (sinkronisasi cloud opsional dan kesiapan rilis) hanya dikerjakan setelah ada persetujuan.
 
 ### Rencana fase berikutnya
 
@@ -86,7 +101,7 @@ Proyek dibangun bertahap. **Saat ini: Fase 4 (latihan, tutorial gerakan, kebiasa
 2. ~~Fase 2: Pelacakan aktivitas (Health Connect, sensor langkah, input manual, riwayat)~~
 3. ~~Fase 3: Berat badan, nutrisi (database makanan Indonesia), resep, dan hidrasi~~
 4. ~~Fase 4: Latihan kalistenik, tutorial animasi gerakan, kebiasaan, dan progres~~
-5. Fase 5: XP, Reward Credit, hadiah, dan pengingat
+5. ~~Fase 5: XP, Reward Credit, hadiah, anggaran, dan pengingat~~
 6. Fase 6 (opsional): Sinkronisasi cloud dan kesiapan rilis
 
 Integrasi smartwatch sengaja ditunda sampai ada riset kompatibilitas.
@@ -154,7 +169,8 @@ base64 -w0 vitquest-debug.keystore > keystore-base64.txt   # macOS: base64 -i vi
 | Bahasa pemrograman | Kotlin (built-in Kotlin di AGP 9) |
 | UI | Jetpack Compose + Material 3, Navigation Compose (type-safe routes), Material 3 adaptive navigation suite |
 | Arsitektur | MVVM + Repository, Coroutines/Flow, Hilt (KSP) |
-| Data | Room (profil, target, langkah, makanan, resep, berat, air, latihan, kebiasaan), DataStore Preferences (tema, status onboarding, pilihan sumber langkah, versi data awal) |
+| Data | Room (profil, target, langkah, makanan, resep, berat, air, latihan, kebiasaan, ledger XP/RC, hadiah, penukaran, anggaran, pengaturan pengingat), DataStore Preferences (tema, status onboarding, pilihan sumber langkah, versi data awal, anggaran bulanan) |
+| Latar belakang | WorkManager 2.12 (pengingat; satu pekerjaan unik per jenis), notifikasi Android dengan satu channel per jenis pengingat |
 | Data kesehatan | Health Connect client 1.1.0 (hanya baca `StepsRecord`), Android `SensorManager` (`TYPE_STEP_COUNTER`) |
 | Bahasa UI | Per-app language API Android (AppCompat). Pilihan bahasa disimpan oleh sistem/AppCompat, bukan duplikat di DataStore. |
 | Build | Gradle 9.6.1 (wrapper, checksum terverifikasi), AGP 9.4.1, Kotlin 2.4.20, JDK 17+ (CI memakai 21) |
@@ -189,6 +205,7 @@ app/src/androidTest/    # Instrumented test (dijalankan di HP/emulator)
 - Versi 2 (Fase 2): `daily_steps` (satu baris per tanggal dan sumber) dan `step_sensor_state` (checkpoint penghitung langkah HP).
 - Versi 3 (Fase 3): kolom `user_profile.sex` dan `goals.daily_calorie_target`, plus tabel `foods`, `food_servings`, `food_log_entries`, `recipes`, `recipe_ingredients`, `meal_plan_entries`, `shopping_items`, `weight_entries`, `body_measurements`, dan `water_logs`.
 - Versi 4 (Fase 4): tabel `workout_sessions`, `workout_session_exercises` (salinan nama gerakan dan status tiap langkah), `habits`, dan `habit_check_ins`.
+- Versi 5 (Fase 5): `reward_transactions` (ledger, unik per `currency` + `source_key`), `rewards`, `redemptions` (unik per `request_id`), `budget_entries`, `reminder_settings`, dan `reminder_window`.
 - Setiap migrasi diuji dengan membuat database versi lama dari skema JSON yang di-commit, lalu membukanya dengan Room versi terbaru. Room memvalidasi semua tabel setelah migrasi.
 - **Catatan makan menyimpan salinan nama dan gizi** saat dicatat. Mengedit atau menghapus makanan buatan sendiri tidak mengubah catatan hari-hari sebelumnya.
 
@@ -198,6 +215,20 @@ app/src/androidTest/    # Instrumented test (dijalankan di HP/emulator)
 - Pose animasi (`ExercisePoses.kt`) hanya menentukan posisi pinggul/bahu, sudut badan, dan titik tangan/kaki. Siku dan lutut dihitung dengan inverse kinematics dua tulang, sehingga panjang anggota tubuh tetap dan tangan/kaki yang menapak tidak bergeser. `ExercisePosesTest` mengecek jangkauan, panjang tulang, batas frame, dan lantai untuk setiap gerakan.
 - Nilai MET dibulatkan dari Compendium of Physical Activities dan hanya dipakai untuk perkiraan kalori yang diberi label.
 - Generator bersifat deterministik: pengaturan yang sama dengan seed yang sama selalu menghasilkan rencana yang sama, sehingga pemutar bisa membangun ulang rencana dari rutenya.
+
+### XP, Reward Credit, dan ledger
+
+- Aturan perolehan ada di `core/domain/rewards/RewardRules.kt`; `LedgerReconciler` membandingkan aktivitas yang tercatat dengan ledger dan hanya **menambah** baris: `g:<kunci>#n` untuk perolehan dan `r:<kunci>#n` untuk koreksi. Menjalankannya berulang kali tidak menambah apa pun.
+- Aktivitas lebih tua dari 30 hari tidak diberi poin dan tidak dikoreksi, sehingga saldo lama tetap stabil.
+- Jika aktivitas yang memberi credit dihapus setelah credit dipakai, saldo bisa sementara di bawah nol; ini ditampilkan jujur dan pulih dengan aktivitas baru.
+- Penukaran (`RewardDao.redeem`) berjalan dalam satu transaksi Room: cek saldo, simpan penukaran dengan `request_id` unik, lalu tulis baris ledger `redeem:<id>`.
+
+### Pengingat
+
+- Waktu berikutnya dihitung oleh `ReminderPlanner` (murni dan dites: jam aktif yang melewati tengah malam, jam tenang, hari pilihan, dan "lewati sisa hari ini").
+- Setiap jenis pengingat adalah satu pekerjaan WorkManager unik (`reminder-<jenis>`). Setelah berjalan, pekerjaan menjadwalkan berikutnya. Mengubah pengaturan mengganti jadwal; membuka app hanya melengkapi jadwal yang hilang.
+- Saat waktunya tiba, worker mengecek ulang target hari itu (air, langkah, latihan, makanan, atau timbang dalam 6 hari terakhir) dan jam aktif/tenang sebelum menampilkan notifikasi.
+- **Waktu tidak dijamin persis.** VitQuest tidak memakai alarm presisi (`SCHEDULE_EXACT_ALARM`). Doze, penghemat baterai, dan pengaturan HyperOS/MIUI (misalnya Autostart dan pembatasan baterai) bisa menunda atau menahan pengingat.
 
 ### Database makanan dan resep
 
@@ -236,10 +267,11 @@ Untuk menandatangani build lokal dengan keystore bersama: `export VITQUEST_DEBUG
 
 ## Privasi dan data
 
-- **Disimpan lokal di HP:** profil (usia, jenis kelamin opsional, tinggi, berat, pengalaman, aktivitas, lokasi latihan, peralatan, preferensi makanan), target harian (termasuk target kalori), langkah harian per sumber, checkpoint sensor langkah, catatan makan, makanan buatan sendiri dan favorit, rencana menu, daftar belanja, riwayat berat badan, ukuran tubuh, catatan minum, riwayat latihan, kebiasaan dan centangnya, pilihan tema, pilihan sumber langkah, dan status onboarding.
+- **Disimpan lokal di HP:** profil (usia, jenis kelamin opsional, tinggi, berat, pengalaman, aktivitas, lokasi latihan, peralatan, preferensi makanan), target harian (termasuk target kalori), langkah harian per sumber, checkpoint sensor langkah, catatan makan, makanan buatan sendiri dan favorit, rencana menu, daftar belanja, riwayat berat badan, ukuran tubuh, catatan minum, riwayat latihan, kebiasaan dan centangnya, ledger XP/Reward Credit, katalog hadiah, penukaran, catatan anggaran, pengaturan pengingat, pilihan tema, pilihan sumber langkah, dan status onboarding.
 - **Izin yang diminta (hanya jika kamu mengaktifkan sumbernya):**
   - `android.permission.health.READ_STEPS`: membaca total langkah harian dari Health Connect. VitQuest **tidak menulis** apa pun ke Health Connect dan tidak membaca data kesehatan lain.
   - `ACTIVITY_RECOGNITION` (Aktivitas fisik): membaca sensor langkah HP (Android 10+).
+  - `POST_NOTIFICATIONS` (Android 13+): menampilkan pengingat yang kamu aktifkan. Isi notifikasi dibuat di HP dan tidak dikirim ke mana pun.
 - **Tidak ada yang dikirim ke server.** Aplikasi tidak punya akun, analitik, iklan, atau koneksi jaringan untuk data pengguna.
 - **Backup cloud dimatikan** untuk data aplikasi (`allowBackup="false"` dan `data_extraction_rules`). Di Android 12+, transfer langsung ke HP baru (device-to-device) masih diizinkan oleh sistem.
 - Data bisa dilihat dan diubah lewat **Profil** dan tab **Aktivitas**, dan dihapus seluruhnya lewat **Pengaturan → Hapus semua data**. Data yang ada di Health Connect tidak ikut terhapus; kelola data itu di aplikasi Health Connect.
@@ -265,5 +297,7 @@ Untuk menandatangani build lokal dengan keystore bersama: `export VITQUEST_DEBUG
 - Kalori latihan adalah perkiraan kasar (MET), bukan hasil pengukuran. Timer pemutar berjalan selama aplikasi terbuka atau di latar belakang selama proses aplikasi masih hidup; tidak ada notifikasi latihan di latar belakang.
 - Target kebiasaan bawaan (gerak 5, latihan 3, air 5, makanan 5 hari per minggu) belum bisa diubah; kebiasaan pilihan sendiri bisa diatur 1–7 hari.
 - Pencapaian dihitung dari data yang tersimpan. Pencapaian target langkah dan air memakai target yang berlaku sekarang.
-- Fase berikutnya (notifikasi, sensor langkah) akan terpengaruh pembatasan baterai HyperOS/MIUI. Ini akan didokumentasikan dan diuji di perangkat saat fitur tersebut dibuat.
+- **Pengingat belum diuji di HP sungguhan.** Penjadwalan dites di Robolectric dengan WorkManager test helper, tetapi perilaku Doze dan penghemat baterai HyperOS/MIUI hanya bisa dipastikan di perangkat. Di HyperOS, mungkin perlu mengizinkan Autostart dan "Tanpa batasan" pada baterai agar pengingat tepat waktu.
+- Pengingat tidak punya tombol aksi di notifikasi (misalnya "+250 ml"); mengetuk notifikasi membuka app.
+- Reward Credit dan anggaran rupiah tidak terhubung ke pembayaran apa pun. Harga hadiah adalah angka yang kamu isi sendiri.
 - Build rilis bertanda tangan (release signing) adalah tugas terpisah dan belum dikonfigurasi.

@@ -28,6 +28,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.ui.res.pluralStringResource
+import io.github.vitoosh.vitquest.feature.rewards.creditsText
 import io.github.vitoosh.vitquest.feature.workouts.minutesText
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -45,9 +46,7 @@ import io.github.vitoosh.vitquest.R
 import io.github.vitoosh.vitquest.core.designsystem.component.CenteredContent
 import io.github.vitoosh.vitquest.core.designsystem.component.DataSourceKind
 import io.github.vitoosh.vitquest.core.designsystem.component.DataSourceTag
-import io.github.vitoosh.vitquest.core.designsystem.component.FeaturePreviewRow
 import io.github.vitoosh.vitquest.core.designsystem.component.IconBubble
-import io.github.vitoosh.vitquest.core.designsystem.component.SectionHeader
 import io.github.vitoosh.vitquest.core.designsystem.component.VqTopAppBar
 import io.github.vitoosh.vitquest.core.designsystem.icon.VqIcons
 import io.github.vitoosh.vitquest.core.designsystem.theme.VqSpacing
@@ -76,6 +75,7 @@ data class HomeActions(
     val openWorkouts: () -> Unit = {},
     val openHabits: () -> Unit = {},
     val openProgress: () -> Unit = {},
+    val openRewards: () -> Unit = {},
 )
 
 @Composable
@@ -141,7 +141,7 @@ private fun HomeContent(state: HomeUiState.Ready, actions: HomeActions, onAddWat
         item { WorkoutCard(state = state, onOpen = actions.openWorkouts) }
         item { HabitsCard(state = state, onOpenHabits = actions.openHabits, onOpenProgress = actions.openProgress) }
         item { WeightCard(state = state, onOpen = actions.openWeight) }
-        item { ComingSoonCard() }
+        item { RewardsCard(state = state, onOpen = actions.openRewards) }
         item {
             Text(
                 text = stringResource(R.string.home_local_data_note),
@@ -396,23 +396,18 @@ private fun HintText(text: String) {
 }
 
 @Composable
-private fun ComingSoonCard() {
-    Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
-        Column(modifier = Modifier.padding(VqSpacing.lg)) {
-            SectionHeader(stringResource(R.string.home_coming_soon_title))
+private fun RewardsCard(state: HomeUiState.Ready, onOpen: () -> Unit) {
+    val level = state.level
+    HomeCard(icon = VqIcons.Trophy, title = stringResource(R.string.home_rewards_title), onClick = onOpen) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
-                text = stringResource(R.string.home_coming_soon_description),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(top = VqSpacing.xs, bottom = VqSpacing.sm),
+                text = stringResource(R.string.rewards_level, formatInteger(level.level)),
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.weight(1f),
             )
-            FeaturePreviewRow(
-                icon = VqIcons.Trophy,
-                title = stringResource(R.string.feature_rewards_title),
-                description = stringResource(R.string.feature_rewards_summary),
-                // The card title already says this is coming soon.
-                trailing = null,
-            )
+            Text(creditsText(state.credits), style = MaterialTheme.typography.titleLarge)
         }
+        LinearProgressIndicator(progress = { level.fraction }, modifier = Modifier.fillMaxWidth())
+        HintText(stringResource(R.string.rewards_level_progress, formatInteger(level.xpIntoLevel), formatInteger(level.xpForNext), formatInteger(level.level + 1)))
     }
 }

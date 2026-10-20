@@ -19,6 +19,14 @@ import io.github.vitoosh.vitquest.core.data.local.FoodDao
 import io.github.vitoosh.vitquest.core.data.local.RecipeDao
 import io.github.vitoosh.vitquest.core.data.local.BodyDao
 import io.github.vitoosh.vitquest.core.data.local.HabitDao
+import io.github.vitoosh.vitquest.core.data.local.ReminderDao
+import io.github.vitoosh.vitquest.core.data.local.RewardDao
+import io.github.vitoosh.vitquest.core.data.repository.OfflineReminderRepository
+import io.github.vitoosh.vitquest.core.data.repository.OfflineRewardRepository
+import io.github.vitoosh.vitquest.core.data.repository.ReminderRepository
+import io.github.vitoosh.vitquest.core.data.repository.ReminderScheduler
+import io.github.vitoosh.vitquest.core.data.repository.RewardRepository
+import io.github.vitoosh.vitquest.core.reminders.WorkManagerReminderScheduler
 import io.github.vitoosh.vitquest.core.data.local.WorkoutDao
 import io.github.vitoosh.vitquest.core.data.repository.HabitRepository
 import io.github.vitoosh.vitquest.core.data.repository.OfflineHabitRepository
@@ -81,6 +89,12 @@ object DataProvidersModule {
     fun provideHabitDao(database: VitQuestDatabase): HabitDao = database.habitDao()
 
     @Provides
+    fun provideRewardDao(database: VitQuestDatabase): RewardDao = database.rewardDao()
+
+    @Provides
+    fun provideReminderDao(database: VitQuestDatabase): ReminderDao = database.reminderDao()
+
+    @Provides
     @Singleton
     fun providePreferencesDataStore(@ApplicationContext context: Context): DataStore<Preferences> =
         PreferenceDataStoreFactory.create(
@@ -132,4 +146,13 @@ abstract class DataBindingsModule {
 
     @Binds
     abstract fun bindHabitRepository(impl: OfflineHabitRepository): HabitRepository
+
+    @Binds
+    abstract fun bindRewardRepository(impl: OfflineRewardRepository): RewardRepository
+
+    @Binds
+    abstract fun bindReminderRepository(impl: OfflineReminderRepository): ReminderRepository
+
+    @Binds
+    abstract fun bindReminderScheduler(impl: WorkManagerReminderScheduler): ReminderScheduler
 }

@@ -6,6 +6,8 @@ import dagger.hilt.android.HiltAndroidApp
 import io.github.vitoosh.vitquest.core.data.repository.StepSensorTracker
 import io.github.vitoosh.vitquest.core.data.seed.SeedDataLoader
 import io.github.vitoosh.vitquest.core.di.ApplicationScope
+import io.github.vitoosh.vitquest.core.reminders.ReminderNotifications
+import io.github.vitoosh.vitquest.core.reminders.WorkManagerReminderScheduler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -20,6 +22,9 @@ class VitQuestApplication : Application() {
     lateinit var seedDataLoader: SeedDataLoader
 
     @Inject
+    lateinit var reminderScheduler: WorkManagerReminderScheduler
+
+    @Inject
     @ApplicationScope
     lateinit var applicationScope: CoroutineScope
 
@@ -29,5 +34,8 @@ class VitQuestApplication : Application() {
         ProcessLifecycleOwner.get().lifecycle.addObserver(stepSensorTracker)
         // Loads or updates the bundled food and recipe database; a no-op once current.
         applicationScope.launch { seedDataLoader.ensureLoaded() }
+        // Channels are recreated each start so their names follow the current language.
+        ReminderNotifications.createChannels(this)
+        applicationScope.launch { reminderScheduler.ensureScheduled() }
     }
 }

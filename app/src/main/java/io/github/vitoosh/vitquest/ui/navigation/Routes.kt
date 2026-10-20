@@ -53,6 +53,8 @@ data class WorkoutPlayerRoute(
 
 @Serializable data object ProgressRoute
 
+@Serializable data object RemindersRoute
+
 /** The five bottom-navigation destinations. */
 enum class TopLevelDestination(
     val route: Any,

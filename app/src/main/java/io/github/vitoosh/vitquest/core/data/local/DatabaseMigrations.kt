@@ -79,5 +79,26 @@ object DatabaseMigrations {
         }
     }
 
-    val ALL: Array<Migration> = arrayOf(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
+    /** v5 (Phase 5): XP and Reward Credit ledger, rewards, redemptions, real-money budget and reminder settings. */
+    val MIGRATION_4_5 = object : Migration(4, 5) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            listOf(
+                "CREATE TABLE IF NOT EXISTS `reward_transactions` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `currency` TEXT NOT NULL, `amount` INTEGER NOT NULL, `reason` TEXT NOT NULL, `source_key` TEXT NOT NULL, `date` TEXT NOT NULL, `created_at_epoch_ms` INTEGER NOT NULL)",
+                "CREATE UNIQUE INDEX IF NOT EXISTS `index_reward_transactions_currency_source_key` ON `reward_transactions` (`currency`, `source_key`)",
+                "CREATE INDEX IF NOT EXISTS `index_reward_transactions_date` ON `reward_transactions` (`date`)",
+                "CREATE TABLE IF NOT EXISTS `rewards` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `seed_key` TEXT, `name` TEXT NOT NULL, `description` TEXT, `type` TEXT NOT NULL, `credit_cost` INTEGER NOT NULL, `price_rupiah` INTEGER, `wishlist` INTEGER NOT NULL, `created_at_epoch_ms` INTEGER NOT NULL)",
+                "CREATE UNIQUE INDEX IF NOT EXISTS `index_rewards_seed_key` ON `rewards` (`seed_key`)",
+                "CREATE TABLE IF NOT EXISTS `redemptions` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `request_id` TEXT NOT NULL, `reward_id` INTEGER, `reward_name` TEXT NOT NULL, `credit_cost` INTEGER NOT NULL, `redeemed_at_epoch_ms` INTEGER NOT NULL, `date` TEXT NOT NULL, `status` TEXT NOT NULL, FOREIGN KEY(`reward_id`) REFERENCES `rewards`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL )",
+                "CREATE UNIQUE INDEX IF NOT EXISTS `index_redemptions_request_id` ON `redemptions` (`request_id`)",
+                "CREATE INDEX IF NOT EXISTS `index_redemptions_reward_id` ON `redemptions` (`reward_id`)",
+                "CREATE TABLE IF NOT EXISTS `budget_entries` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `date` TEXT NOT NULL, `kind` TEXT NOT NULL, `amount_rupiah` INTEGER NOT NULL, `reward_id` INTEGER, `note` TEXT, `created_at_epoch_ms` INTEGER NOT NULL, FOREIGN KEY(`reward_id`) REFERENCES `rewards`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL )",
+                "CREATE INDEX IF NOT EXISTS `index_budget_entries_date` ON `budget_entries` (`date`)",
+                "CREATE INDEX IF NOT EXISTS `index_budget_entries_reward_id` ON `budget_entries` (`reward_id`)",
+                "CREATE TABLE IF NOT EXISTS `reminder_settings` (`type` TEXT NOT NULL, `enabled` INTEGER NOT NULL, `interval_minutes` INTEGER, `time_minutes` INTEGER, `days` TEXT NOT NULL, PRIMARY KEY(`type`))",
+                "CREATE TABLE IF NOT EXISTS `reminder_window` (`id` INTEGER NOT NULL, `active_start` INTEGER, `active_end` INTEGER, `quiet_start` INTEGER, `quiet_end` INTEGER, PRIMARY KEY(`id`))",
+            ).forEach(db::execSQL)
+        }
+    }
+
+    val ALL: Array<Migration> = arrayOf(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
 }
