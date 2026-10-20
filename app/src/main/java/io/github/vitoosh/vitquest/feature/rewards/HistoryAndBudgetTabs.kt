@@ -39,27 +39,25 @@ import io.github.vitoosh.vitquest.core.designsystem.component.CenteredContent
 import io.github.vitoosh.vitquest.core.designsystem.component.DataSourceKind
 import io.github.vitoosh.vitquest.core.designsystem.component.DataSourceTag
 import io.github.vitoosh.vitquest.core.designsystem.component.SectionHeader
-import io.github.vitoosh.vitquest.core.designsystem.component.VqBadge
 import io.github.vitoosh.vitquest.core.designsystem.theme.VqSpacing
 import io.github.vitoosh.vitquest.core.domain.FieldError
 import io.github.vitoosh.vitquest.core.model.BudgetEntryKind
-import io.github.vitoosh.vitquest.core.model.Redemption
-import io.github.vitoosh.vitquest.core.model.RedemptionStatus
+import io.github.vitoosh.vitquest.core.model.ObtainedReward
 import io.github.vitoosh.vitquest.core.ui.dayLabel
 
 private const val LEDGER_LIMIT = 100
 
 @Composable
 fun RewardHistoryTab(state: RewardsUiState, actions: RewardActions) {
-    var cancelling by rememberSaveable { mutableStateOf<Long?>(null) }
+    var undoing by rememberSaveable { mutableStateOf<Long?>(null) }
     CenteredContent {
         LazyColumn(contentPadding = PaddingValues(VqSpacing.lg), verticalArrangement = Arrangement.spacedBy(VqSpacing.sm)) {
-            item { SectionHeader(stringResource(R.string.rewards_redemptions)) }
-            if (state.redemptions.isEmpty()) {
-                item { Text(stringResource(R.string.rewards_no_redemptions), style = MaterialTheme.typography.bodyMedium) }
+            item { SectionHeader(stringResource(R.string.rewards_obtained_title)) }
+            if (state.history.isEmpty()) {
+                item { Text(stringResource(R.string.rewards_no_obtained), style = MaterialTheme.typography.bodyMedium) }
             }
-            items(state.redemptions, key = { "r-${it.id}" }) { redemption ->
-                RedemptionRow(redemption, state, onCancel = { cancelling = redemption.id })
+            items(state.history, key = { "o-${it.id}" }) { entry ->
+                ObtainedRow(entry, state, onUndo = { undoing = entry.id })
             }
             item { SectionHeader(stringResource(R.string.rewards_ledger), modifier = Modifier.padding(top = VqSpacing.md)) }
             item {
@@ -75,40 +73,38 @@ fun RewardHistoryTab(state: RewardsUiState, actions: RewardActions) {
             items(state.transactions.take(LEDGER_LIMIT), key = { "t-${it.id}" }) { TransactionRow(it, state.today) }
         }
     }
-    cancelling?.let { id ->
-        val redemption = state.redemptions.firstOrNull { it.id == id }
+    undoing?.let { id ->
+        val entry = state.history.firstOrNull { it.id == id }
         AlertDialog(
-            onDismissRequest = { cancelling = null },
-            title = { Text(stringResource(R.string.rewards_cancel_title)) },
-            text = { Text(stringResource(R.string.rewards_cancel_message, creditsText(redemption?.creditCost ?: 0))) },
+            onDismissRequest = { undoing = null },
+            title = { Text(stringResource(R.string.rewards_undo_title)) },
+            text = { Text(stringResource(R.string.rewards_undo_message)) },
             confirmButton = {
                 TextButton(onClick = {
-                    redemption?.let(actions.cancelRedemption)
-                    cancelling = null
-                }) { Text(stringResource(R.string.rewards_cancel_confirm)) }
+                    entry?.let(actions.undoObtained)
+                    undoing = null
+                }) { Text(stringResource(R.string.rewards_undo_obtained)) }
             },
-            dismissButton = { TextButton(onClick = { cancelling = null }) { Text(stringResource(R.string.action_cancel)) } },
+            dismissButton = { TextButton(onClick = { undoing = null }) { Text(stringResource(R.string.action_cancel)) } },
         )
     }
 }
 
 @Composable
-private fun RedemptionRow(redemption: Redemption, state: RewardsUiState, onCancel: () -> Unit) {
+private fun ObtainedRow(entry: ObtainedReward, state: RewardsUiState, onUndo: () -> Unit) {
     Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
         Row(Modifier.padding(VqSpacing.md), verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(VqSpacing.xs)) {
-                Text(redemption.rewardName, style = MaterialTheme.typography.titleMedium)
+                Text(entry.rewardName, style = MaterialTheme.typography.titleMedium)
                 Text(
-                    text = dayLabel(redemption.date, state.today) + " · −" + creditsText(redemption.creditCost),
+                    text = listOfNotNull(
+                        dayLabel(entry.date, state.today),
+                        entry.pricePaidRupiah?.let { stringResource(R.string.rewards_paid, rupiahText(it)) },
+                    ).joinToString(" · "),
                     style = MaterialTheme.typography.bodySmall,
                 )
-                if (redemption.status == RedemptionStatus.CANCELLED) {
-                    VqBadge(stringResource(R.string.rewards_status_cancelled), MaterialTheme.colorScheme.surfaceContainerHighest, MaterialTheme.colorScheme.onSurface)
-                }
             }
-            if (redemption.status == RedemptionStatus.REDEEMED) {
-                TextButton(onClick = onCancel) { Text(stringResource(R.string.rewards_cancel_redemption)) }
-            }
+            TextButton(onClick = onUndo) { Text(stringResource(R.string.rewards_undo_obtained)) }
         }
     }
 }

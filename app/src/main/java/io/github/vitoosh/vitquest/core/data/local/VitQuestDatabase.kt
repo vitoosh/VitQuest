@@ -25,7 +25,7 @@ import androidx.room.RoomDatabase
         HabitCheckInEntity::class,
         RewardTransactionEntity::class,
         RewardEntity::class,
-        RedemptionEntity::class,
+        RewardHistoryEntity::class,
         BudgetEntryEntity::class,
         ReminderSettingEntity::class,
         ReminderWindowEntity::class,
@@ -54,6 +54,6 @@ abstract class VitQuestDatabase : RoomDatabase() {
 
     companion object {
         const val NAME = "vitquest.db"
-        const val VERSION = 5
+        const val VERSION = 6
     }
 }

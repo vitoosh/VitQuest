@@ -1,7 +1,7 @@
 package io.github.vitoosh.vitquest.core.data.repository
 
 import io.github.vitoosh.vitquest.core.data.local.BudgetEntryEntity
-import io.github.vitoosh.vitquest.core.data.local.RedeemOutcome
+import io.github.vitoosh.vitquest.core.data.local.ObtainOutcome
 import io.github.vitoosh.vitquest.core.data.local.RewardDao
 import io.github.vitoosh.vitquest.core.data.local.RewardEntity
 import io.github.vitoosh.vitquest.core.data.local.toEntity
@@ -13,9 +13,8 @@ import io.github.vitoosh.vitquest.core.domain.rewards.LedgerReconciler
 import io.github.vitoosh.vitquest.core.domain.rewards.RewardRules
 import io.github.vitoosh.vitquest.core.model.BudgetEntry
 import io.github.vitoosh.vitquest.core.model.BudgetEntryKind
-import io.github.vitoosh.vitquest.core.model.Redemption
+import io.github.vitoosh.vitquest.core.model.ObtainedReward
 import io.github.vitoosh.vitquest.core.model.Reward
-import io.github.vitoosh.vitquest.core.model.RewardCurrency
 import io.github.vitoosh.vitquest.core.model.RewardTransaction
 import io.github.vitoosh.vitquest.core.model.RewardType
 import io.github.vitoosh.vitquest.core.time.TimeSource
@@ -32,7 +31,6 @@ data class RewardInput(
     val name: String,
     val description: String?,
     val type: RewardType,
-    val creditCost: Int,
     val priceRupiah: Long?,
 )
 
@@ -46,7 +44,6 @@ data class BudgetEntryInput(
 
 interface RewardRepository {
     val xp: Flow<Int>
-    val credits: Flow<Int>
     fun transactions(): Flow<List<RewardTransaction>>
 
     /** Brings the ledger up to date with the stored records. Safe to call any number of times. */
@@ -57,11 +54,16 @@ interface RewardRepository {
     suspend fun setWishlist(id: Long, wishlist: Boolean)
     suspend fun deleteReward(id: Long)
 
-    fun redemptions(): Flow<List<Redemption>>
+    /** Rewards the user actually got, newest first. */
+    fun history(): Flow<List<ObtainedReward>>
 
-    /** [requestId] identifies one confirmation; repeating it never charges twice. */
-    suspend fun redeem(requestId: String, rewardId: Long): RedeemOutcome
-    suspend fun cancelRedemption(id: Long): Boolean
+    /**
+     * Records that the user got [rewardId] in real life. [requestId] identifies one
+     * confirmation, so repeating it never records (or spends) twice. A [pricePaidRupiah]
+     * also adds a spending entry to the budget.
+     */
+    suspend fun markObtained(requestId: String, rewardId: Long, pricePaidRupiah: Long?): ObtainOutcome
+    suspend fun undoObtained(id: Long): Boolean
 
     fun budgetEntries(): Flow<List<BudgetEntry>>
     suspend fun addBudgetEntry(input: BudgetEntryInput)
@@ -83,8 +85,7 @@ class OfflineRewardRepository @Inject constructor(
 
     private val syncMutex = Mutex()
 
-    override val xp: Flow<Int> = rewardDao.observeBalance(RewardCurrency.XP.name)
-    override val credits: Flow<Int> = rewardDao.observeBalance(RewardCurrency.CREDIT.name)
+    override val xp: Flow<Int> = rewardDao.observeXp()
 
     override fun transactions(): Flow<List<RewardTransaction>> =
         rewardDao.observeTransactions().map { rows -> rows.mapNotNull { it.toModel() } }
@@ -122,7 +123,6 @@ class OfflineRewardRepository @Inject constructor(
             name = input.name.trim(),
             description = input.description?.trim()?.takeIf { it.isNotEmpty() },
             type = input.type.name,
-            creditCost = input.creditCost,
             priceRupiah = input.priceRupiah,
             wishlist = existing?.wishlist ?: false,
             createdAtEpochMs = existing?.createdAtEpochMs ?: timeSource.now().toEpochMilli(),
@@ -132,19 +132,15 @@ class OfflineRewardRepository @Inject constructor(
 
     override suspend fun setWishlist(id: Long, wishlist: Boolean) = rewardDao.setWishlist(id, wishlist)
 
-    // Past redemptions keep their name snapshot; budget entries just lose the link.
+    // History keeps its name snapshot; budget entries just lose the link.
     override suspend fun deleteReward(id: Long) = rewardDao.deleteReward(id)
 
-    override fun redemptions(): Flow<List<Redemption>> = rewardDao.observeRedemptions().map { rows -> rows.map { it.toModel() } }
+    override fun history(): Flow<List<ObtainedReward>> = rewardDao.observeHistory().map { rows -> rows.map { it.toModel() } }
 
-    override suspend fun redeem(requestId: String, rewardId: Long): RedeemOutcome {
-        // Earnings first, so the balance check sees everything the user has done.
-        sync()
-        return rewardDao.redeem(requestId, rewardId, timeSource.today().toString(), timeSource.now().toEpochMilli())
-    }
+    override suspend fun markObtained(requestId: String, rewardId: Long, pricePaidRupiah: Long?): ObtainOutcome =
+        rewardDao.markObtained(requestId, rewardId, pricePaidRupiah, timeSource.today().toString(), timeSource.now().toEpochMilli())
 
-    override suspend fun cancelRedemption(id: Long): Boolean =
-        rewardDao.cancelRedemption(id, timeSource.today().toString(), timeSource.now().toEpochMilli())
+    override suspend fun undoObtained(id: Long): Boolean = rewardDao.undoObtained(id)
 
     override fun budgetEntries(): Flow<List<BudgetEntry>> = rewardDao.observeBudgetEntries().map { rows -> rows.map { it.toModel() } }
 

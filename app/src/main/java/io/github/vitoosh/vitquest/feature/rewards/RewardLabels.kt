@@ -22,8 +22,6 @@ val RewardReason.labelRes: Int
         RewardReason.WEIGHT_LOG -> R.string.reward_reason_weight_log
         RewardReason.HABIT_CHECK_IN -> R.string.reward_reason_habit_check_in
         RewardReason.ACHIEVEMENT -> R.string.reward_reason_achievement
-        RewardReason.REDEMPTION -> R.string.reward_reason_redemption
-        RewardReason.REDEMPTION_CANCELLED -> R.string.reward_reason_redemption_cancelled
     }
 
 /** When and how often a rule pays out. */
@@ -48,22 +46,10 @@ val RewardType.labelRes: Int
 
 @Composable
 @ReadOnlyComposable
-fun creditsText(amount: Int): String = stringResource(R.string.value_credits, formatInteger(amount))
-
-@Composable
-@ReadOnlyComposable
 fun xpText(amount: Int): String = stringResource(R.string.value_xp, formatInteger(amount))
 
-/** Real money, always with the currency so it is never confused with credits. */
+/** Real money, always with the currency so it is never confused with XP. */
 @Composable
 @ReadOnlyComposable
 fun rupiahText(amount: Long): String =
     stringResource(R.string.value_rupiah, NumberFormat.getIntegerInstance(currentLocale()).format(amount))
-
-/** "+50 XP · +5 RC" for a rule, leaving out a currency it does not pay. */
-@Composable
-@ReadOnlyComposable
-fun ruleRewardText(rule: RewardRule): String = listOfNotNull(
-    rule.xp.takeIf { it > 0 }?.let { "+" + xpText(it) },
-    rule.credits.takeIf { it > 0 }?.let { "+" + creditsText(it) },
-).joinToString(" · ")

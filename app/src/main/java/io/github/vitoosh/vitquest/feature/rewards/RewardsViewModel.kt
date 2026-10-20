@@ -3,7 +3,7 @@ package io.github.vitoosh.vitquest.feature.rewards
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.github.vitoosh.vitquest.core.data.local.RedeemOutcome
+import io.github.vitoosh.vitquest.core.data.local.ObtainOutcome
 import io.github.vitoosh.vitquest.core.data.repository.BudgetEntryInput
 import io.github.vitoosh.vitquest.core.data.repository.RewardInput
 import io.github.vitoosh.vitquest.core.data.repository.RewardRepository
@@ -12,7 +12,7 @@ import io.github.vitoosh.vitquest.core.domain.rewards.LevelProgress
 import io.github.vitoosh.vitquest.core.domain.rewards.Leveling
 import io.github.vitoosh.vitquest.core.model.BudgetEntry
 import io.github.vitoosh.vitquest.core.model.BudgetEntryKind
-import io.github.vitoosh.vitquest.core.model.Redemption
+import io.github.vitoosh.vitquest.core.model.ObtainedReward
 import io.github.vitoosh.vitquest.core.model.Reward
 import io.github.vitoosh.vitquest.core.model.RewardTransaction
 import io.github.vitoosh.vitquest.core.model.RewardType
@@ -30,10 +30,9 @@ import kotlinx.coroutines.launch
 data class RewardsUiState(
     val today: LocalDate,
     val level: LevelProgress,
-    val credits: Int,
     val transactions: List<RewardTransaction>,
     val rewards: List<Reward>,
-    val redemptions: List<Redemption>,
+    val history: List<ObtainedReward>,
     val budgetEntries: List<BudgetEntry>,
     val monthlyBudget: Long?,
 ) {
@@ -44,14 +43,16 @@ data class RewardsUiState(
 
     fun savedFor(rewardId: Long): Long = budgetEntries.filter { it.rewardId == rewardId }
         .sumOf { if (it.kind == BudgetEntryKind.SAVING) it.amountRupiah else 0L }
+
+    fun timesObtained(rewardId: Long): Int = history.count { it.rewardId == rewardId }
 }
 
-enum class RewardMessage { REDEEMED, ALREADY_REDEEMED, NOT_ENOUGH_CREDITS, REWARD_MISSING, CANCELLED }
+enum class RewardMessage { OBTAINED, ALREADY_OBTAINED, REWARD_MISSING, UNDONE }
 
-data class RewardForm(val name: String, val description: String, val type: RewardType, val cost: String, val price: String)
+data class RewardForm(val name: String, val description: String, val type: RewardType, val price: String)
 
-data class RewardFormErrors(val name: FieldError? = null, val cost: FieldError? = null, val price: FieldError? = null) {
-    val isEmpty: Boolean get() = name == null && cost == null && price == null
+data class RewardFormErrors(val name: FieldError? = null, val price: FieldError? = null) {
+    val isEmpty: Boolean get() = name == null && price == null
 }
 
 @HiltViewModel
@@ -64,18 +65,16 @@ class RewardsViewModel @Inject constructor(
     private val _message = MutableStateFlow<RewardMessage?>(null)
     val message: StateFlow<RewardMessage?> = _message.asStateFlow()
 
-    private val ledger = combine(repository.xp, repository.credits, repository.transactions()) { xp, credits, transactions ->
-        Triple(xp, credits, transactions)
-    }
+    private val ledger = combine(repository.xp, repository.transactions()) { xp, transactions -> xp to transactions }
 
     val uiState: StateFlow<RewardsUiState?> = combine(
         ledger,
         repository.rewards(),
-        repository.redemptions(),
+        repository.history(),
         combine(repository.budgetEntries(), repository.monthlyBudget) { entries, budget -> entries to budget },
         today,
-    ) { (xp, credits, transactions), rewards, redemptions, (entries, budget), date ->
-        RewardsUiState(date, Leveling.progress(xp), credits, transactions, rewards, redemptions, entries, budget)
+    ) { (xp, transactions), rewards, history, (entries, budget), date ->
+        RewardsUiState(date, Leveling.progress(xp), transactions, rewards, history, entries, budget)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
     /** Picks up anything earned since the last visit. */
@@ -89,16 +88,14 @@ class RewardsViewModel @Inject constructor(
     }
 
     fun saveReward(id: Long?, form: RewardForm): RewardFormErrors {
-        val cost = RupiahInput.parseCount(form.cost, COST_RANGE)
         val price: Result<Long?> = if (form.price.isBlank()) Result.success(null) else RupiahInput.parse(form.price)
         val errors = RewardFormErrors(
             name = if (form.name.isBlank()) FieldError.REQUIRED else null,
-            cost = cost.exceptionOrNull()?.let { it as? FieldException }?.error,
             price = price.exceptionOrNull()?.let { it as? FieldException }?.error,
         )
         if (!errors.isEmpty) return errors
         viewModelScope.launch {
-            repository.saveReward(id, RewardInput(form.name, form.description, form.type, cost.getOrThrow(), price.getOrThrow()))
+            repository.saveReward(id, RewardInput(form.name, form.description, form.type, price.getOrThrow()))
         }
         return errors
     }
@@ -111,19 +108,22 @@ class RewardsViewModel @Inject constructor(
         viewModelScope.launch { repository.deleteReward(reward.id) }
     }
 
-    fun redeem(requestId: String, reward: Reward) {
+    /** Blank [pricePaid] records the reward without any spending. */
+    fun markObtained(requestId: String, reward: Reward, pricePaid: String): FieldError? {
+        val price: Result<Long?> = if (pricePaid.isBlank()) Result.success(null) else RupiahInput.parse(pricePaid)
+        price.exceptionOrNull()?.let { return (it as? FieldException)?.error ?: FieldError.INVALID_NUMBER }
         viewModelScope.launch {
-            _message.value = when (repository.redeem(requestId, reward.id)) {
-                is RedeemOutcome.Redeemed -> RewardMessage.REDEEMED
-                is RedeemOutcome.AlreadyRedeemed -> RewardMessage.ALREADY_REDEEMED
-                is RedeemOutcome.NotEnoughCredits -> RewardMessage.NOT_ENOUGH_CREDITS
-                RedeemOutcome.RewardMissing -> RewardMessage.REWARD_MISSING
+            _message.value = when (repository.markObtained(requestId, reward.id, price.getOrThrow())) {
+                is ObtainOutcome.Recorded -> RewardMessage.OBTAINED
+                is ObtainOutcome.AlreadyRecorded -> RewardMessage.ALREADY_OBTAINED
+                ObtainOutcome.RewardMissing -> RewardMessage.REWARD_MISSING
             }
         }
+        return null
     }
 
-    fun cancelRedemption(redemption: Redemption) {
-        viewModelScope.launch { if (repository.cancelRedemption(redemption.id)) _message.value = RewardMessage.CANCELLED }
+    fun undoObtained(entry: ObtainedReward) {
+        viewModelScope.launch { if (repository.undoObtained(entry.id)) _message.value = RewardMessage.UNDONE }
     }
 
     fun addBudgetEntry(kind: BudgetEntryKind, amount: String, rewardId: Long?, note: String): FieldError? {
@@ -150,10 +150,6 @@ class RewardsViewModel @Inject constructor(
         viewModelScope.launch { repository.setMonthlyBudget(parsed.getOrThrow()) }
         return null
     }
-
-    private companion object {
-        val COST_RANGE = 1..100_000
-    }
 }
 
 class FieldException(val error: FieldError) : Exception()
@@ -168,12 +164,5 @@ object RupiahInput {
         if (!trimmed.matches(Regex("[0-9][0-9., ]*"))) return Result.failure(FieldException(FieldError.INVALID_NUMBER))
         val value = trimmed.filter(Char::isDigit).toLongOrNull() ?: return Result.failure(FieldException(FieldError.OUT_OF_RANGE))
         return if (value in RANGE) Result.success(value) else Result.failure(FieldException(FieldError.OUT_OF_RANGE))
-    }
-
-    fun parseCount(input: String, range: IntRange): Result<Int> {
-        val trimmed = input.trim()
-        if (trimmed.isEmpty()) return Result.failure(FieldException(FieldError.REQUIRED))
-        val value = trimmed.toIntOrNull() ?: return Result.failure(FieldException(FieldError.INVALID_NUMBER))
-        return if (value in range) Result.success(value) else Result.failure(FieldException(FieldError.OUT_OF_RANGE))
     }
 }

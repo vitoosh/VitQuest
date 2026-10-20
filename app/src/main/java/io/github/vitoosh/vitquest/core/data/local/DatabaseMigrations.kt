@@ -79,7 +79,7 @@ object DatabaseMigrations {
         }
     }
 
-    /** v5 (Phase 5): XP and Reward Credit ledger, rewards, redemptions, real-money budget and reminder settings. */
+    /** v5 (Phase 5): XP and Reward Credit ledger (credits removed in v6), rewards, redemptions, real-money budget and reminder settings. */
     val MIGRATION_4_5 = object : Migration(4, 5) {
         override fun migrate(db: SupportSQLiteDatabase) {
             listOf(
@@ -100,5 +100,36 @@ object DatabaseMigrations {
         }
     }
 
-    val ALL: Array<Migration> = arrayOf(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
+    /**
+     * v6: Reward Credits removed. Credit lines are dropped, rewards move to `reward_items`
+     * without a credit cost, and redemptions that were not cancelled become history.
+     * Children are rebuilt before `rewards` is dropped so no foreign key is broken.
+     */
+    val MIGRATION_5_6 = object : Migration(5, 6) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            listOf(
+                "DELETE FROM `reward_transactions` WHERE `currency` = 'CREDIT'",
+                "CREATE TABLE IF NOT EXISTS `reward_items` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `seed_key` TEXT, `name` TEXT NOT NULL, `description` TEXT, `type` TEXT NOT NULL, `price_rupiah` INTEGER, `wishlist` INTEGER NOT NULL, `created_at_epoch_ms` INTEGER NOT NULL)",
+                "CREATE UNIQUE INDEX IF NOT EXISTS `index_reward_items_seed_key` ON `reward_items` (`seed_key`)",
+                "INSERT INTO `reward_items` (`id`, `seed_key`, `name`, `description`, `type`, `price_rupiah`, `wishlist`, `created_at_epoch_ms`) " +
+                    "SELECT `id`, `seed_key`, `name`, `description`, `type`, `price_rupiah`, `wishlist`, `created_at_epoch_ms` FROM `rewards`",
+                "CREATE TABLE IF NOT EXISTS `reward_history` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `request_id` TEXT NOT NULL, `reward_id` INTEGER, `reward_name` TEXT NOT NULL, `price_paid_rupiah` INTEGER, `budget_entry_id` INTEGER, `obtained_at_epoch_ms` INTEGER NOT NULL, `date` TEXT NOT NULL, FOREIGN KEY(`reward_id`) REFERENCES `reward_items`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL )",
+                "CREATE UNIQUE INDEX IF NOT EXISTS `index_reward_history_request_id` ON `reward_history` (`request_id`)",
+                "CREATE INDEX IF NOT EXISTS `index_reward_history_reward_id` ON `reward_history` (`reward_id`)",
+                "INSERT INTO `reward_history` (`request_id`, `reward_id`, `reward_name`, `price_paid_rupiah`, `budget_entry_id`, `obtained_at_epoch_ms`, `date`) " +
+                    "SELECT `request_id`, `reward_id`, `reward_name`, NULL, NULL, `redeemed_at_epoch_ms`, `date` FROM `redemptions` WHERE `status` = 'REDEEMED'",
+                "CREATE TABLE IF NOT EXISTS `budget_entries_v6` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `date` TEXT NOT NULL, `kind` TEXT NOT NULL, `amount_rupiah` INTEGER NOT NULL, `reward_id` INTEGER, `note` TEXT, `created_at_epoch_ms` INTEGER NOT NULL, FOREIGN KEY(`reward_id`) REFERENCES `reward_items`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL )",
+                "INSERT INTO `budget_entries_v6` (`id`, `date`, `kind`, `amount_rupiah`, `reward_id`, `note`, `created_at_epoch_ms`) " +
+                    "SELECT `id`, `date`, `kind`, `amount_rupiah`, `reward_id`, `note`, `created_at_epoch_ms` FROM `budget_entries`",
+                "DROP TABLE `budget_entries`",
+                "ALTER TABLE `budget_entries_v6` RENAME TO `budget_entries`",
+                "CREATE INDEX IF NOT EXISTS `index_budget_entries_date` ON `budget_entries` (`date`)",
+                "CREATE INDEX IF NOT EXISTS `index_budget_entries_reward_id` ON `budget_entries` (`reward_id`)",
+                "DROP TABLE `redemptions`",
+                "DROP TABLE `rewards`",
+            ).forEach(db::execSQL)
+        }
+    }
+
+    val ALL: Array<Migration> = arrayOf(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
 }

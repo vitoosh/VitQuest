@@ -28,7 +28,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.ui.res.pluralStringResource
-import io.github.vitoosh.vitquest.feature.rewards.creditsText
+import io.github.vitoosh.vitquest.feature.rewards.xpText
 import io.github.vitoosh.vitquest.feature.workouts.minutesText
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -405,7 +405,7 @@ private fun RewardsCard(state: HomeUiState.Ready, onOpen: () -> Unit) {
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.weight(1f),
             )
-            Text(creditsText(state.credits), style = MaterialTheme.typography.titleLarge)
+            Text(xpText(level.totalXp), style = MaterialTheme.typography.titleMedium)
         }
         LinearProgressIndicator(progress = { level.fraction }, modifier = Modifier.fillMaxWidth())
         HintText(stringResource(R.string.rewards_level_progress, formatInteger(level.xpIntoLevel), formatInteger(level.xpForNext), formatInteger(level.level + 1)))

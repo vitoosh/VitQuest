@@ -3,13 +3,7 @@ package io.github.vitoosh.vitquest.core.model
 import java.time.Instant
 import java.time.LocalDate
 
-/**
- * The two virtual currencies. XP only grows (levels); Reward Credits are earned
- * and spent in the in-app catalog. Neither is money nor exchangeable for cash.
- */
-enum class RewardCurrency { XP, CREDIT }
-
-/** Why a ledger entry exists. Shown in the transaction history. */
+/** Why an XP ledger entry exists. Shown in the history. */
 enum class RewardReason {
     WORKOUT,
     STEP_GOAL,
@@ -18,17 +12,14 @@ enum class RewardReason {
     WEIGHT_LOG,
     HABIT_CHECK_IN,
     ACHIEVEMENT,
-    REDEMPTION,
-    REDEMPTION_CANCELLED,
 }
 
-/** One immutable line of the ledger. Corrections are new lines, never edits. */
+/** One immutable line of the XP ledger. Corrections are new lines, never edits. */
 data class RewardTransaction(
     val id: Long,
-    val currency: RewardCurrency,
     val amount: Int,
     val reason: RewardReason,
-    /** The day the earning activity happened (or the redemption day). */
+    /** The day the earning activity happened. */
     val date: LocalDate,
     val createdAt: Instant,
     /** True for an entry that takes back an earlier one because its activity was deleted. */
@@ -37,30 +28,28 @@ data class RewardTransaction(
 
 enum class RewardType { PHYSICAL, EXPERIENCE }
 
+/** Something real the user wants to treat themselves to, optionally with a price to save for. */
 data class Reward(
     val id: Long,
     val name: String,
     val description: String?,
     val type: RewardType,
-    val creditCost: Int,
-    /** Optional real-world price in rupiah, only used for the separate savings tracker. */
+    /** Real-world price in rupiah, used for the savings progress. */
     val priceRupiah: Long?,
     val wishlist: Boolean,
 )
 
-enum class RedemptionStatus { REDEEMED, CANCELLED }
-
-data class Redemption(
+/** A reward the user actually bought or did. */
+data class ObtainedReward(
     val id: Long,
     val rewardId: Long?,
     val rewardName: String,
-    val creditCost: Int,
-    val redeemedAt: Instant,
+    val pricePaidRupiah: Long?,
+    val obtainedAt: Instant,
     val date: LocalDate,
-    val status: RedemptionStatus,
 )
 
-/** Real money, kept apart from Reward Credits. */
+/** Real money the user saved or spent on rewards. */
 enum class BudgetEntryKind { SAVING, SPENDING }
 
 data class BudgetEntry(

@@ -65,7 +65,6 @@ sealed interface HomeUiState {
         /** Null until loaded; Home then shows how many habits are done today. */
         val habits: HabitsUiState? = null,
         val level: LevelProgress = Leveling.progress(0),
-        val credits: Int = 0,
         val energy: EnergyEstimate = EnergyEstimate.Missing(emptySet()),
         val calorieTarget: CalorieTarget? = null,
         val weight: WeightSummary? = null,
@@ -115,8 +114,8 @@ class HomeViewModel @Inject constructor(
             snapshot,
             bodyRepository.weights(),
             today,
-            combine(rewardRepository.xp, rewardRepository.credits) { xp, credits -> xp to credits },
-        ) { (profile, goals), todayData, weights, date, (xp, credits) ->
+            rewardRepository.xp,
+        ) { (profile, goals), todayData, weights, date, xp ->
             val energy = EnergyCalculator.estimate(
                 EnergyInputs(
                     age = profile?.age,
@@ -142,7 +141,6 @@ class HomeViewModel @Inject constructor(
                 weight = if (weights.isEmpty()) null else WeightStats.summarize(weights, goals?.targetWeightKg, date),
                 today = date,
                 level = Leveling.progress(xp),
-                credits = credits,
             )
         }.stateIn(
             scope = viewModelScope,
@@ -154,7 +152,7 @@ class HomeViewModel @Inject constructor(
         today.value = timeSource.today()
         viewModelScope.launch {
             stepsRepository.refresh()
-            // Grants XP and credits for anything recorded since the last visit.
+            // Grants XP for anything recorded since the last visit.
             rewardRepository.sync()
         }
     }

@@ -27,7 +27,6 @@ import io.github.vitoosh.vitquest.core.designsystem.icon.VqIcons
 import io.github.vitoosh.vitquest.core.designsystem.theme.VqSpacing
 import io.github.vitoosh.vitquest.core.domain.rewards.LevelProgress
 import io.github.vitoosh.vitquest.core.domain.rewards.RewardRule
-import io.github.vitoosh.vitquest.core.model.RewardCurrency
 import io.github.vitoosh.vitquest.core.model.RewardTransaction
 import io.github.vitoosh.vitquest.core.ui.dayLabel
 import io.github.vitoosh.vitquest.core.ui.formatInteger
@@ -40,7 +39,7 @@ fun OverviewTab(state: RewardsUiState, onOpenCatalog: () -> Unit) {
     CenteredContent {
         LazyColumn(contentPadding = PaddingValues(VqSpacing.lg), verticalArrangement = Arrangement.spacedBy(VqSpacing.md)) {
             item { LevelCard(state.level) }
-            item { CreditsCard(state.credits, onOpenCatalog) }
+            item { HowItWorksCard(onOpenCatalog) }
             item { SectionHeader(stringResource(R.string.rewards_rules_title)) }
             item { RulesCard() }
             item { SectionHeader(stringResource(R.string.rewards_recent)) }
@@ -78,13 +77,11 @@ fun LevelCard(level: LevelProgress, modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun CreditsCard(credits: Int, onOpenCatalog: () -> Unit) {
+private fun HowItWorksCard(onOpenCatalog: () -> Unit) {
     Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)) {
         Column(Modifier.padding(VqSpacing.lg), verticalArrangement = Arrangement.spacedBy(VqSpacing.sm)) {
-            Text(stringResource(R.string.rewards_credit_balance), style = MaterialTheme.typography.titleMedium)
-            Text(creditsText(credits), style = MaterialTheme.typography.headlineMedium)
-            Text(stringResource(R.string.rewards_credits_not_money), style = MaterialTheme.typography.bodySmall)
-            if (credits < 0) Text(stringResource(R.string.rewards_negative_balance), style = MaterialTheme.typography.bodySmall)
+            Text(stringResource(R.string.rewards_how_title), style = MaterialTheme.typography.titleMedium)
+            Text(stringResource(R.string.rewards_how_text), style = MaterialTheme.typography.bodyMedium)
             Button(onClick = onOpenCatalog) { Text(stringResource(R.string.rewards_open_catalog)) }
         }
     }
@@ -100,7 +97,7 @@ private fun RulesCard() {
                         Text(stringResource(rule.reason.labelRes), style = MaterialTheme.typography.bodyMedium)
                         Text(stringResource(rule.limitRes), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
-                    Text(ruleRewardText(rule), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
+                    Text("+" + xpText(rule.xp), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
                 }
             }
             Text(
@@ -126,7 +123,7 @@ fun TransactionRow(transaction: RewardTransaction, today: LocalDate) {
         val sign = if (transaction.amount > 0) "+" else "−"
         val magnitude = kotlin.math.abs(transaction.amount)
         Text(
-            text = sign + if (transaction.currency == RewardCurrency.XP) xpText(magnitude) else creditsText(magnitude),
+            text = sign + xpText(magnitude),
             style = MaterialTheme.typography.titleSmall,
             color = if (transaction.amount > 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
         )

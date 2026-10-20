@@ -36,7 +36,7 @@ import io.github.vitoosh.vitquest.core.designsystem.component.VqTopAppBar
 import io.github.vitoosh.vitquest.core.domain.FieldError
 import io.github.vitoosh.vitquest.core.model.BudgetEntry
 import io.github.vitoosh.vitquest.core.model.BudgetEntryKind
-import io.github.vitoosh.vitquest.core.model.Redemption
+import io.github.vitoosh.vitquest.core.model.ObtainedReward
 import io.github.vitoosh.vitquest.core.model.Reward
 
 private enum class RewardsTab(val labelRes: Int) {
@@ -50,8 +50,8 @@ data class RewardActions(
     val saveReward: (Long?, RewardForm) -> RewardFormErrors = { _, _ -> RewardFormErrors() },
     val setWishlist: (Reward, Boolean) -> Unit = { _, _ -> },
     val deleteReward: (Reward) -> Unit = {},
-    val redeem: (String, Reward) -> Unit = { _, _ -> },
-    val cancelRedemption: (Redemption) -> Unit = {},
+    val markObtained: (String, Reward, String) -> FieldError? = { _, _, _ -> null },
+    val undoObtained: (ObtainedReward) -> Unit = {},
     val addBudgetEntry: (BudgetEntryKind, String, Long?, String) -> FieldError? = { _, _, _, _ -> null },
     val deleteBudgetEntry: (BudgetEntry) -> Unit = {},
     val setMonthlyBudget: (String) -> FieldError? = { null },
@@ -73,8 +73,8 @@ fun RewardsRoute(onOpenSettings: () -> Unit, viewModel: RewardsViewModel = hiltV
             saveReward = viewModel::saveReward,
             setWishlist = viewModel::setWishlist,
             deleteReward = viewModel::deleteReward,
-            redeem = viewModel::redeem,
-            cancelRedemption = viewModel::cancelRedemption,
+            markObtained = viewModel::markObtained,
+            undoObtained = viewModel::undoObtained,
             addBudgetEntry = viewModel::addBudgetEntry,
             deleteBudgetEntry = viewModel::deleteBudgetEntry,
             setMonthlyBudget = viewModel::setMonthlyBudget,
@@ -83,7 +83,7 @@ fun RewardsRoute(onOpenSettings: () -> Unit, viewModel: RewardsViewModel = hiltV
     )
 }
 
-/** Rewards tab: XP and credits, the reward catalog, history, and the separate real-money budget. */
+/** Rewards tab: XP and level, real rewards to save for, what the user got, and the real-money budget. */
 @Composable
 fun RewardsScreen(
     uiState: RewardsUiState?,
@@ -133,9 +133,8 @@ fun RewardsScreen(
 
 private val RewardMessage.textRes: Int
     get() = when (this) {
-        RewardMessage.REDEEMED -> R.string.rewards_redeemed
-        RewardMessage.ALREADY_REDEEMED -> R.string.rewards_already_redeemed
-        RewardMessage.NOT_ENOUGH_CREDITS -> R.string.rewards_not_enough
+        RewardMessage.OBTAINED -> R.string.rewards_obtained
+        RewardMessage.ALREADY_OBTAINED -> R.string.rewards_already_obtained
         RewardMessage.REWARD_MISSING -> R.string.rewards_missing
-        RewardMessage.CANCELLED -> R.string.rewards_cancelled
+        RewardMessage.UNDONE -> R.string.rewards_undone
     }

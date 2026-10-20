@@ -9,37 +9,30 @@ import androidx.room.Update
 import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 
-sealed interface RedeemOutcome {
-    data class Redeemed(val redemptionId: Long) : RedeemOutcome
-    /** The same request was already processed; nothing was charged again. */
-    data class AlreadyRedeemed(val redemptionId: Long) : RedeemOutcome
-    data class NotEnoughCredits(val balance: Int, val cost: Int) : RedeemOutcome
-    data object RewardMissing : RedeemOutcome
+sealed interface ObtainOutcome {
+    data class Recorded(val historyId: Long) : ObtainOutcome
+    /** The same request was already saved; nothing was recorded twice. */
+    data class AlreadyRecorded(val historyId: Long) : ObtainOutcome
+    data object RewardMissing : ObtainOutcome
 }
 
 @Dao
 abstract class RewardDao {
 
-    // ---- Ledger ----
+    // ---- XP ledger ----
 
-    @Query("SELECT * FROM reward_transactions ORDER BY created_at_epoch_ms DESC, id DESC")
+    @Query("SELECT * FROM reward_transactions WHERE currency = 'XP' ORDER BY created_at_epoch_ms DESC, id DESC")
     abstract fun observeTransactions(): Flow<List<RewardTransactionEntity>>
 
-    @Query("SELECT COALESCE(SUM(amount), 0) FROM reward_transactions WHERE currency = :currency")
-    abstract fun observeBalance(currency: String): Flow<Int>
+    @Query("SELECT COALESCE(SUM(amount), 0) FROM reward_transactions WHERE currency = 'XP'")
+    abstract fun observeXp(): Flow<Int>
 
-    @Query("SELECT COALESCE(SUM(amount), 0) FROM reward_transactions WHERE currency = :currency")
-    abstract suspend fun balance(currency: String): Int
-
-    @Query("SELECT * FROM reward_transactions")
+    @Query("SELECT * FROM reward_transactions WHERE currency = 'XP'")
     abstract suspend fun allTransactions(): List<RewardTransactionEntity>
 
     /** Lines whose key already exists are skipped, which makes every write idempotent. */
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     abstract suspend fun insertTransactions(lines: List<RewardTransactionEntity>)
-
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    abstract suspend fun insertTransaction(line: RewardTransactionEntity): Long
 
     /** Reads the ledger and appends what [plan] returns, all in one transaction. */
     @Transaction
@@ -49,16 +42,13 @@ abstract class RewardDao {
         return added.size
     }
 
-    // ---- Catalog ----
+    // ---- Rewards ----
 
-    @Query("SELECT * FROM rewards ORDER BY wishlist DESC, credit_cost, name COLLATE NOCASE")
+    @Query("SELECT * FROM reward_items ORDER BY wishlist DESC, name COLLATE NOCASE")
     abstract fun observeRewards(): Flow<List<RewardEntity>>
 
-    @Query("SELECT * FROM rewards WHERE id = :id")
+    @Query("SELECT * FROM reward_items WHERE id = :id")
     abstract suspend fun getReward(id: Long): RewardEntity?
-
-    @Query("SELECT COUNT(*) FROM rewards")
-    abstract suspend fun rewardCount(): Int
 
     @Insert
     abstract suspend fun insertReward(reward: RewardEntity): Long
@@ -69,79 +59,63 @@ abstract class RewardDao {
     @Update
     abstract suspend fun updateReward(reward: RewardEntity)
 
-    @Query("UPDATE rewards SET wishlist = :wishlist WHERE id = :id")
+    @Query("UPDATE reward_items SET wishlist = :wishlist WHERE id = :id")
     abstract suspend fun setWishlist(id: Long, wishlist: Boolean)
 
-    @Query("DELETE FROM rewards WHERE id = :id")
+    @Query("DELETE FROM reward_items WHERE id = :id")
     abstract suspend fun deleteReward(id: Long)
 
-    // ---- Redemptions ----
+    // ---- Rewards obtained ----
 
-    @Query("SELECT * FROM redemptions ORDER BY redeemed_at_epoch_ms DESC, id DESC")
-    abstract fun observeRedemptions(): Flow<List<RedemptionEntity>>
+    @Query("SELECT * FROM reward_history ORDER BY obtained_at_epoch_ms DESC, id DESC")
+    abstract fun observeHistory(): Flow<List<RewardHistoryEntity>>
 
-    @Query("SELECT * FROM redemptions WHERE request_id = :requestId")
-    abstract suspend fun getRedemptionByRequest(requestId: String): RedemptionEntity?
+    @Query("SELECT * FROM reward_history WHERE request_id = :requestId")
+    abstract suspend fun getHistoryByRequest(requestId: String): RewardHistoryEntity?
 
-    @Query("SELECT * FROM redemptions WHERE id = :id")
-    abstract suspend fun getRedemption(id: Long): RedemptionEntity?
+    @Query("SELECT * FROM reward_history WHERE id = :id")
+    abstract suspend fun getHistory(id: Long): RewardHistoryEntity?
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    abstract suspend fun insertRedemption(redemption: RedemptionEntity): Long
+    @Insert
+    abstract suspend fun insertHistory(entry: RewardHistoryEntity): Long
 
-    @Query("UPDATE redemptions SET status = :status WHERE id = :id")
-    abstract suspend fun setRedemptionStatus(id: Long, status: String)
+    @Query("DELETE FROM reward_history WHERE id = :id")
+    abstract suspend fun deleteHistory(id: Long)
 
     /**
-     * Spends credits atomically: the balance check, the redemption row and
-     * the ledger line succeed or fail together, and a repeated [requestId]
-     * returns the earlier result instead of charging twice.
+     * Records a reward as obtained, plus a spending entry when a price is
+     * given, in one transaction. A repeated [requestId] returns the earlier
+     * record instead of saving it (or the spending) twice.
      */
     @Transaction
-    open suspend fun redeem(requestId: String, rewardId: Long, date: String, nowEpochMs: Long): RedeemOutcome {
-        getRedemptionByRequest(requestId)?.let { return RedeemOutcome.AlreadyRedeemed(it.id) }
-        val reward = getReward(rewardId) ?: return RedeemOutcome.RewardMissing
-        val balance = balance(CREDIT)
-        if (balance < reward.creditCost) return RedeemOutcome.NotEnoughCredits(balance, reward.creditCost)
-        val id = insertRedemption(
-            RedemptionEntity(
+    open suspend fun markObtained(requestId: String, rewardId: Long, pricePaidRupiah: Long?, date: String, nowEpochMs: Long): ObtainOutcome {
+        getHistoryByRequest(requestId)?.let { return ObtainOutcome.AlreadyRecorded(it.id) }
+        val reward = getReward(rewardId) ?: return ObtainOutcome.RewardMissing
+        val budgetEntryId = pricePaidRupiah?.let { price ->
+            insertBudgetEntry(
+                BudgetEntryEntity(date = date, kind = SPENDING, amountRupiah = price, rewardId = reward.id, note = null, createdAtEpochMs = nowEpochMs),
+            )
+        }
+        val id = insertHistory(
+            RewardHistoryEntity(
                 requestId = requestId,
                 rewardId = reward.id,
                 rewardName = reward.name,
-                creditCost = reward.creditCost,
-                redeemedAtEpochMs = nowEpochMs,
+                pricePaidRupiah = pricePaidRupiah,
+                budgetEntryId = budgetEntryId,
+                obtainedAtEpochMs = nowEpochMs,
                 date = date,
-                status = STATUS_REDEEMED,
             ),
         )
-        insertTransaction(
-            RewardTransactionEntity(
-                currency = CREDIT,
-                amount = -reward.creditCost,
-                reason = REASON_REDEMPTION,
-                sourceKey = "redeem:$requestId",
-                date = date,
-                createdAtEpochMs = nowEpochMs,
-            ),
-        )
-        return RedeemOutcome.Redeemed(id)
+        return ObtainOutcome.Recorded(id)
     }
 
-    /** Refunds a redemption once; cancelling again does nothing. */
+    /** Removes a record made by mistake, together with the spending entry it created. */
     @Transaction
-    open suspend fun cancelRedemption(id: Long, date: String, nowEpochMs: Long): Boolean {
-        val redemption = getRedemption(id)?.takeIf { it.status == STATUS_REDEEMED } ?: return false
-        setRedemptionStatus(id, STATUS_CANCELLED)
-        insertTransaction(
-            RewardTransactionEntity(
-                currency = CREDIT,
-                amount = redemption.creditCost,
-                reason = REASON_REDEMPTION_CANCELLED,
-                sourceKey = "redeem-cancel:${redemption.requestId}",
-                date = date,
-                createdAtEpochMs = nowEpochMs,
-            ),
-        )
+    open suspend fun undoObtained(id: Long): Boolean {
+        val entry = getHistory(id) ?: return false
+        entry.budgetEntryId?.let { deleteBudgetEntry(it) }
+        deleteHistory(id)
         return true
     }
 
@@ -157,11 +131,7 @@ abstract class RewardDao {
     abstract suspend fun deleteBudgetEntry(id: Long)
 
     companion object {
-        const val CREDIT = "CREDIT"
-        const val STATUS_REDEEMED = "REDEEMED"
-        const val STATUS_CANCELLED = "CANCELLED"
-        const val REASON_REDEMPTION = "REDEMPTION"
-        const val REASON_REDEMPTION_CANCELLED = "REDEMPTION_CANCELLED"
+        const val SPENDING = "SPENDING"
     }
 }
 

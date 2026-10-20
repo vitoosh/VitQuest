@@ -5,7 +5,6 @@ import io.github.vitoosh.vitquest.core.domain.habits.AchievementStatus
 import io.github.vitoosh.vitquest.core.domain.habits.DayRecord
 import io.github.vitoosh.vitquest.core.model.CustomHabit
 import io.github.vitoosh.vitquest.core.model.Goals
-import io.github.vitoosh.vitquest.core.model.RewardCurrency
 import io.github.vitoosh.vitquest.core.model.RewardReason
 import io.github.vitoosh.vitquest.core.model.WeightEntry
 import io.github.vitoosh.vitquest.core.model.WorkoutSession
@@ -84,39 +83,35 @@ class RewardsDomainTest {
     private fun apply(existing: List<LedgerLine>, events: List<RewardEvent>) =
         existing + LedgerReconciler.reconcile(events, existing, RewardRules.windowStart(today))
 
-    private fun balance(lines: List<LedgerLine>, currency: RewardCurrency) = lines.filter { it.currency == currency }.sumOf { it.amount }
+    private fun total(lines: List<LedgerLine>) = lines.sumOf { it.amount }
 
     @Test
     fun reconcilingIsIdempotentAndCorrectionsAppendLines() {
         val workout = RewardEvent("workout:7", RewardRule.WORKOUT, today)
         val first = apply(emptyList(), listOf(workout))
-        assertEquals(50, balance(first, RewardCurrency.XP))
-        assertEquals(5, balance(first, RewardCurrency.CREDIT))
+        assertEquals(50, total(first))
         // Running again changes nothing.
         assertEquals(first, apply(first, listOf(workout)))
 
         // The workout is deleted: a reversal is appended, nothing is edited.
         val reversed = apply(first, emptyList())
         assertEquals(first, reversed.take(first.size))
-        assertEquals(0, balance(reversed, RewardCurrency.XP))
+        assertEquals(0, total(reversed))
         assertEquals(apply(reversed, emptyList()), reversed)
 
         // Logged again: a second grant.
         val again = apply(reversed, listOf(workout))
-        assertEquals(50, balance(again, RewardCurrency.XP))
+        assertEquals(50, total(again))
         assertTrue(again.any { it.sourceKey == "g:workout:7#2" })
-        assertEquals(again.size, again.map { it.currency to it.sourceKey }.toSet().size)
+        assertEquals(again.size, again.map { it.sourceKey }.toSet().size)
     }
 
     @Test
-    fun habitCheckInsEarnOnlyXpAndOldActivityIsNeverTakenBack() {
+    fun habitCheckInsEarnASmallAmountAndOldActivityIsNeverTakenBack() {
         val habit = apply(emptyList(), listOf(RewardEvent("habit:1:$today", RewardRule.HABIT_CHECK_IN, today)))
-        assertEquals(listOf(RewardCurrency.XP), habit.map { it.currency })
+        assertEquals(listOf(5), habit.map { it.amount })
 
-        val old = listOf(LedgerLine(RewardCurrency.XP, 30, "g:steps:${today.minusDays(60)}#1", RewardReason.STEP_GOAL, today.minusDays(60)))
+        val old = listOf(LedgerLine(30, "g:steps:${today.minusDays(60)}#1", RewardReason.STEP_GOAL, today.minusDays(60)))
         assertEquals(old, apply(old, emptyList()))
-        // Redemption lines are not the reconciler's business.
-        val redemption = listOf(LedgerLine(RewardCurrency.CREDIT, -100, "redeem:abc", RewardReason.REDEMPTION, today))
-        assertEquals(redemption, apply(redemption, emptyList()))
     }
 }

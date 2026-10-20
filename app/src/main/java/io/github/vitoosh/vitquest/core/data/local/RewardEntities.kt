@@ -7,9 +7,9 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 
 /**
- * The XP and Reward Credit ledger. Lines are only ever inserted; a unique
- * (currency, source_key) pair makes every grant, reversal and redemption
- * idempotent.
+ * The XP ledger. Lines are only ever inserted; a unique (currency, source_key)
+ * pair makes every grant and reversal idempotent. `currency` is always "XP"
+ * since Reward Credits were removed in database version 6.
  */
 @Entity(
     tableName = "reward_transactions",
@@ -17,46 +17,52 @@ import androidx.room.PrimaryKey
 )
 data class RewardTransactionEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    val currency: String,
+    val currency: String = XP,
     val amount: Int,
     val reason: String,
     @ColumnInfo(name = "source_key") val sourceKey: String,
     val date: String,
     @ColumnInfo(name = "created_at_epoch_ms") val createdAtEpochMs: Long,
-)
+) {
+    companion object {
+        const val XP = "XP"
+    }
+}
 
-/** Built-in suggestions have a seed key; rewards the user adds have none. */
-@Entity(tableName = "rewards", indices = [Index(value = ["seed_key"], unique = true)])
+/** Real rewards to save for. Built-in suggestions have a seed key; the user's own have none. */
+@Entity(tableName = "reward_items", indices = [Index(value = ["seed_key"], unique = true)])
 data class RewardEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     @ColumnInfo(name = "seed_key") val seedKey: String?,
     val name: String,
     val description: String?,
     val type: String,
-    @ColumnInfo(name = "credit_cost") val creditCost: Int,
     @ColumnInfo(name = "price_rupiah") val priceRupiah: Long?,
     val wishlist: Boolean,
     @ColumnInfo(name = "created_at_epoch_ms") val createdAtEpochMs: Long,
 )
 
-/** [requestId] is unique, so a repeated tap or retry can never redeem twice. */
+/**
+ * Rewards the user actually got. [requestId] is unique, so a repeated tap
+ * records it once; [budgetEntryId] is the spending entry created with it.
+ */
 @Entity(
-    tableName = "redemptions",
+    tableName = "reward_history",
     foreignKeys = [ForeignKey(entity = RewardEntity::class, parentColumns = ["id"], childColumns = ["reward_id"], onDelete = ForeignKey.SET_NULL)],
     indices = [Index(value = ["request_id"], unique = true), Index("reward_id")],
 )
-data class RedemptionEntity(
+data class RewardHistoryEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     @ColumnInfo(name = "request_id") val requestId: String,
     @ColumnInfo(name = "reward_id") val rewardId: Long?,
     @ColumnInfo(name = "reward_name") val rewardName: String,
-    @ColumnInfo(name = "credit_cost") val creditCost: Int,
-    @ColumnInfo(name = "redeemed_at_epoch_ms") val redeemedAtEpochMs: Long,
+    @ColumnInfo(name = "price_paid_rupiah") val pricePaidRupiah: Long?,
+    @ColumnInfo(name = "budget_entry_id") val budgetEntryId: Long?,
+    @ColumnInfo(name = "obtained_at_epoch_ms") val obtainedAtEpochMs: Long,
     val date: String,
-    val status: String,
 )
 
-/** Real money in rupiah. Never mixed with Reward Credits. */
+/** Real money in rupiah, entered by the user. */
 @Entity(
     tableName = "budget_entries",
     foreignKeys = [ForeignKey(entity = RewardEntity::class, parentColumns = ["id"], childColumns = ["reward_id"], onDelete = ForeignKey.SET_NULL)],

@@ -4,13 +4,11 @@ import io.github.vitoosh.vitquest.core.domain.rewards.LedgerLine
 import io.github.vitoosh.vitquest.core.domain.rewards.LedgerReconciler
 import io.github.vitoosh.vitquest.core.model.BudgetEntry
 import io.github.vitoosh.vitquest.core.model.BudgetEntryKind
-import io.github.vitoosh.vitquest.core.model.Redemption
-import io.github.vitoosh.vitquest.core.model.RedemptionStatus
+import io.github.vitoosh.vitquest.core.model.ObtainedReward
 import io.github.vitoosh.vitquest.core.model.ReminderSetting
 import io.github.vitoosh.vitquest.core.model.ReminderType
 import io.github.vitoosh.vitquest.core.model.ReminderWindow
 import io.github.vitoosh.vitquest.core.model.Reward
-import io.github.vitoosh.vitquest.core.model.RewardCurrency
 import io.github.vitoosh.vitquest.core.model.RewardReason
 import io.github.vitoosh.vitquest.core.model.RewardTransaction
 import io.github.vitoosh.vitquest.core.model.RewardType
@@ -20,11 +18,9 @@ import java.time.LocalDate
 import java.time.LocalTime
 
 fun RewardTransactionEntity.toModel(): RewardTransaction? {
-    val currency = currency.toEnumOrNull<RewardCurrency>() ?: return null
     val reason = reason.toEnumOrNull<RewardReason>() ?: return null
     return RewardTransaction(
         id = id,
-        currency = currency,
         amount = amount,
         reason = reason,
         date = LocalDate.parse(date),
@@ -34,13 +30,11 @@ fun RewardTransactionEntity.toModel(): RewardTransaction? {
 }
 
 fun RewardTransactionEntity.toLine(): LedgerLine? {
-    val currency = currency.toEnumOrNull<RewardCurrency>() ?: return null
     val reason = reason.toEnumOrNull<RewardReason>() ?: return null
-    return LedgerLine(currency, amount, sourceKey, reason, LocalDate.parse(date))
+    return LedgerLine(amount, sourceKey, reason, LocalDate.parse(date))
 }
 
 fun LedgerLine.toEntity(nowEpochMs: Long) = RewardTransactionEntity(
-    currency = currency.name,
     amount = amount,
     reason = reason.name,
     sourceKey = sourceKey,
@@ -53,19 +47,17 @@ fun RewardEntity.toModel() = Reward(
     name = name,
     description = description,
     type = type.toEnumOrNull<RewardType>() ?: RewardType.PHYSICAL,
-    creditCost = creditCost,
     priceRupiah = priceRupiah,
     wishlist = wishlist,
 )
 
-fun RedemptionEntity.toModel() = Redemption(
+fun RewardHistoryEntity.toModel() = ObtainedReward(
     id = id,
     rewardId = rewardId,
     rewardName = rewardName,
-    creditCost = creditCost,
-    redeemedAt = Instant.ofEpochMilli(redeemedAtEpochMs),
+    pricePaidRupiah = pricePaidRupiah,
+    obtainedAt = Instant.ofEpochMilli(obtainedAtEpochMs),
     date = LocalDate.parse(date),
-    status = status.toEnumOrNull<RedemptionStatus>() ?: RedemptionStatus.REDEEMED,
 )
 
 fun BudgetEntryEntity.toModel() = BudgetEntry(

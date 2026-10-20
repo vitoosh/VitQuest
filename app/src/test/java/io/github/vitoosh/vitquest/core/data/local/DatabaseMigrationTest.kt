@@ -193,9 +193,82 @@ class DatabaseMigrationTest {
             val line = RewardTransactionEntity(currency = "XP", amount = 50, reason = "WORKOUT", sourceKey = "g:workout:1#1", date = "2026-10-21", createdAtEpochMs = 1L)
             database.rewardDao().insertTransactions(listOf(line, line))
             // The unique (currency, source_key) index keeps the ledger idempotent.
-            assertEquals(50, database.rewardDao().balance("XP"))
+            assertEquals(50, database.rewardDao().observeXp().first())
             database.reminderDao().upsertWindow(ReminderWindowEntity(activeStart = 480, activeEnd = 1200, quietStart = null, quietEnd = null))
             assertEquals(480, database.reminderDao().getWindow()?.activeStart)
+        } finally {
+            database.close()
+        }
+    }
+
+    @Test
+    fun migrating5To6DropsCreditsAndKeepsRewardsHistoryAndBudget() = runTest {
+        createDatabase(version = 5) { db ->
+            insertProfile(db)
+            fun line(currency: String, amount: Int, reason: String, key: String) = ContentValues().apply {
+                put("currency", currency)
+                put("amount", amount)
+                put("reason", reason)
+                put("source_key", key)
+                put("date", "2026-10-19")
+                put("created_at_epoch_ms", 1L)
+            }
+            db.insert("reward_transactions", SQLiteDatabase.CONFLICT_ABORT, line("XP", 50, "WORKOUT", "g:workout:1#1"))
+            db.insert("reward_transactions", SQLiteDatabase.CONFLICT_ABORT, line("CREDIT", 5, "WORKOUT", "g:workout:1#1"))
+            db.insert("reward_transactions", SQLiteDatabase.CONFLICT_ABORT, line("CREDIT", -40, "REDEMPTION", "redeem:a"))
+            db.insert(
+                "rewards",
+                SQLiteDatabase.CONFLICT_ABORT,
+                ContentValues().apply {
+                    put("id", 7)
+                    put("seed_key", "book")
+                    put("name", "Buku baru")
+                    put("type", "PHYSICAL")
+                    put("credit_cost", 120)
+                    put("price_rupiah", 95_000L)
+                    put("wishlist", 1)
+                    put("created_at_epoch_ms", 1L)
+                },
+            )
+            fun redemption(requestId: String, status: String) = ContentValues().apply {
+                put("request_id", requestId)
+                put("reward_id", 7)
+                put("reward_name", "Buku baru")
+                put("credit_cost", 120)
+                put("redeemed_at_epoch_ms", 2L)
+                put("date", "2026-10-19")
+                put("status", status)
+            }
+            db.insert("redemptions", SQLiteDatabase.CONFLICT_ABORT, redemption("a", "REDEEMED"))
+            db.insert("redemptions", SQLiteDatabase.CONFLICT_ABORT, redemption("b", "CANCELLED"))
+            db.insert(
+                "budget_entries",
+                SQLiteDatabase.CONFLICT_ABORT,
+                ContentValues().apply {
+                    put("date", "2026-10-19")
+                    put("kind", "SAVING")
+                    put("amount_rupiah", 30_000L)
+                    put("reward_id", 7)
+                    put("created_at_epoch_ms", 1L)
+                },
+            )
+        }
+
+        val database = open()
+        try {
+            val dao = database.rewardDao()
+            // Only the XP line survives; credit lines and their reasons are gone.
+            assertEquals(50, dao.observeXp().first())
+            assertEquals(listOf("XP"), dao.allTransactions().map { it.currency })
+            val reward = dao.observeRewards().first().single()
+            assertEquals(Triple(7L, "Buku baru", 95_000L), Triple(reward.id, reward.name, reward.priceRupiah))
+            // A redemption that was not cancelled is kept as a reward the user got.
+            assertEquals(listOf("a"), dao.observeHistory().first().map { it.requestId })
+            assertEquals(listOf(7L), dao.observeBudgetEntries().first().map { it.rewardId })
+            // Deleting the reward still unlinks history and budget entries rather than failing.
+            dao.deleteReward(7)
+            assertEquals(listOf(null), dao.observeHistory().first().map { it.rewardId })
+            assertEquals(listOf(null), dao.observeBudgetEntries().first().map { it.rewardId })
         } finally {
             database.close()
         }

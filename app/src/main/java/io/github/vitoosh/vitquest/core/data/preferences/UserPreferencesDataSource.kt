@@ -63,7 +63,7 @@ class UserPreferencesDataSource @Inject constructor(
         dataStore.edit { it[Keys.SEED_VERSION] = version }
     }
 
-    /** Optional monthly real-money budget for rewards, in rupiah. Unrelated to Reward Credits. */
+    /** Optional monthly real-money budget for rewards, in rupiah. */
     val monthlyRewardBudget: Flow<Long?> = dataStore.data
         .catch { if (it is IOException) emit(emptyPreferences()) else throw it }
         .map { it[Keys.MONTHLY_REWARD_BUDGET] }

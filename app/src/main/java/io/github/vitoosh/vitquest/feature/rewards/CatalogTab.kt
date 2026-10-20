@@ -56,7 +56,7 @@ private const val NEW_REWARD = -1L
 @Composable
 fun CatalogTab(state: RewardsUiState, actions: RewardActions) {
     var editing by rememberSaveable { mutableStateOf<Long?>(null) }
-    var redeeming by rememberSaveable { mutableStateOf<Long?>(null) }
+    var obtaining by rememberSaveable { mutableStateOf<Long?>(null) }
     var deleting by rememberSaveable { mutableStateOf<Long?>(null) }
     val wishlist = state.rewards.filter { it.wishlist }
     val others = state.rewards.filterNot { it.wishlist }
@@ -64,7 +64,7 @@ fun CatalogTab(state: RewardsUiState, actions: RewardActions) {
         LazyColumn(contentPadding = PaddingValues(VqSpacing.lg), verticalArrangement = Arrangement.spacedBy(VqSpacing.md)) {
             item {
                 Text(
-                    text = stringResource(R.string.rewards_catalog_intro, creditsText(state.credits)),
+                    text = stringResource(R.string.rewards_catalog_intro),
                     style = MaterialTheme.typography.bodyMedium,
                 )
             }
@@ -80,7 +80,7 @@ fun CatalogTab(state: RewardsUiState, actions: RewardActions) {
             if (wishlist.isNotEmpty()) {
                 item { SectionHeader(stringResource(R.string.rewards_wishlist)) }
                 items(wishlist, key = { "w-${it.id}" }) { reward ->
-                    RewardCard(reward, state.credits, onRedeem = { redeeming = reward.id }, onEdit = { editing = reward.id }, onDelete = { deleting = reward.id }, onWishlist = { actions.setWishlist(reward, it) })
+                    RewardCard(reward, state, onObtain = { obtaining = reward.id }, onEdit = { editing = reward.id }, onDelete = { deleting = reward.id }, onWishlist = { actions.setWishlist(reward, it) })
                 }
             }
             RewardType.entries.forEach { type ->
@@ -88,15 +88,8 @@ fun CatalogTab(state: RewardsUiState, actions: RewardActions) {
                 if (ofType.isEmpty()) return@forEach
                 item(key = "h-$type") { SectionHeader(stringResource(type.labelRes)) }
                 items(ofType, key = { it.id }) { reward ->
-                    RewardCard(reward, state.credits, onRedeem = { redeeming = reward.id }, onEdit = { editing = reward.id }, onDelete = { deleting = reward.id }, onWishlist = { actions.setWishlist(reward, it) })
+                    RewardCard(reward, state, onObtain = { obtaining = reward.id }, onEdit = { editing = reward.id }, onDelete = { deleting = reward.id }, onWishlist = { actions.setWishlist(reward, it) })
                 }
-            }
-            item {
-                Text(
-                    text = stringResource(R.string.rewards_catalog_note),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
             }
         }
     }
@@ -104,12 +97,13 @@ fun CatalogTab(state: RewardsUiState, actions: RewardActions) {
         val existing = state.rewards.firstOrNull { it.id == id }
         RewardDialog(existing, onSave = { form -> actions.saveReward(existing?.id, form).also { if (it.isEmpty) editing = null } }, onDismiss = { editing = null })
     }
-    redeeming?.let { id ->
+    obtaining?.let { id ->
         state.rewards.firstOrNull { it.id == id }?.let { reward ->
-            RedeemDialog(reward, state.credits, onConfirm = { requestId ->
-                actions.redeem(requestId, reward)
-                redeeming = null
-            }, onDismiss = { redeeming = null })
+            ObtainDialog(
+                reward = reward,
+                onConfirm = { requestId, pricePaid -> actions.markObtained(requestId, reward, pricePaid).also { if (it == null) obtaining = null } },
+                onDismiss = { obtaining = null },
+            )
         }
     }
     deleting?.let { id ->
@@ -133,8 +127,8 @@ fun CatalogTab(state: RewardsUiState, actions: RewardActions) {
 @Composable
 private fun RewardCard(
     reward: Reward,
-    balance: Int,
-    onRedeem: () -> Unit,
+    state: RewardsUiState,
+    onObtain: () -> Unit,
     onEdit: () -> Unit,
     onDelete: () -> Unit,
     onWishlist: (Boolean) -> Unit,
@@ -155,22 +149,23 @@ private fun RewardCard(
                 }
             }
             FlowRow(horizontalArrangement = Arrangement.spacedBy(VqSpacing.sm), verticalArrangement = Arrangement.spacedBy(VqSpacing.xs)) {
-                VqBadge(creditsText(reward.creditCost), MaterialTheme.colorScheme.secondaryContainer, MaterialTheme.colorScheme.onSecondaryContainer)
                 VqBadge(stringResource(reward.type.labelRes), MaterialTheme.colorScheme.surfaceContainerHighest, MaterialTheme.colorScheme.onSurface)
                 reward.priceRupiah?.let {
                     VqBadge(stringResource(R.string.rewards_price_estimate, rupiahText(it)), MaterialTheme.colorScheme.tertiaryContainer, MaterialTheme.colorScheme.onTertiaryContainer)
                 }
+                state.timesObtained(reward.id).takeIf { it > 0 }?.let { times ->
+                    VqBadge(stringResource(R.string.rewards_obtained_count, formatInteger(times)), MaterialTheme.colorScheme.secondaryContainer, MaterialTheme.colorScheme.onSecondaryContainer)
+                }
             }
-            val enough = balance >= reward.creditCost
-            if (!enough) {
-                LinearProgressIndicator(progress = { (balance.coerceAtLeast(0).toFloat() / reward.creditCost).coerceIn(0f, 1f) }, modifier = Modifier.fillMaxWidth())
-                Text(
-                    text = stringResource(R.string.rewards_credits_to_go, creditsText(reward.creditCost - balance.coerceAtLeast(0))),
-                    style = MaterialTheme.typography.bodySmall,
-                )
+            reward.priceRupiah?.let { price ->
+                val saved = state.savedFor(reward.id)
+                if (saved > 0) {
+                    LinearProgressIndicator(progress = { (saved.toFloat() / price).coerceIn(0f, 1f) }, modifier = Modifier.fillMaxWidth())
+                    Text(savingsText(saved, price), style = MaterialTheme.typography.bodySmall)
+                }
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Button(onClick = onRedeem, enabled = enough) { Text(stringResource(R.string.rewards_redeem)) }
+                Button(onClick = onObtain) { Text(stringResource(R.string.rewards_mark_obtained)) }
                 Row(Modifier.weight(1f), horizontalArrangement = Arrangement.End) {
                     IconButton(onClick = onEdit) { Icon(Icons.Filled.Edit, contentDescription = stringResource(R.string.rewards_edit)) }
                     IconButton(onClick = onDelete) { Icon(Icons.Filled.Delete, contentDescription = stringResource(R.string.action_delete)) }
@@ -181,19 +176,21 @@ private fun RewardCard(
 }
 
 @Composable
-private fun RedeemDialog(reward: Reward, balance: Int, onConfirm: (String) -> Unit, onDismiss: () -> Unit) {
-    // One id per confirmation: tapping twice, or a retry after a crash, cannot redeem twice.
+private fun ObtainDialog(reward: Reward, onConfirm: (String, String) -> FieldError?, onDismiss: () -> Unit) {
+    // One id per confirmation: tapping twice, or a retry after a crash, cannot record it twice.
     val requestId by rememberSaveable { mutableStateOf(UUID.randomUUID().toString()) }
+    var pricePaid by rememberSaveable { mutableStateOf(reward.priceRupiah?.toString().orEmpty()) }
+    var error by rememberSaveable { mutableStateOf<FieldError?>(null) }
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.rewards_redeem_title, reward.name)) },
+        title = { Text(stringResource(R.string.rewards_obtain_title, reward.name)) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(VqSpacing.sm)) {
-                Text(stringResource(R.string.rewards_redeem_message, creditsText(reward.creditCost), creditsText(balance - reward.creditCost)))
-                Text(stringResource(R.string.rewards_redeem_note), style = MaterialTheme.typography.bodySmall)
+                Text(stringResource(R.string.rewards_obtain_message), style = MaterialTheme.typography.bodyMedium)
+                FormField(pricePaid, { pricePaid = it.take(15) }, stringResource(R.string.rewards_price_paid), error, KeyboardType.Number)
             }
         },
-        confirmButton = { TextButton(onClick = { onConfirm(requestId) }) { Text(stringResource(R.string.rewards_redeem)) } },
+        confirmButton = { TextButton(onClick = { error = onConfirm(requestId, pricePaid) }) { Text(stringResource(R.string.rewards_obtain_save)) } },
         dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) } },
     )
 }
@@ -204,7 +201,6 @@ private fun RewardDialog(existing: Reward?, onSave: (RewardForm) -> RewardFormEr
     var name by rememberSaveable { mutableStateOf(existing?.name.orEmpty()) }
     var description by rememberSaveable { mutableStateOf(existing?.description.orEmpty()) }
     var type by rememberSaveable { mutableStateOf(existing?.type ?: RewardType.PHYSICAL) }
-    var cost by rememberSaveable { mutableStateOf(existing?.creditCost?.toString().orEmpty()) }
     var price by rememberSaveable { mutableStateOf(existing?.priceRupiah?.toString().orEmpty()) }
     var errors by rememberSaveable(stateSaver = RewardFormErrorsSaver) { mutableStateOf(RewardFormErrors()) }
     AlertDialog(
@@ -219,12 +215,11 @@ private fun RewardDialog(existing: Reward?, onSave: (RewardForm) -> RewardFormEr
                         FilterChip(selected = type == option, onClick = { type = option }, label = { Text(stringResource(option.labelRes)) })
                     }
                 }
-                FormField(cost, { cost = it.filter(Char::isDigit).take(6) }, stringResource(R.string.rewards_cost), errors.cost, KeyboardType.Number)
                 FormField(price, { price = it.take(15) }, stringResource(R.string.rewards_price), errors.price, KeyboardType.Number, stringResource(R.string.rewards_price_help))
             }
         },
         confirmButton = {
-            TextButton(onClick = { errors = onSave(RewardForm(name, description, type, cost, price)) }) { Text(stringResource(R.string.action_save)) }
+            TextButton(onClick = { errors = onSave(RewardForm(name, description, type, price)) }) { Text(stringResource(R.string.action_save)) }
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) } },
     )
@@ -252,13 +247,13 @@ fun FormField(
 }
 
 private val RewardFormErrorsSaver = androidx.compose.runtime.saveable.listSaver<RewardFormErrors, String?>(
-    save = { listOf(it.name?.name, it.cost?.name, it.price?.name) },
+    save = { listOf(it.name?.name, it.price?.name) },
     restore = { list ->
         fun error(name: String?) = FieldError.entries.firstOrNull { it.name == name }
-        RewardFormErrors(error(list[0]), error(list[1]), error(list[2]))
+        RewardFormErrors(error(list[0]), error(list[1]))
     },
 )
 
-/** Used by the budget tab to show how a reward's price compares with savings. */
+/** How much has been saved towards a reward's real price. */
 @Composable
 fun savingsText(saved: Long, price: Long): String = stringResource(R.string.budget_saved_of_price, rupiahText(saved), rupiahText(price), formatInteger((saved * 100 / price).toInt().coerceAtMost(100)))

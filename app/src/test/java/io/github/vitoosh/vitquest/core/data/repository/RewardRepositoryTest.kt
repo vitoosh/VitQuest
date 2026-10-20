@@ -4,12 +4,11 @@ import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import io.github.vitoosh.vitquest.core.data.local.RedeemOutcome
+import io.github.vitoosh.vitquest.core.data.local.ObtainOutcome
 import io.github.vitoosh.vitquest.core.data.local.VitQuestDatabase
 import io.github.vitoosh.vitquest.core.data.preferences.UserPreferencesDataSource
 import io.github.vitoosh.vitquest.core.model.BudgetEntryKind
 import io.github.vitoosh.vitquest.core.model.Goals
-import io.github.vitoosh.vitquest.core.model.RedemptionStatus
 import io.github.vitoosh.vitquest.core.model.RewardReason
 import io.github.vitoosh.vitquest.core.model.RewardType
 import io.github.vitoosh.vitquest.core.model.WorkoutIntensity
@@ -82,64 +81,54 @@ class RewardRepositoryTest {
         rewards.sync()
         // Workout 50 + first-workout achievement 100.
         assertEquals(150, rewards.xp.first())
-        assertEquals(15, rewards.credits.first())
 
         workouts.deleteSession(workouts.sessions().first().single().id)
         rewards.sync()
         assertEquals(0, rewards.xp.first())
         val history = rewards.transactions().first()
-        assertEquals(4, history.count { it.isReversal })
+        assertEquals(2, history.count { it.isReversal })
         assertTrue(history.all { it.reason == RewardReason.WORKOUT || it.reason == RewardReason.ACHIEVEMENT })
     }
 
-    private suspend fun earnCredits() {
-        // Two workouts a day for a few days, so there is something to spend.
-        (0L..4L).forEach { back ->
-            repeat(2) { workouts.logManual(ManualWorkoutInput(today.minusDays(back), 15, WorkoutIntensity.LIGHT, null), weightKg = null) }
-        }
-        rewards.sync()
+    @Test
+    fun markingObtainedIsAtomicAndNeverRecordsTwice() = runTest {
+        rewards.saveReward(null, RewardInput("Botol minum", null, RewardType.PHYSICAL, priceRupiah = 85_000))
+        val reward = rewards.rewards().first().single()
+
+        val results = (1..5).map { async { rewards.markObtained("request-1", reward.id, 80_000) } }.awaitAll()
+        assertEquals(1, results.count { it is ObtainOutcome.Recorded })
+        assertEquals(4, results.count { it is ObtainOutcome.AlreadyRecorded })
+        val got = rewards.history().first().single()
+        assertEquals(Triple("Botol minum", 80_000L, today), Triple(got.rewardName, got.pricePaidRupiah, got.date))
+        // The price paid is noted once as real spending for that reward.
+        val spending = rewards.budgetEntries().first().single()
+        assertEquals(Triple(BudgetEntryKind.SPENDING, 80_000L, reward.id), Triple(spending.kind, spending.amountRupiah, spending.rewardId))
+        // Getting a reward never touches XP.
+        assertEquals(0, rewards.xp.first())
+
+        assertTrue(rewards.markObtained("request-2", 9_999, null) is ObtainOutcome.RewardMissing)
     }
 
     @Test
-    fun redeemingIsAtomicAndNeverChargesTwice() = runTest {
-        earnCredits()
-        val start = rewards.credits.first()
-        rewards.saveReward(null, RewardInput("Botol minum", null, RewardType.PHYSICAL, creditCost = 30, priceRupiah = 85_000))
+    fun undoRemovesTheRecordAndItsSpendingOnce() = runTest {
+        rewards.saveReward(null, RewardInput("Nonton film", null, RewardType.EXPERIENCE, priceRupiah = null))
         val reward = rewards.rewards().first().single()
+        val free = rewards.markObtained("a", reward.id, null) as ObtainOutcome.Recorded
+        val paid = rewards.markObtained("b", reward.id, 50_000) as ObtainOutcome.Recorded
+        assertEquals(1, rewards.budgetEntries().first().size)
 
-        val results = (1..5).map { async { rewards.redeem("request-1", reward.id) } }.awaitAll()
-        assertEquals(1, results.count { it is RedeemOutcome.Redeemed })
-        assertEquals(4, results.count { it is RedeemOutcome.AlreadyRedeemed })
-        assertEquals(start - 30, rewards.credits.first())
-        assertEquals(1, rewards.redemptions().first().size)
-
-        val expensive = RewardInput("Liburan", null, RewardType.EXPERIENCE, creditCost = 10_000, priceRupiah = null)
-        rewards.saveReward(null, expensive)
-        val big = rewards.rewards().first().first { it.name == "Liburan" }
-        assertTrue(rewards.redeem("request-2", big.id) is RedeemOutcome.NotEnoughCredits)
-        assertEquals(start - 30, rewards.credits.first())
-    }
-
-    @Test
-    fun cancellingRefundsOnceAndKeepsTheHistory() = runTest {
-        earnCredits()
-        val start = rewards.credits.first()
-        rewards.saveReward(null, RewardInput("Nonton film", null, RewardType.EXPERIENCE, creditCost = 40, priceRupiah = null))
-        val reward = rewards.rewards().first().single()
-        val outcome = rewards.redeem("r", reward.id) as RedeemOutcome.Redeemed
-
-        assertTrue(rewards.cancelRedemption(outcome.redemptionId))
-        assertFalse(rewards.cancelRedemption(outcome.redemptionId))
-        assertEquals(start, rewards.credits.first())
-        assertEquals(RedemptionStatus.CANCELLED, rewards.redemptions().first().single().status)
-        // Deleting the reward keeps the redemption and its name.
+        assertTrue(rewards.undoObtained(paid.historyId))
+        assertFalse(rewards.undoObtained(paid.historyId))
+        assertTrue(rewards.budgetEntries().first().isEmpty())
+        assertEquals(listOf(free.historyId), rewards.history().first().map { it.id })
+        // Deleting the reward keeps what the user got, with its name.
         rewards.deleteReward(reward.id)
-        assertEquals("Nonton film", rewards.redemptions().first().single().rewardName)
+        assertEquals("Nonton film", rewards.history().first().single().rewardName)
     }
 
     @Test
-    fun realMoneyBudgetIsSeparateFromCredits() = runTest {
-        rewards.saveReward(null, RewardInput("Sepatu", null, RewardType.PHYSICAL, creditCost = 500, priceRupiah = 600_000))
+    fun realMoneyBudgetTracksSavings() = runTest {
+        rewards.saveReward(null, RewardInput("Sepatu", null, RewardType.PHYSICAL, priceRupiah = 600_000))
         val shoes = rewards.rewards().first().single()
         rewards.addBudgetEntry(BudgetEntryInput(today, BudgetEntryKind.SAVING, 150_000, shoes.id, " tabungan "))
         rewards.setMonthlyBudget(300_000)
@@ -147,7 +136,6 @@ class RewardRepositoryTest {
         val entry = rewards.budgetEntries().first().single()
         assertEquals(150_000L, entry.amountRupiah)
         assertEquals("tabungan", entry.note)
-        assertEquals(0, rewards.credits.first())
         rewards.deleteBudgetEntry(entry.id)
         assertTrue(rewards.budgetEntries().first().isEmpty())
     }

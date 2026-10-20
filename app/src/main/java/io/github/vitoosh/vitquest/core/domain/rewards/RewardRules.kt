@@ -10,18 +10,18 @@ import io.github.vitoosh.vitquest.core.model.WeightEntry
 import io.github.vitoosh.vitquest.core.model.WorkoutSession
 import java.time.LocalDate
 
-/** How much one kind of activity earns, and how often. Shown to the user as-is. */
-enum class RewardRule(val reason: RewardReason, val xp: Int, val credits: Int) {
-    WORKOUT(RewardReason.WORKOUT, xp = 50, credits = 5),
-    STEP_GOAL(RewardReason.STEP_GOAL, xp = 30, credits = 3),
-    WATER_GOAL(RewardReason.WATER_GOAL, xp = 20, credits = 2),
-    FOOD_LOG(RewardReason.FOOD_LOG, xp = 10, credits = 1),
-    WEIGHT_LOG(RewardReason.WEIGHT_LOG, xp = 10, credits = 1),
-    HABIT_CHECK_IN(RewardReason.HABIT_CHECK_IN, xp = 5, credits = 0),
-    ACHIEVEMENT(RewardReason.ACHIEVEMENT, xp = 100, credits = 10),
+/** How much XP one kind of activity earns, and how often. Shown to the user as-is. */
+enum class RewardRule(val reason: RewardReason, val xp: Int) {
+    WORKOUT(RewardReason.WORKOUT, xp = 50),
+    STEP_GOAL(RewardReason.STEP_GOAL, xp = 30),
+    WATER_GOAL(RewardReason.WATER_GOAL, xp = 20),
+    FOOD_LOG(RewardReason.FOOD_LOG, xp = 10),
+    WEIGHT_LOG(RewardReason.WEIGHT_LOG, xp = 10),
+    HABIT_CHECK_IN(RewardReason.HABIT_CHECK_IN, xp = 5),
+    ACHIEVEMENT(RewardReason.ACHIEVEMENT, xp = 100),
 }
 
-/** Something that earns XP and/or credits. The key identifies it across syncs. */
+/** Something that earns XP. The key identifies it across syncs. */
 data class RewardEvent(
     val key: String,
     val rule: RewardRule,
