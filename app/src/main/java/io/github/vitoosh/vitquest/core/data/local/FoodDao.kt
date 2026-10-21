@@ -109,4 +109,34 @@ abstract class FoodDao {
 
     @Query("DELETE FROM food_log_entries WHERE id = :id")
     abstract suspend fun deleteLog(id: Long)
+
+    @Insert
+    abstract suspend fun insertPhoto(photo: FoodPhotoEntity): Long
+
+    @Query("DELETE FROM food_photos WHERE id = :id")
+    abstract suspend fun deletePhoto(id: Long)
+
+    @Query("SELECT COUNT(*) FROM food_log_entries WHERE photo_id = :photoId")
+    abstract suspend fun countLogsForPhoto(photoId: Long): Int
+
+    @Query("SELECT id FROM food_photos")
+    abstract suspend fun photoIds(): List<Long>
+
+    /** Saves a photo and the entries estimated from it together. Returns the photo id. */
+    @Transaction
+    open suspend fun logPhotoMeal(photo: FoodPhotoEntity, entries: List<FoodLogEntity>): Long {
+        val photoId = insertPhoto(photo)
+        entries.forEach { insertLog(it.copy(photoId = photoId)) }
+        return photoId
+    }
+
+    /** Deletes an entry and, when it was the last one from its photo, the photo row. Returns that photo id. */
+    @Transaction
+    open suspend fun deleteLogAndOrphanPhoto(id: Long): Long? {
+        val photoId = getLogEntry(id)?.photoId
+        deleteLog(id)
+        if (photoId == null || countLogsForPhoto(photoId) > 0) return null
+        deletePhoto(photoId)
+        return photoId
+    }
 }

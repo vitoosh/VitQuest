@@ -42,6 +42,7 @@ fun FoodLogEntity.toModel(): FoodLogEntry = FoodLogEntry(
     servingLabelEn = servingLabelEn,
     nutrients = Nutrients(kcal, proteinG, carbsG, fatG),
     createdAt = Instant.ofEpochMilli(createdAtEpochMs),
+    photoId = photoId,
 )
 
 fun RecipeWithIngredients.toModel(): Recipe = Recipe(

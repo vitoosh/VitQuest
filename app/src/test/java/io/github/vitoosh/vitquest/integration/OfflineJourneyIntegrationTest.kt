@@ -8,6 +8,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import io.github.vitoosh.vitquest.core.data.backup.LocalBackupRepository
 import io.github.vitoosh.vitquest.core.data.backup.RestoreResult
 import io.github.vitoosh.vitquest.core.data.local.VitQuestDatabase
+import io.github.vitoosh.vitquest.core.data.photos.FoodPhotoStore
 import io.github.vitoosh.vitquest.core.data.preferences.UserPreferencesDataSource
 import io.github.vitoosh.vitquest.core.data.repository.ManualWorkoutInput
 import io.github.vitoosh.vitquest.core.data.repository.OfflineBodyRepository
@@ -84,7 +85,7 @@ class OfflineJourneyIntegrationTest {
             override suspend fun reschedule(type: ReminderType) = Unit
             override suspend fun rescheduleAll() = Unit
         }
-        backups = LocalBackupRepository(context, database, store, seeds, scheduler, time)
+        backups = LocalBackupRepository(context, database, store, seeds, scheduler, FoodPhotoStore(context), time)
     }
 
     @After

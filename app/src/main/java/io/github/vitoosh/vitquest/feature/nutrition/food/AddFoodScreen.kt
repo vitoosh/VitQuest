@@ -22,6 +22,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
@@ -78,6 +79,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun AddFoodRoute(
     onNavigateBack: () -> Unit,
+    onOpenPhoto: () -> Unit = {},
     viewModel: AddFoodViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -110,6 +112,7 @@ fun AddFoodRoute(
         onToggleFavorite = viewModel::toggleFavorite,
         onCreateFood = { creating = true },
         onNavigateBack = onNavigateBack,
+        onOpenPhoto = onOpenPhoto,
     )
 
     if (selectedFood != null) {
@@ -156,6 +159,7 @@ fun AddFoodScreen(
     onToggleFavorite: (Food) -> Unit,
     onCreateFood: () -> Unit,
     onNavigateBack: () -> Unit,
+    onOpenPhoto: () -> Unit = {},
 ) {
     Scaffold(
         topBar = {
@@ -198,6 +202,13 @@ fun AddFoodScreen(
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                     modifier = Modifier.fillMaxWidth().padding(horizontal = VqSpacing.lg, vertical = VqSpacing.sm),
                 )
+                FilledTonalButton(
+                    onClick = onOpenPhoto,
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = VqSpacing.lg),
+                ) {
+                    Icon(VqIcons.PhotoCamera, contentDescription = null)
+                    Text(stringResource(R.string.photo_entry), modifier = Modifier.padding(start = VqSpacing.sm))
+                }
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     // Leaves room so the floating button never covers the last row.

@@ -46,8 +46,10 @@ Belum ada satu pun yang dijalankan di HP sungguhan. Untuk POCO X8 Pro (HyperOS):
 - [ ] Onboarding, edit profil, ganti bahasa (Indonesia/Inggris), tema terang/gelap.
 - [ ] Health Connect: izin diberikan, ditolak, dicabut; sensor HP saat izin aktivitas ditolak; input manual.
 - [ ] Catat makanan, air, berat, latihan (pemutar latihan sampai selesai dan berhenti di tengah), kebiasaan.
-- [ ] XP bertambah sekali per aktivitas; menghapus aktivitas menambah baris koreksi.
-- [ ] Hadiah: tambah, wishlist, tabungan, "Sudah didapat" dengan dan tanpa harga, hapus catatan.
+- [ ] Update dari build lama yang masih punya XP/hadiah: data lain tetap ada, tab Hadiah hilang.
+- [ ] Langkah: jalan 100 langkah yang dihitung sendiri, bandingkan dengan angka sensor HP dan akselerometer di Diagnostik langkah; HP di saku, di tangan, dan di tas.
+- [ ] Penghitungan latar: nyalakan, kunci layar 30+ menit sambil berjalan, restart HP, update app; cek notifikasi dan pemakaian baterai, dengan dan tanpa Autostart / "Tanpa batasan" di HyperOS.
+- [ ] Foto makanan (build dengan secret Supabase): persetujuan, kamera, galeri, mode pesawat, foto bukan makanan, ubah berat/nama, simpan, hapus catatan (foto ikut terhapus), cadangan dan pulihkan dengan foto.
 - [ ] Pengingat di jam aktif dan jam tenang, dengan penghemat baterai HyperOS aktif dan tidak; setelah restart HP.
 - [ ] Notifikasi di layar kunci dengan "sembunyikan konten sensitif".
 - [ ] Ekspor cadangan ke penyimpanan HP dan ke Google Drive; pulihkan di HP lain; coba file yang salah.

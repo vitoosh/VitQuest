@@ -16,6 +16,7 @@ import kotlinx.coroutines.test.runTest
 import org.json.JSONObject
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -309,6 +310,38 @@ class DatabaseMigrationTest {
         try {
             assertEquals(emptySet<String>(), tableNames(database) intersect rewardTables)
             assertEquals("Jalan pagi", database.habitDao().observeHabits().first().single().habit.name)
+        } finally {
+            database.close()
+        }
+    }
+
+    @Test
+    fun migrating7To8KeepsTheDiaryAndAddsFoodPhotos() = runTest {
+        createDatabase(version = 7) { db ->
+            insertProfile(db)
+            db.insert(
+                "food_log_entries",
+                SQLiteDatabase.CONFLICT_ABORT,
+                ContentValues().apply {
+                    put("date", "2026-10-20")
+                    put("meal", "LUNCH")
+                    put("name_id", "Nasi goreng")
+                    put("name_en", "Fried rice")
+                    put("grams", 250.0)
+                    put("quantity", 1.0)
+                    put("kcal", 420.0)
+                    put("created_at_epoch_ms", 1L)
+                },
+            )
+        }
+
+        val database = open()
+        try {
+            val entry = database.foodDao().getLogEntry(1)!!
+            assertEquals("Nasi goreng", entry.nameId)
+            assertEquals(null, entry.photoId)
+            assertTrue("food_photos" in tableNames(database))
+            assertTrue(database.foodDao().photoIds().isEmpty())
         } finally {
             database.close()
         }

@@ -25,6 +25,8 @@ data class BackupSnapshot(
     val databaseVersion: Int,
     val tables: Map<String, BackupRows>,
     val preferences: PreferencesBackup,
+    /** Small files kept with the records (food photo copies), as path to Base64 content. */
+    val files: Map<String, String> = emptyMap(),
 )
 
 class BackupException(val error: RestoreError, cause: Throwable? = null) : Exception(error.name, cause)
@@ -34,7 +36,8 @@ class BackupException(val error: RestoreError, cause: Throwable? = null) : Excep
  *
  * ```
  * { "app": "VitQuest", "format": 1, "databaseVersion": 6, "exportedAt": "...",
- *   "preferences": { ... }, "tables": { "weight_entries": [ { "id": 1, ... } ], ... } }
+ *   "preferences": { ... }, "tables": { "weight_entries": [ { "id": 1, ... } ], ... },
+ *   "files": { "food_photos/3.jpg": "<base64>" } }
  * ```
  */
 object BackupFormat {
@@ -58,6 +61,9 @@ object BackupFormat {
                     },
                 ),
             )
+            if (snapshot.files.isNotEmpty()) {
+                put("files", JsonObject(snapshot.files.toSortedMap().mapValues { (_, content) -> JsonPrimitive(content) }))
+            }
         }
         return json.encodeToString(JsonElement.serializer(), root)
     }
@@ -73,7 +79,8 @@ object BackupFormat {
             val tables = (root["tables"] as JsonObject).mapValues { (_, rows) ->
                 (rows as JsonArray).map { row -> (row as JsonObject).mapValues { (_, value) -> decodeValue(value) } }
             }
-            BackupSnapshot(version, tables, decodePreferences(root["preferences"] as? JsonObject))
+            val files = (root["files"] as JsonObject?)?.mapValues { (_, content) -> (content as JsonPrimitive).content }.orEmpty()
+            BackupSnapshot(version, tables, decodePreferences(root["preferences"] as? JsonObject), files)
         } catch (error: RuntimeException) {
             // A cast failed: some part of the file is not shaped like a backup.
             throw BackupException(RestoreError.DAMAGED, error)

@@ -22,6 +22,11 @@ jobs:
     name: Test, lint and build debug APK
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    env:
+      # Food photo estimates (docs/AI_SETUP.md). Both values are public by design; only the
+      # Supabase project URL and its publishable key. When empty, the build works without the feature.
+      VITQUEST_SUPABASE_URL: ${{ secrets.VITQUEST_SUPABASE_URL }}
+      VITQUEST_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITQUEST_SUPABASE_PUBLISHABLE_KEY }}
 
     steps:
       - name: Check out repository
@@ -53,6 +58,15 @@ jobs:
           else
             echo "::warning::VITQUEST_DEBUG_KEYSTORE_BASE64 is not set. This APK uses a temporary debug key and cannot be installed over a previous build without uninstalling (which deletes app data). See README."
             echo "⚠️ Signed with a temporary debug key (secret VITQUEST_DEBUG_KEYSTORE_BASE64 not set)." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Report food photo setup
+        run: |
+          if [ -n "$VITQUEST_SUPABASE_URL" ] && [ -n "$VITQUEST_SUPABASE_PUBLISHABLE_KEY" ]; then
+            echo "Food photo estimates are enabled in this build." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "::notice::VITQUEST_SUPABASE_URL / VITQUEST_SUPABASE_PUBLISHABLE_KEY are not set, so food photo estimates are off in this APK. See docs/AI_SETUP.md."
+            echo "ℹ️ Food photo estimates are off (Supabase secrets not set, see docs/AI_SETUP.md)." >> "$GITHUB_STEP_SUMMARY"
           fi
 
       - name: Run unit tests

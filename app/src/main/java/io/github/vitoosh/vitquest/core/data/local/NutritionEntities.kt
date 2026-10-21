@@ -42,7 +42,7 @@ data class FoodServingEntity(
 @Entity(
     tableName = "food_log_entries",
     foreignKeys = [ForeignKey(entity = FoodEntity::class, parentColumns = ["id"], childColumns = ["food_id"], onDelete = ForeignKey.SET_NULL)],
-    indices = [Index("date"), Index("food_id")],
+    indices = [Index("date"), Index("food_id"), Index("photo_id")],
 )
 data class FoodLogEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
@@ -59,6 +59,18 @@ data class FoodLogEntity(
     @ColumnInfo(name = "protein_g") val proteinG: Double?,
     @ColumnInfo(name = "carbs_g") val carbsG: Double?,
     @ColumnInfo(name = "fat_g") val fatG: Double?,
+    @ColumnInfo(name = "created_at_epoch_ms") val createdAtEpochMs: Long,
+    /** Set when the entry came from a food photo; the photo is [FoodPhotoEntity] with this id. */
+    @ColumnInfo(name = "photo_id") val photoId: Long? = null,
+)
+
+/**
+ * A small copy of a food photo, stored as `food_photos/<id>.jpg` in app storage.
+ * Entries point at it without a foreign key; the photo is deleted with its last entry.
+ */
+@Entity(tableName = "food_photos")
+data class FoodPhotoEntity(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
     @ColumnInfo(name = "created_at_epoch_ms") val createdAtEpochMs: Long,
 )
 

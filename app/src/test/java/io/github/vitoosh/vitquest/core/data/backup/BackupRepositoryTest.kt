@@ -7,6 +7,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import io.github.vitoosh.vitquest.core.data.local.VitQuestDatabase
+import io.github.vitoosh.vitquest.core.data.photos.FoodPhotoStore
 import io.github.vitoosh.vitquest.core.data.local.toEntity
 import io.github.vitoosh.vitquest.core.data.preferences.UserPreferencesDataSource
 import io.github.vitoosh.vitquest.core.data.repository.ReminderScheduler
@@ -47,6 +48,7 @@ class BackupRepositoryTest {
     private lateinit var database: VitQuestDatabase
     private lateinit var preferences: UserPreferencesDataSource
     private lateinit var backups: LocalBackupRepository
+    private val photos = FoodPhotoStore(context)
     private var rescheduled = 0
 
     private val db: SupportSQLiteDatabase get() = database.openHelper.writableDatabase
@@ -62,7 +64,8 @@ class BackupRepositoryTest {
                 rescheduled++
             }
         }
-        backups = LocalBackupRepository(context, database, preferences, seeds, scheduler, time)
+        backups = LocalBackupRepository(context, database, preferences, seeds, scheduler, photos, time)
+        photos.directory.deleteRecursively()
         runBlocking { seeds.ensureLoaded() }
     }
 
@@ -71,6 +74,16 @@ class BackupRepositoryTest {
         scope.cancel()
         database.close()
         prefsFile.delete()
+        photos.directory.deleteRecursively()
+    }
+
+    private fun recordPhotoMeal(photoId: Long, jpeg: ByteArray) {
+        db.execSQL("INSERT INTO food_photos (id, created_at_epoch_ms) VALUES ($photoId, 1)")
+        db.execSQL(
+            "INSERT INTO food_log_entries (date, meal, food_id, name_id, name_en, grams, quantity, kcal, created_at_epoch_ms, photo_id) " +
+                "VALUES ('2026-10-20', 'LUNCH', NULL, 'Nasi goreng', 'Fried rice', 250, 1, 420, 1, $photoId)",
+        )
+        photos.write(photoId, jpeg)
     }
 
     private suspend fun recordSomeData() {
@@ -146,6 +159,44 @@ class BackupRepositoryTest {
         assertEquals(before, backupTables())
         assertEquals(ThemeMode.DARK, preferences.userPreferences.first().themeMode)
         assertEquals(0, rescheduled)
+    }
+
+    @Test
+    fun photoCopiesTravelWithTheBackup() = runTest {
+        recordSomeData()
+        val jpeg = byteArrayOf(-1, -40, -1, 1, 2, 3)
+        recordPhotoMeal(5, jpeg)
+        val file = exportToBytes()
+        assertTrue(String(file).contains("\"files\":{\"food_photos/5.jpg\""))
+
+        database.clearAllTables()
+        photos.directory.deleteRecursively()
+        // A photo on this phone that is not in the backup goes away with the records it belonged to.
+        photos.write(77, byteArrayOf(9))
+
+        assertEquals(RestoreResult.Restored, backups.restore(ByteArrayInputStream(file)))
+        assertTrue(jpeg.contentEquals(photos.file(5).readBytes()))
+        assertTrue(!photos.file(77).exists())
+        assertEquals(5L, database.foodDao().photoIds().single())
+    }
+
+    @Test
+    fun photoFilesThatDoNotFitMakeTheBackupDamaged() = runTest {
+        recordPhotoMeal(5, byteArrayOf(1, 2, 3))
+        val good = String(exportToBytes())
+        val before = backupTables()
+
+        // A path outside the photo folder, a photo no record points at, and content that is not Base64.
+        listOf(
+            good.replace("\"food_photos/5.jpg\"", "\"../databases/vitquest.db\""),
+            good.replace("\"food_photos/5.jpg\"", "\"food_photos/6.jpg\""),
+            good.replace(Regex("\"food_photos/5.jpg\":\"[^\"]*\""), "\"food_photos/5.jpg\":\"not base64!\""),
+        ).forEach { file ->
+            assertEquals(RestoreResult.Failed(RestoreError.DAMAGED), restore(file))
+        }
+        assertEquals(before, backupTables())
+        assertTrue(byteArrayOf(1, 2, 3).contentEquals(photos.file(5).readBytes()))
+        assertTrue(!File(context.filesDir, "food_photos.restore").exists())
     }
 
     @Test

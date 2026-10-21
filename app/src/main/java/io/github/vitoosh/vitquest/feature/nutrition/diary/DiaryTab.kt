@@ -1,16 +1,21 @@
 package io.github.vitoosh.vitquest.feature.nutrition.diary
 
+import android.graphics.BitmapFactory
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.AlertDialog
@@ -19,6 +24,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
@@ -28,20 +34,28 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.vitoosh.vitquest.R
+import io.github.vitoosh.vitquest.core.data.photos.FoodPhotoStore
 import io.github.vitoosh.vitquest.core.designsystem.component.CenteredContent
 import io.github.vitoosh.vitquest.core.designsystem.component.DataSourceKind
 import io.github.vitoosh.vitquest.core.designsystem.component.DataSourceTag
@@ -63,7 +77,10 @@ import io.github.vitoosh.vitquest.core.ui.messageRes
 import io.github.vitoosh.vitquest.feature.nutrition.CalorieSummaryCard
 import io.github.vitoosh.vitquest.feature.nutrition.CalorieTargetDialog
 import io.github.vitoosh.vitquest.feature.nutrition.DateNavigator
+import java.io.File
 import java.time.LocalDate
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 @Composable
 fun DiaryTab(
@@ -266,13 +283,51 @@ private fun MealHeader(meal: MealType, nutrients: Nutrients?, onAdd: () -> Unit)
 
 @Composable
 private fun DiaryEntryRow(entry: FoodLogEntry, onClick: () -> Unit) {
+    var viewingPhoto by rememberSaveable { mutableStateOf(false) }
     ListItem(
         headlineContent = { Text(localized(entry.nameId, entry.nameEn)) },
-        supportingContent = { Text(portionText(entry)) },
+        supportingContent = {
+            Text(if (entry.photoId != null) portionText(entry) + " · " + stringResource(R.string.photo_ai_estimate) else portionText(entry))
+        },
+        leadingContent = entry.photoId?.let { id -> { FoodPhotoThumbnail(id, onClick = { viewingPhoto = true }) } },
         trailingContent = { Text(formatKcal(entry.nutrients.kcal), style = MaterialTheme.typography.titleSmall) },
         colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surface),
         modifier = Modifier.clickable(role = Role.Button, onClick = onClick),
     )
+    if (viewingPhoto && entry.photoId != null) {
+        AlertDialog(
+            onDismissRequest = { viewingPhoto = false },
+            text = { FoodPhotoImage(entry.photoId, Modifier.fillMaxWidth().aspectRatio(4f / 3f)) },
+            confirmButton = { TextButton(onClick = { viewingPhoto = false }) { Text(stringResource(R.string.action_close)) } },
+        )
+    }
+}
+
+/** The small copy kept with an entry from a food photo; read from app storage. */
+@Composable
+private fun FoodPhotoImage(photoId: Long, modifier: Modifier) {
+    val context = LocalContext.current
+    val image by produceState<ImageBitmap?>(null, photoId) {
+        value = withContext(Dispatchers.IO) {
+            val file = File(context.filesDir, FoodPhotoStore.backupPath(photoId))
+            if (file.isFile) BitmapFactory.decodeFile(file.path)?.asImageBitmap() else null
+        }
+    }
+    image?.let {
+        Image(
+            bitmap = it,
+            contentDescription = stringResource(R.string.photo_description),
+            contentScale = ContentScale.Crop,
+            modifier = modifier.clip(RoundedCornerShape(12.dp)),
+        )
+    }
+}
+
+@Composable
+private fun FoodPhotoThumbnail(photoId: Long, onClick: () -> Unit) {
+    IconButton(onClick = onClick) {
+        FoodPhotoImage(photoId, Modifier.size(40.dp))
+    }
 }
 
 /**

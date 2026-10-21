@@ -22,3 +22,6 @@ keystore.properties
 
 # Logs
 *.log
+
+# Compiled output of the Supabase function check
+supabase/tests/out/

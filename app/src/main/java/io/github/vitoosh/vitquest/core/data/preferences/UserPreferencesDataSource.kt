@@ -38,6 +38,7 @@ class UserPreferencesDataSource @Inject constructor(
                     ?.let { stored -> StepSourcePreference.entries.firstOrNull { it.name == stored } }
                     ?: StepSourcePreference.AUTOMATIC,
                 backgroundStepTracking = prefs[Keys.BACKGROUND_STEPS] ?: false,
+                aiPhotoConsent = prefs[Keys.AI_PHOTO_CONSENT] ?: false,
             )
         }
 
@@ -55,6 +56,10 @@ class UserPreferencesDataSource @Inject constructor(
 
     suspend fun setBackgroundStepTracking(enabled: Boolean) {
         dataStore.edit { it[Keys.BACKGROUND_STEPS] = enabled }
+    }
+
+    suspend fun setAiPhotoConsent(consent: Boolean) {
+        dataStore.edit { it[Keys.AI_PHOTO_CONSENT] = consent }
     }
 
     /** Version of the bundled food and recipe data already loaded into the database. */
@@ -100,6 +105,7 @@ class UserPreferencesDataSource @Inject constructor(
         val ONBOARDING_COMPLETED = booleanPreferencesKey("onboarding_completed")
         val STEP_SOURCE = stringPreferencesKey("step_source_preference")
         val BACKGROUND_STEPS = booleanPreferencesKey("background_step_tracking")
+        val AI_PHOTO_CONSENT = booleanPreferencesKey("ai_photo_consent")
         val SEED_VERSION = intPreferencesKey("seed_data_version")
     }
 }

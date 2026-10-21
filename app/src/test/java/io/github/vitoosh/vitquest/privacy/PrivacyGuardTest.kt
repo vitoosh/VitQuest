@@ -26,8 +26,10 @@ class PrivacyGuardTest {
         "android.permission.ACTIVITY_RECOGNITION", // phone step counter
         "android.permission.POST_NOTIFICATIONS", // reminders and the step counting notification
         "android.permission.FOREGROUND_SERVICE_HEALTH", // background step counting (health service type)
+        // Only for food photo estimates, after the user agrees; see onlyTheFoodPhotoCodeUsesTheNetwork.
+        "android.permission.INTERNET",
         // Requested by VitQuest for background step counting, and by WorkManager (reminders).
-        // No network constraint is used; nothing is sent.
+        // No network constraint is used.
         "android.permission.WAKE_LOCK",
         "android.permission.ACCESS_NETWORK_STATE",
         "android.permission.RECEIVE_BOOT_COMPLETED",
@@ -37,15 +39,30 @@ class PrivacyGuardTest {
     )
 
     @Test
-    fun onlyReviewedPermissionsAndNoInternet() {
+    fun onlyReviewedPermissions() {
         @Suppress("DEPRECATION")
         val requested = context.packageManager
             .getPackageInfo(context.packageName, PackageManager.GET_PERMISSIONS)
             .requestedPermissions.orEmpty().toSet()
         // WAKE_LOCK comes from WorkManager's manifest, so this proves library permissions are included.
         assertTrue("Robolectric did not read the merged manifest", "android.permission.WAKE_LOCK" in requested)
-        assertTrue("VitQuest must not have internet access", "android.permission.INTERNET" !in requested)
         assertEquals("Unreviewed permissions", emptySet<String>(), requested - allowed)
+    }
+
+    @Test
+    fun onlyTheFoodPhotoCodeUsesTheNetwork() {
+        val sources = File("src/main/java").walkTopDown().filter { it.extension == "kt" }.toList()
+        val network = Regex("""\bjava\.net\.(URL|HttpURLConnection|Socket)\b|\bokhttp3\b|\bio\.ktor\b|\bretrofit2\b|\bopenConnection\(""")
+        val outside = sources.filter { file -> "/core/ai/" !in file.invariantSeparatorsPath && file.readLines().any(network::containsMatchIn) }
+        assertEquals("Network code outside core/ai", emptyList<File>(), outside)
+        // And within it, only HTTPS to the configured server.
+        val client = File("src/main/java/io/github/vitoosh/vitquest/core/ai/AiClient.kt").readText()
+        assertTrue(client.contains("startsWith(\"https://\")"))
+    }
+
+    @Test
+    fun cleartextTrafficIsNotAllowed() {
+        assertEquals(0, context.applicationInfo.flags and ApplicationInfo.FLAG_USES_CLEARTEXT_TRAFFIC)
     }
 
     @Test

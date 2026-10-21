@@ -17,6 +17,8 @@ interface UserPreferencesRepository {
     suspend fun setStepSourcePreference(preference: StepSourcePreference)
 
     suspend fun setBackgroundStepTracking(enabled: Boolean)
+
+    suspend fun setAiPhotoConsent(consent: Boolean)
 }
 
 class DataStoreUserPreferencesRepository @Inject constructor(
@@ -34,4 +36,6 @@ class DataStoreUserPreferencesRepository @Inject constructor(
         dataSource.setStepSourcePreference(preference)
 
     override suspend fun setBackgroundStepTracking(enabled: Boolean) = dataSource.setBackgroundStepTracking(enabled)
+
+    override suspend fun setAiPhotoConsent(consent: Boolean) = dataSource.setAiPhotoConsent(consent)
 }

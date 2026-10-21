@@ -8,4 +8,6 @@ data class UserPreferences(
     val stepSourcePreference: StepSourcePreference = StepSourcePreference.AUTOMATIC,
     /** Count steps with a foreground service while the app is closed. */
     val backgroundStepTracking: Boolean = false,
+    /** The user agreed that food photos are sent for an AI estimate. Asked again on a new phone. */
+    val aiPhotoConsent: Boolean = false,
 )

@@ -27,6 +27,10 @@ import io.github.vitoosh.vitquest.core.model.UserProfile
 import io.github.vitoosh.vitquest.feature.home.HomeActions
 import io.github.vitoosh.vitquest.feature.home.HomeScreen
 import io.github.vitoosh.vitquest.feature.home.HomeUiState
+import io.github.vitoosh.vitquest.feature.nutrition.photo.FoodPhotoActions
+import io.github.vitoosh.vitquest.feature.nutrition.photo.FoodPhotoScreen
+import io.github.vitoosh.vitquest.feature.nutrition.photo.FoodPhotoUiState
+import io.github.vitoosh.vitquest.feature.nutrition.photo.PhotoError
 import io.github.vitoosh.vitquest.feature.onboarding.OnboardingScreen
 import io.github.vitoosh.vitquest.feature.onboarding.OnboardingStep
 import io.github.vitoosh.vitquest.feature.onboarding.OnboardingUiState
@@ -114,6 +118,22 @@ class AccessibilityChecksTest {
     @Test fun settings() = check(content = settings)
 
     @Test fun reminders() = check(content = reminders)
+
+    @Test fun foodPhotoConsent() = check {
+        FoodPhotoScreen(FoodPhotoUiState.Idle, consent = false, onNavigateBack = {}, actions = FoodPhotoActions())
+    }
+
+    @Test fun foodPhotoChoose() = check {
+        FoodPhotoScreen(FoodPhotoUiState.Idle, consent = true, onNavigateBack = {}, actions = FoodPhotoActions())
+    }
+
+    @Test fun foodPhotoReview() = check {
+        FoodPhotoScreen(FoodPhotoScreenSmokeTest.reviewState(), consent = true, onNavigateBack = {}, actions = FoodPhotoActions())
+    }
+
+    @Test fun foodPhotoFailed() = check {
+        FoodPhotoScreen(FoodPhotoUiState.Failed(PhotoError.SERVER, canRetry = true), consent = true, onNavigateBack = {}, actions = FoodPhotoActions())
+    }
 
     @Test fun onboardingWelcome() = check {
         OnboardingScreen(OnboardingUiState(), onUpdateForm = {}, onNext = {}, onSkip = {}, onBack = {})

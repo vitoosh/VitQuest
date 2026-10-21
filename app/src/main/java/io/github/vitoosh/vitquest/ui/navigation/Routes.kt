@@ -26,6 +26,9 @@ import kotlinx.serialization.Serializable
 /** Date as ISO-8601 and meal as a MealType name, so the route stays serializable. */
 @Serializable data class AddFoodRoute(val date: String, val meal: String)
 
+/** Same date and meal encoding as [AddFoodRoute]. */
+@Serializable data class FoodPhotoRoute(val date: String, val meal: String)
+
 @Serializable data class RecipeDetailRoute(val recipeId: Long)
 
 @Serializable data object ShoppingListRoute

@@ -846,4 +846,107 @@ object VqIcons {
             }
         }
     }
+
+    val PhotoCamera: ImageVector by lazy {
+        materialIcon(name = "VitQuest.PhotoCamera") {
+            materialPath {
+                moveTo(12.0f, 12.0f)
+                moveToRelative(-3.2f, 0.0f)
+                arcToRelative(3.2f, 3.2f, 0.0f, true, true, 6.4f, 0.0f)
+                arcToRelative(3.2f, 3.2f, 0.0f, true, true, -6.4f, 0.0f)
+            }
+            materialPath {
+                moveTo(9.0f, 2.0f)
+                lineTo(7.17f, 4.0f)
+                lineTo(4.0f, 4.0f)
+                curveToRelative(-1.1f, 0.0f, -2.0f, 0.9f, -2.0f, 2.0f)
+                verticalLineToRelative(12.0f)
+                curveToRelative(0.0f, 1.1f, 0.9f, 2.0f, 2.0f, 2.0f)
+                horizontalLineToRelative(16.0f)
+                curveToRelative(1.1f, 0.0f, 2.0f, -0.9f, 2.0f, -2.0f)
+                lineTo(22.0f, 6.0f)
+                curveToRelative(0.0f, -1.1f, -0.9f, -2.0f, -2.0f, -2.0f)
+                horizontalLineToRelative(-3.17f)
+                lineTo(15.0f, 2.0f)
+                lineTo(9.0f, 2.0f)
+                close()
+                moveTo(12.0f, 17.0f)
+                curveToRelative(-2.76f, 0.0f, -5.0f, -2.24f, -5.0f, -5.0f)
+                reflectiveCurveToRelative(2.24f, -5.0f, 5.0f, -5.0f)
+                reflectiveCurveToRelative(5.0f, 2.24f, 5.0f, 5.0f)
+                reflectiveCurveToRelative(-2.24f, 5.0f, -5.0f, 5.0f)
+                close()
+            }
+        }
+    }
+
+    val PhotoLibrary: ImageVector by lazy {
+        materialIcon(name = "VitQuest.PhotoLibrary") {
+            materialPath {
+                moveTo(22.0f, 16.0f)
+                lineTo(22.0f, 4.0f)
+                curveToRelative(0.0f, -1.1f, -0.9f, -2.0f, -2.0f, -2.0f)
+                lineTo(8.0f, 2.0f)
+                curveToRelative(-1.1f, 0.0f, -2.0f, 0.9f, -2.0f, 2.0f)
+                verticalLineToRelative(12.0f)
+                curveToRelative(0.0f, 1.1f, 0.9f, 2.0f, 2.0f, 2.0f)
+                horizontalLineToRelative(12.0f)
+                curveToRelative(1.1f, 0.0f, 2.0f, -0.9f, 2.0f, -2.0f)
+                close()
+                moveTo(11.0f, 12.0f)
+                lineToRelative(2.03f, 2.71f)
+                lineTo(16.0f, 11.0f)
+                lineToRelative(4.0f, 5.0f)
+                lineTo(8.0f, 16.0f)
+                lineToRelative(3.0f, -4.0f)
+                close()
+                moveTo(2.0f, 6.0f)
+                verticalLineToRelative(14.0f)
+                curveToRelative(0.0f, 1.1f, 0.9f, 2.0f, 2.0f, 2.0f)
+                horizontalLineToRelative(14.0f)
+                verticalLineToRelative(-2.0f)
+                lineTo(4.0f, 20.0f)
+                lineTo(4.0f, 6.0f)
+                lineTo(2.0f, 6.0f)
+                close()
+            }
+        }
+    }
+
+    val AutoAwesome: ImageVector by lazy {
+        materialIcon(name = "VitQuest.AutoAwesome") {
+            materialPath {
+                moveTo(19.0f, 9.0f)
+                lineToRelative(1.25f, -2.75f)
+                lineTo(23.0f, 5.0f)
+                lineToRelative(-2.75f, -1.25f)
+                lineTo(19.0f, 1.0f)
+                lineToRelative(-1.25f, 2.75f)
+                lineTo(15.0f, 5.0f)
+                lineToRelative(2.75f, 1.25f)
+                lineTo(19.0f, 9.0f)
+                close()
+                moveTo(11.5f, 9.5f)
+                lineTo(9.0f, 4.0f)
+                lineTo(6.5f, 9.5f)
+                lineTo(1.0f, 12.0f)
+                lineToRelative(5.5f, 2.5f)
+                lineTo(9.0f, 20.0f)
+                lineToRelative(2.5f, -5.5f)
+                lineTo(17.0f, 12.0f)
+                lineToRelative(-5.5f, -2.5f)
+                close()
+                moveTo(19.0f, 15.0f)
+                lineToRelative(-1.25f, 2.75f)
+                lineTo(15.0f, 19.0f)
+                lineToRelative(2.75f, 1.25f)
+                lineTo(19.0f, 23.0f)
+                lineToRelative(1.25f, -2.75f)
+                lineTo(23.0f, 19.0f)
+                lineToRelative(-2.75f, -1.25f)
+                lineTo(19.0f, 15.0f)
+                close()
+            }
+        }
+    }
 }

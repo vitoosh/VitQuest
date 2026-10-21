@@ -97,6 +97,8 @@ class FakeUserPreferencesRepository : UserPreferencesRepository {
 
     override suspend fun setBackgroundStepTracking(enabled: Boolean) =
         state.update { it.copy(backgroundStepTracking = enabled) }
+
+    override suspend fun setAiPhotoConsent(consent: Boolean) = state.update { it.copy(aiPhotoConsent = consent) }
 }
 
 class FakeHealthConnectStepsSource(

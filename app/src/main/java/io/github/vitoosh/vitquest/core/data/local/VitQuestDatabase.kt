@@ -12,6 +12,7 @@ import androidx.room.RoomDatabase
         FoodEntity::class,
         FoodServingEntity::class,
         FoodLogEntity::class,
+        FoodPhotoEntity::class,
         RecipeEntity::class,
         RecipeIngredientEntity::class,
         MealPlanEntity::class,
@@ -48,6 +49,6 @@ abstract class VitQuestDatabase : RoomDatabase() {
 
     companion object {
         const val NAME = "vitquest.db"
-        const val VERSION = 7
+        const val VERSION = 8
     }
 }

@@ -12,6 +12,10 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import io.github.vitoosh.vitquest.core.ai.HttpClient
+import io.github.vitoosh.vitquest.core.ai.KeystoreTokenCipher
+import io.github.vitoosh.vitquest.core.ai.TokenCipher
+import io.github.vitoosh.vitquest.core.ai.UrlConnectionHttpClient
 import io.github.vitoosh.vitquest.core.data.backup.BackupRepository
 import io.github.vitoosh.vitquest.core.data.backup.LocalBackupRepository
 import io.github.vitoosh.vitquest.core.data.health.AndroidHealthConnectStepsSource
@@ -133,6 +137,12 @@ abstract class DataBindingsModule {
 
     @Binds
     abstract fun bindMotionSensorSource(impl: AndroidMotionSensorSource): MotionSensorSource
+
+    @Binds
+    abstract fun bindHttpClient(impl: UrlConnectionHttpClient): HttpClient
+
+    @Binds
+    abstract fun bindTokenCipher(impl: KeystoreTokenCipher): TokenCipher
 
     @Binds
     abstract fun bindTimeSource(impl: SystemTimeSource): TimeSource

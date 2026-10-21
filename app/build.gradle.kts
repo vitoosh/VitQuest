@@ -7,6 +7,12 @@ plugins {
     alias(libs.plugins.room)
 }
 
+// Food photo AI (see docs/AI_SETUP.md). Both values are public by design; empty disables the feature.
+fun buildSetting(env: String, property: String): String =
+    providers.environmentVariable(env).orElse(providers.gradleProperty(property)).getOrElse("").trim()
+val supabaseUrl = buildSetting("VITQUEST_SUPABASE_URL", "vitquest.supabaseUrl")
+val supabasePublishableKey = buildSetting("VITQUEST_SUPABASE_PUBLISHABLE_KEY", "vitquest.supabasePublishableKey")
+
 // Optional shared debug keystore (see README "Debug signing"). When the
 // environment variable is not set, AGP falls back to its default debug key.
 val sharedDebugKeystore = providers.environmentVariable("VITQUEST_DEBUG_KEYSTORE").orNull
@@ -25,6 +31,9 @@ android {
         versionName = "0.1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "SUPABASE_URL", "\"${supabaseUrl.replace("\"", "")}\"")
+        buildConfigField("String", "SUPABASE_PUBLISHABLE_KEY", "\"${supabasePublishableKey.replace("\"", "")}\"")
     }
 
     signingConfigs {

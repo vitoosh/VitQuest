@@ -3,8 +3,10 @@ package io.github.vitoosh.vitquest.core.data.repository
 import io.github.vitoosh.vitquest.core.data.local.FoodDao
 import io.github.vitoosh.vitquest.core.data.local.FoodEntity
 import io.github.vitoosh.vitquest.core.data.local.FoodLogEntity
+import io.github.vitoosh.vitquest.core.data.local.FoodPhotoEntity
 import io.github.vitoosh.vitquest.core.data.local.FoodServingEntity
 import io.github.vitoosh.vitquest.core.data.local.toModel
+import io.github.vitoosh.vitquest.core.data.photos.FoodPhotoStore
 import io.github.vitoosh.vitquest.core.domain.nutrition.PortionCalculator
 import io.github.vitoosh.vitquest.core.model.Food
 import io.github.vitoosh.vitquest.core.model.FoodCategory
@@ -22,6 +24,9 @@ import kotlinx.coroutines.flow.map
 
 /** A portion chosen in the UI: a serving (or plain grams) times a quantity. */
 data class Portion(val serving: FoodServing?, val quantity: Double, val grams: Double)
+
+/** One item from a food photo estimate, as the user confirmed it. */
+data class PhotoMealItem(val nameId: String, val nameEn: String, val grams: Double, val nutrients: Nutrients)
 
 data class CustomFoodInput(
     val name: String,
@@ -46,11 +51,15 @@ interface NutritionRepository {
     /** Changes the amount of a logged item; nutrients scale with the new weight. */
     suspend fun updateAmount(entryId: Long, quantity: Double, grams: Double)
     suspend fun deleteEntry(entryId: Long)
+
+    /** Logs the items estimated from one photo, keeping [thumbnail] so the meal can be seen again. */
+    suspend fun logPhotoMeal(date: LocalDate, meal: MealType, items: List<PhotoMealItem>, thumbnail: ByteArray?): Long
 }
 
 @Singleton
 class OfflineNutritionRepository @Inject constructor(
     private val foodDao: FoodDao,
+    private val photoStore: FoodPhotoStore,
     private val timeSource: TimeSource,
 ) : NutritionRepository {
 
@@ -161,7 +170,36 @@ class OfflineNutritionRepository @Inject constructor(
         )
     }
 
-    override suspend fun deleteEntry(entryId: Long) = foodDao.deleteLog(entryId)
+    override suspend fun deleteEntry(entryId: Long) {
+        // The photo goes with the last entry that came from it.
+        foodDao.deleteLogAndOrphanPhoto(entryId)?.let(photoStore::delete)
+    }
+
+    override suspend fun logPhotoMeal(date: LocalDate, meal: MealType, items: List<PhotoMealItem>, thumbnail: ByteArray?): Long {
+        val now = timeSource.now().toEpochMilli()
+        val entries = items.map { item ->
+            FoodLogEntity(
+                date = date.toString(),
+                meal = meal.name,
+                foodId = null,
+                nameId = item.nameId,
+                nameEn = item.nameEn,
+                grams = item.grams,
+                quantity = 1.0,
+                servingLabelId = null,
+                servingLabelEn = null,
+                kcal = item.nutrients.kcal,
+                proteinG = item.nutrients.proteinG,
+                carbsG = item.nutrients.carbsG,
+                fatG = item.nutrients.fatG,
+                createdAtEpochMs = now,
+            )
+        }
+        val photoId = foodDao.logPhotoMeal(FoodPhotoEntity(createdAtEpochMs = now), entries)
+        // The entries are what matter; if the small copy cannot be written, they are kept without it.
+        if (thumbnail != null) runCatching { photoStore.write(photoId, thumbnail) }
+        return photoId
+    }
 
     private companion object {
         // Large enough to list the whole bundled database when the search is empty.

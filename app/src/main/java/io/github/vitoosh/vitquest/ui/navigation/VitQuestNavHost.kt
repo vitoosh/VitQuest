@@ -5,31 +5,33 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.toRoute
 import io.github.vitoosh.vitquest.R
 import io.github.vitoosh.vitquest.core.domain.nutrition.mealForHour
 import io.github.vitoosh.vitquest.core.model.MealType
 import io.github.vitoosh.vitquest.core.model.WorkoutRequest
-import io.github.vitoosh.vitquest.feature.home.HomeActions
-import io.github.vitoosh.vitquest.feature.nutrition.NutritionScreen
-import io.github.vitoosh.vitquest.feature.workouts.WorkoutsScreen
-import io.github.vitoosh.vitquest.feature.workouts.generator.WorkoutRoutes
-import java.time.LocalDate
-import java.time.LocalTime
 import io.github.vitoosh.vitquest.feature.activity.ActivityRoute as ActivityScreenRoute
 import io.github.vitoosh.vitquest.feature.activity.StepDiagnosticsRoute as StepDiagnosticsScreenRoute
-import io.github.vitoosh.vitquest.feature.home.HomeRoute as HomeScreenRoute
 import io.github.vitoosh.vitquest.feature.habits.HabitsRoute as HabitsScreenRoute
+import io.github.vitoosh.vitquest.feature.home.HomeActions
+import io.github.vitoosh.vitquest.feature.home.HomeRoute as HomeScreenRoute
 import io.github.vitoosh.vitquest.feature.hydration.HydrationRoute as HydrationScreenRoute
-import io.github.vitoosh.vitquest.feature.progress.ProgressRoute as ProgressScreenRoute
-import io.github.vitoosh.vitquest.feature.reminders.RemindersRoute as RemindersScreenRoute
-import io.github.vitoosh.vitquest.feature.workouts.library.ExerciseDetailRoute as ExerciseDetailScreenRoute
-import io.github.vitoosh.vitquest.feature.workouts.player.WorkoutPlayerRoute as WorkoutPlayerScreenRoute
+import io.github.vitoosh.vitquest.feature.nutrition.NutritionScreen
 import io.github.vitoosh.vitquest.feature.nutrition.food.AddFoodRoute as AddFoodScreenRoute
+import io.github.vitoosh.vitquest.feature.nutrition.photo.FoodPhotoRoute as FoodPhotoScreenRoute
 import io.github.vitoosh.vitquest.feature.nutrition.plan.ShoppingListRoute as ShoppingListScreenRoute
 import io.github.vitoosh.vitquest.feature.nutrition.recipes.RecipeDetailRoute as RecipeDetailScreenRoute
 import io.github.vitoosh.vitquest.feature.profile.EditProfileRoute as EditProfileScreenRoute
+import io.github.vitoosh.vitquest.feature.progress.ProgressRoute as ProgressScreenRoute
+import io.github.vitoosh.vitquest.feature.reminders.RemindersRoute as RemindersScreenRoute
 import io.github.vitoosh.vitquest.feature.settings.SettingsRoute as SettingsScreenRoute
 import io.github.vitoosh.vitquest.feature.weight.WeightRoute as WeightScreenRoute
+import io.github.vitoosh.vitquest.feature.workouts.WorkoutsScreen
+import io.github.vitoosh.vitquest.feature.workouts.generator.WorkoutRoutes
+import io.github.vitoosh.vitquest.feature.workouts.library.ExerciseDetailRoute as ExerciseDetailScreenRoute
+import io.github.vitoosh.vitquest.feature.workouts.player.WorkoutPlayerRoute as WorkoutPlayerScreenRoute
+import java.time.LocalDate
+import java.time.LocalTime
 
 @Composable
 fun VitQuestNavHost(
@@ -112,8 +114,19 @@ fun VitQuestNavHost(
         composable<EditProfileRoute> {
             EditProfileScreenRoute(onNavigateBack = navController::navigateUp)
         }
-        composable<AddFoodRoute> {
-            AddFoodScreenRoute(onNavigateBack = navController::navigateUp)
+        composable<AddFoodRoute> { entry ->
+            val route = entry.toRoute<AddFoodRoute>()
+            AddFoodScreenRoute(
+                onNavigateBack = navController::navigateUp,
+                onOpenPhoto = { navController.navigate(FoodPhotoRoute(route.date, route.meal)) { launchSingleTop = true } },
+            )
+        }
+        composable<FoodPhotoRoute> {
+            FoodPhotoScreenRoute(
+                onNavigateBack = navController::navigateUp,
+                // Back to the diary, where the new entries are.
+                onSaved = { navController.popBackStack<AddFoodRoute>(inclusive = true) },
+            )
         }
         composable<RecipeDetailRoute> {
             RecipeDetailScreenRoute(onNavigateBack = navController::navigateUp)

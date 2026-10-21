@@ -71,6 +71,8 @@ data class FoodLogEntry(
     val servingLabelEn: String?,
     val nutrients: Nutrients,
     val createdAt: Instant,
+    /** The food photo this entry was estimated from, if any. */
+    val photoId: Long? = null,
 )
 
 data class WeightEntry(val id: Long, val date: LocalDate, val weightKg: Double, val note: String?)

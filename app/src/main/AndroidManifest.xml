@@ -17,6 +17,10 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
+    <!-- Only for the optional food photo estimate: a photo goes to VitQuest's own Supabase function, which asks
+         Google Gemini. Nothing else in the app uses the network (checked by PrivacyGuardTest). -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <uses-feature
         android:name="android.hardware.sensor.stepcounter"
         android:required="false" />
@@ -41,6 +45,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.VitQuest"
+        android:usesCleartextTraffic="false"
         tools:targetApi="36">
 
         <activity
@@ -73,6 +78,17 @@
                 <category android:name="android.intent.category.HEALTH_PERMISSIONS" />
             </intent-filter>
         </activity-alias>
+
+        <!-- Lets the camera app write a captured photo into VitQuest's cache, for one capture at a time. -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.camera"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/camera_paths" />
+        </provider>
 
         <service
             android:name=".core.steps.StepTrackingService"

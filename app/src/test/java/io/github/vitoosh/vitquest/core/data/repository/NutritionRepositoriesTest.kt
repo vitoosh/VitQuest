@@ -1,11 +1,13 @@
 package io.github.vitoosh.vitquest.core.data.repository
 
+import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import io.github.vitoosh.vitquest.core.data.local.GoalsEntity
 import io.github.vitoosh.vitquest.core.data.local.UserProfileEntity
 import io.github.vitoosh.vitquest.core.data.local.VitQuestDatabase
+import io.github.vitoosh.vitquest.core.data.photos.FoodPhotoStore
 import io.github.vitoosh.vitquest.core.data.seed.SeedImporter
 import io.github.vitoosh.vitquest.core.model.MealType
 import io.github.vitoosh.vitquest.core.model.Nutrients
@@ -27,7 +29,9 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class NutritionRepositoriesTest {
 
+    private val context: Context = ApplicationProvider.getApplicationContext()
     private lateinit var database: VitQuestDatabase
+    private lateinit var photos: FoodPhotoStore
     private lateinit var nutrition: OfflineNutritionRepository
     private lateinit var recipes: OfflineRecipeRepository
     private lateinit var body: OfflineBodyRepository
@@ -36,10 +40,12 @@ class NutritionRepositoriesTest {
 
     @Before
     fun setUp() = runTest {
-        database = Room.inMemoryDatabaseBuilder(ApplicationProvider.getApplicationContext(), VitQuestDatabase::class.java)
+        database = Room.inMemoryDatabaseBuilder(context, VitQuestDatabase::class.java)
             .allowMainThreadQueries()
             .build()
-        nutrition = OfflineNutritionRepository(database.foodDao(), time)
+        photos = FoodPhotoStore(context)
+        photos.directory.deleteRecursively()
+        nutrition = OfflineNutritionRepository(database.foodDao(), photos, time)
         recipes = OfflineRecipeRepository(database.recipeDao(), time)
         body = OfflineBodyRepository(database.bodyDao(), database.profileDao(), time)
 
@@ -157,6 +163,34 @@ class NutritionRepositoriesTest {
 
         body.deleteWeight(weights.last().id)
         assertEquals(82.0, database.profileDao().observeProfile().first()?.currentWeightKg)
+    }
+
+    @Test
+    fun photoMealKeepsItsPhotoUntilTheLastEntryIsDeleted() = runTest {
+        val thumbnail = byteArrayOf(1, 2, 3)
+        val photoId = nutrition.logPhotoMeal(
+            today,
+            MealType.LUNCH,
+            listOf(
+                PhotoMealItem("Nasi putih", "Steamed rice", 150.0, Nutrients(195.0, 3.6, 42.0, 0.4)),
+                PhotoMealItem("Ayam goreng", "Fried chicken", 90.0, Nutrients(260.0, 24.0, 4.0, 16.0)),
+            ),
+            thumbnail,
+        )
+
+        val entries = nutrition.diary(today).first()
+        assertEquals(listOf("Nasi putih", "Ayam goreng"), entries.map { it.nameId })
+        assertTrue(entries.all { it.photoId == photoId && it.meal == MealType.LUNCH && it.foodId == null })
+        assertEquals(455.0, entries.sumOf { it.nutrients.kcal }, 0.01)
+        assertTrue(thumbnail.contentEquals(photos.file(photoId).readBytes()))
+
+        nutrition.deleteEntry(entries[0].id)
+        assertTrue(photos.file(photoId).exists())
+        assertEquals(listOf(photoId), database.foodDao().photoIds())
+
+        nutrition.deleteEntry(entries[1].id)
+        assertFalse(photos.file(photoId).exists())
+        assertTrue(database.foodDao().photoIds().isEmpty())
     }
 
     @Test

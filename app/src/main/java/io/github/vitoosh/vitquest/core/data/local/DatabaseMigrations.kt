@@ -140,5 +140,16 @@ object DatabaseMigrations {
         }
     }
 
-    val ALL: Array<Migration> = arrayOf(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7)
+    /** v8: small copies of food photos used for AI calorie estimates, linked from diary entries. */
+    val MIGRATION_7_8 = object : Migration(7, 8) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            listOf(
+                "CREATE TABLE IF NOT EXISTS `food_photos` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `created_at_epoch_ms` INTEGER NOT NULL)",
+                "ALTER TABLE `food_log_entries` ADD COLUMN `photo_id` INTEGER",
+                "CREATE INDEX IF NOT EXISTS `index_food_log_entries_photo_id` ON `food_log_entries` (`photo_id`)",
+            ).forEach(db::execSQL)
+        }
+    }
+
+    val ALL: Array<Migration> = arrayOf(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8)
 }
