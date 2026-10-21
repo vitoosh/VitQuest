@@ -47,7 +47,9 @@ import io.github.vitoosh.vitquest.core.data.repository.StepsRepository
 import io.github.vitoosh.vitquest.core.data.repository.UserDataRepository
 import io.github.vitoosh.vitquest.core.data.repository.UserPreferencesRepository
 import io.github.vitoosh.vitquest.core.data.repository.WorkoutRepository
+import io.github.vitoosh.vitquest.core.data.sensor.AndroidMotionSensorSource
 import io.github.vitoosh.vitquest.core.data.sensor.AndroidStepSensorSource
+import io.github.vitoosh.vitquest.core.data.sensor.MotionSensorSource
 import io.github.vitoosh.vitquest.core.data.sensor.StepSensorSource
 import io.github.vitoosh.vitquest.core.reminders.WorkManagerReminderScheduler
 import io.github.vitoosh.vitquest.core.time.SystemTimeSource
@@ -128,6 +130,9 @@ abstract class DataBindingsModule {
 
     @Binds
     abstract fun bindStepSensorSource(impl: AndroidStepSensorSource): StepSensorSource
+
+    @Binds
+    abstract fun bindMotionSensorSource(impl: AndroidMotionSensorSource): MotionSensorSource
 
     @Binds
     abstract fun bindTimeSource(impl: SystemTimeSource): TimeSource

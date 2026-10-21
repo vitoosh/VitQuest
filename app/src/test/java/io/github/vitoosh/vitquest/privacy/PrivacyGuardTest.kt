@@ -24,8 +24,10 @@ class PrivacyGuardTest {
     private val allowed = setOf(
         "android.permission.health.READ_STEPS", // Health Connect, read-only daily steps
         "android.permission.ACTIVITY_RECOGNITION", // phone step counter
-        "android.permission.POST_NOTIFICATIONS", // reminders
-        // Added by WorkManager (reminders). No network constraint is used; nothing is sent.
+        "android.permission.POST_NOTIFICATIONS", // reminders and the step counting notification
+        "android.permission.FOREGROUND_SERVICE_HEALTH", // background step counting (health service type)
+        // Requested by VitQuest for background step counting, and by WorkManager (reminders).
+        // No network constraint is used; nothing is sent.
         "android.permission.WAKE_LOCK",
         "android.permission.ACCESS_NETWORK_STATE",
         "android.permission.RECEIVE_BOOT_COMPLETED",

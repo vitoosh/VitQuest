@@ -35,6 +35,17 @@ abstract class StepsDao {
     @Query("SELECT * FROM step_sensor_state WHERE id = $SINGLE_ROW_ID")
     abstract suspend fun getSensorState(): StepSensorStateEntity?
 
+    @Query("SELECT * FROM step_sensor_state WHERE id = $SINGLE_ROW_ID")
+    abstract fun observeSensorState(): Flow<StepSensorStateEntity?>
+
+    /** Adds [steps] to a day's running total for [source]. */
+    @Transaction
+    open suspend fun addSteps(date: LocalDate, source: StepSource, steps: Int, now: Instant) {
+        if (steps <= 0) return
+        val existing = getSteps(date.toString(), source.name) ?: 0
+        upsert(listOf(DailyStepsEntity(date.toString(), source.name, existing + steps, now.toEpochMilli())))
+    }
+
     @Upsert
     abstract suspend fun upsertSensorState(state: StepSensorStateEntity)
 

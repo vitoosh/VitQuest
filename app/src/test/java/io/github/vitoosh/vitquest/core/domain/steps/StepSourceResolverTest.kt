@@ -65,4 +65,15 @@ class StepSourceResolverTest {
         val resolved = StepSourceResolver.resolve(listOf(record(StepSource.PHONE_SENSOR, 0)), StepSourcePreference.AUTOMATIC)
         assertEquals(0, resolved[day]?.steps)
     }
+
+    @Test
+    fun theLargerPhoneCountWinsBecauseTheBuiltInCounterCanMissSteps() {
+        val records = listOf(record(StepSource.PHONE_SENSOR, 265), record(StepSource.MOTION, 4_120))
+        assertEquals(DailySteps(day, 4_120, StepSource.MOTION), StepSourceResolver.resolve(records, StepSourcePreference.PHONE_SENSOR)[day])
+        assertEquals(DailySteps(day, 4_120, StepSource.MOTION), StepSourceResolver.resolve(records, StepSourcePreference.AUTOMATIC)[day])
+        // Health Connect is a tier above, so the phone counts are not mixed with it.
+        val withHealthConnect = records + record(StepSource.HEALTH_CONNECT, 3_900)
+        assertEquals(StepSource.HEALTH_CONNECT, StepSourceResolver.resolve(withHealthConnect, StepSourcePreference.AUTOMATIC)[day]?.source)
+        assertTrue(StepSourceResolver.resolve(records, StepSourcePreference.HEALTH_CONNECT).isEmpty())
+    }
 }

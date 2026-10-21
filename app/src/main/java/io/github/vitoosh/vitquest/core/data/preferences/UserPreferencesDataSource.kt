@@ -37,6 +37,7 @@ class UserPreferencesDataSource @Inject constructor(
                 stepSourcePreference = prefs[Keys.STEP_SOURCE]
                     ?.let { stored -> StepSourcePreference.entries.firstOrNull { it.name == stored } }
                     ?: StepSourcePreference.AUTOMATIC,
+                backgroundStepTracking = prefs[Keys.BACKGROUND_STEPS] ?: false,
             )
         }
 
@@ -50,6 +51,10 @@ class UserPreferencesDataSource @Inject constructor(
 
     suspend fun setStepSourcePreference(preference: StepSourcePreference) {
         dataStore.edit { it[Keys.STEP_SOURCE] = preference.name }
+    }
+
+    suspend fun setBackgroundStepTracking(enabled: Boolean) {
+        dataStore.edit { it[Keys.BACKGROUND_STEPS] = enabled }
     }
 
     /** Version of the bundled food and recipe data already loaded into the database. */
@@ -68,6 +73,7 @@ class UserPreferencesDataSource @Inject constructor(
         return PreferencesBackup(
             themeMode = prefs[Keys.THEME_MODE],
             stepSource = prefs[Keys.STEP_SOURCE],
+            backgroundStepTracking = prefs[Keys.BACKGROUND_STEPS] ?: false,
             onboardingCompleted = prefs[Keys.ONBOARDING_COMPLETED] ?: false,
             seedDataVersion = prefs[Keys.SEED_VERSION] ?: 0,
         )
@@ -80,6 +86,7 @@ class UserPreferencesDataSource @Inject constructor(
             backup.themeMode?.takeIf { stored -> ThemeMode.entries.any { it.name == stored } }?.let { prefs[Keys.THEME_MODE] = it }
             backup.stepSource?.takeIf { stored -> StepSourcePreference.entries.any { it.name == stored } }?.let { prefs[Keys.STEP_SOURCE] = it }
             prefs[Keys.ONBOARDING_COMPLETED] = backup.onboardingCompleted
+            prefs[Keys.BACKGROUND_STEPS] = backup.backgroundStepTracking
             prefs[Keys.SEED_VERSION] = backup.seedDataVersion
         }
     }
@@ -92,6 +99,7 @@ class UserPreferencesDataSource @Inject constructor(
         val THEME_MODE = stringPreferencesKey("theme_mode")
         val ONBOARDING_COMPLETED = booleanPreferencesKey("onboarding_completed")
         val STEP_SOURCE = stringPreferencesKey("step_source_preference")
+        val BACKGROUND_STEPS = booleanPreferencesKey("background_step_tracking")
         val SEED_VERSION = intPreferencesKey("seed_data_version")
     }
 }
@@ -99,6 +107,7 @@ class UserPreferencesDataSource @Inject constructor(
 data class PreferencesBackup(
     val themeMode: String?,
     val stepSource: String?,
+    val backgroundStepTracking: Boolean = false,
     val onboardingCompleted: Boolean,
     val seedDataVersion: Int,
 )

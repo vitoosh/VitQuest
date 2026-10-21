@@ -17,6 +17,10 @@ fun formatInteger(value: Int): String = NumberFormat.getIntegerInstance(currentL
 
 @Composable
 @ReadOnlyComposable
+fun formatInteger(value: Long): String = NumberFormat.getIntegerInstance(currentLocale()).format(value)
+
+@Composable
+@ReadOnlyComposable
 fun formatDecimal(value: Double): String = NumberFormat.getNumberInstance(currentLocale()).apply {
     minimumFractionDigits = 0
     maximumFractionDigits = 1

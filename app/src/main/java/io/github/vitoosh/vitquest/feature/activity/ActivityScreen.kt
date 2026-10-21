@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Info
@@ -38,9 +39,11 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -55,8 +58,11 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.semantics
 import androidx.core.app.ActivityCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleResumeEffect
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.repeatOnLifecycle
 import io.github.vitoosh.vitquest.R
 import io.github.vitoosh.vitquest.core.data.health.AndroidHealthConnectStepsSource
 import io.github.vitoosh.vitquest.core.data.repository.HealthConnectStatus
@@ -69,12 +75,16 @@ import io.github.vitoosh.vitquest.core.designsystem.icon.VqIcons
 import io.github.vitoosh.vitquest.core.designsystem.theme.VqSpacing
 import io.github.vitoosh.vitquest.core.domain.FieldError
 import io.github.vitoosh.vitquest.core.domain.steps.StepDay
+import io.github.vitoosh.vitquest.core.domain.steps.StepDiagnostics
 import io.github.vitoosh.vitquest.core.domain.steps.StepSourceResolver
 import io.github.vitoosh.vitquest.core.domain.steps.StepStats
 import io.github.vitoosh.vitquest.core.model.StepSourcePreference
+import io.github.vitoosh.vitquest.core.steps.StepTrackingNotifications
+import io.github.vitoosh.vitquest.core.steps.StepTrackingService
 import io.github.vitoosh.vitquest.core.ui.dayLabel
 import io.github.vitoosh.vitquest.core.ui.formatInteger
 import java.time.LocalDate
+import kotlinx.coroutines.delay
 
 /** Actions that need the platform (permission prompts, other apps). */
 data class ActivityPlatformActions(
@@ -83,11 +93,14 @@ data class ActivityPlatformActions(
     val openHealthConnectSettings: () -> Unit,
     val enablePhoneSensor: () -> Unit,
     val openAppSettings: () -> Unit,
+    val setBackgroundTracking: (Boolean) -> Unit = {},
+    val openDiagnostics: () -> Unit = {},
 )
 
 @Composable
 fun ActivityRoute(
     onOpenSettings: () -> Unit,
+    onOpenDiagnostics: () -> Unit = {},
     viewModel: ActivityViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -100,6 +113,18 @@ fun ActivityRoute(
         viewModel.refresh()
         onPauseOrDispose { }
     }
+    // While the screen is open, pick up new Health Connect data from other apps every minute.
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
+    LaunchedEffect(lifecycle) {
+        lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+            while (true) {
+                delay(HEALTH_CONNECT_REFRESH_MS)
+                viewModel.refresh()
+            }
+        }
+    }
+    // Asked when background counting is turned on, so the ongoing notification can show today's steps.
+    val notificationLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { }
 
     val healthConnectLauncher = rememberLauncherForActivityResult(
         AndroidHealthConnectStepsSource.permissionContract(),
@@ -132,6 +157,18 @@ fun ActivityRoute(
                 Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", context.packageName, null)),
             )
         },
+        setBackgroundTracking = { enabled ->
+            viewModel.setBackgroundTracking(enabled)
+            if (enabled) {
+                if (!StepTrackingService.start(context)) viewModel.setBackgroundTracking(false)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !StepTrackingNotifications.canPost(context)) {
+                    notificationLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                }
+            } else {
+                StepTrackingService.stop(context)
+            }
+        },
+        openDiagnostics = onOpenDiagnostics,
     )
 
     ActivityScreen(
@@ -155,6 +192,8 @@ private fun Context.startSafely(intent: Intent): Boolean = try {
 }
 
 private enum class Rationale { HEALTH_CONNECT, PHONE_SENSOR }
+
+private const val HEALTH_CONNECT_REFRESH_MS = 60_000L
 
 @Composable
 fun ActivityScreen(
@@ -391,9 +430,10 @@ private fun StepSourcesCard(
                     PhoneSensorStatus.PERMISSION_REQUIRED -> stringResource(
                         if (sensorPermanentlyDenied) R.string.sensor_status_denied else R.string.sensor_status_permission_required,
                     )
-                    PhoneSensorStatus.ACTIVE -> stringResource(
-                        if (sensorUsed) R.string.sensor_status_active else R.string.source_status_not_used,
-                    )
+                    PhoneSensorStatus.ACTIVE -> when {
+                        !sensorUsed -> stringResource(R.string.source_status_not_used)
+                        else -> sensorActivity(state.diagnostics)
+                    }
                 },
             ) {
                 if (status?.phoneSensor == PhoneSensorStatus.PERMISSION_REQUIRED) {
@@ -403,6 +443,10 @@ private fun StepSourcesCard(
                         FilledTonalButton(onClick = onEnableSensor) { Text(stringResource(R.string.action_enable)) }
                     }
                 }
+            }
+
+            if (sensorUsed && status?.phoneSensor == PhoneSensorStatus.ACTIVE) {
+                BackgroundTrackingRow(enabled = state.backgroundTracking, actions = actions)
             }
 
             HorizontalDivider()
@@ -423,6 +467,53 @@ private fun StepSourcesCard(
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
+            TextButton(onClick = actions.openDiagnostics) { Text(stringResource(R.string.diagnostics_open)) }
+        }
+    }
+}
+
+/** Says whether data actually arrives, not only that the permission was given. */
+@Composable
+private fun sensorActivity(diagnostics: StepDiagnostics): String {
+    val counter = when {
+        !diagnostics.collecting -> stringResource(R.string.sensor_status_active)
+        diagnostics.lastCounterValue == null -> stringResource(R.string.sensor_status_waiting)
+        else -> stringResource(R.string.sensor_status_receiving, formatInteger(diagnostics.lastCounterValue))
+    }
+    return if (diagnostics.collecting && diagnostics.motionAvailable) {
+        counter + "\n" + stringResource(R.string.sensor_status_motion, formatInteger(diagnostics.motionStepsThisSession))
+    } else {
+        counter
+    }
+}
+
+@Composable
+private fun BackgroundTrackingRow(enabled: Boolean, actions: ActivityPlatformActions) {
+    Column(verticalArrangement = Arrangement.spacedBy(VqSpacing.xs)) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .toggleable(value = enabled, role = Role.Switch, onValueChange = actions.setBackgroundTracking),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(VqSpacing.md),
+        ) {
+            Column(Modifier.weight(1f)) {
+                Text(stringResource(R.string.background_steps_title), style = MaterialTheme.typography.titleSmall)
+                Text(
+                    text = stringResource(if (enabled) R.string.background_steps_on else R.string.background_steps_off),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            Switch(checked = enabled, onCheckedChange = null)
+        }
+        if (enabled) {
+            Text(
+                text = stringResource(R.string.background_steps_hyperos),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            TextButton(onClick = actions.openAppSettings) { Text(stringResource(R.string.action_open_app_settings)) }
         }
     }
 }

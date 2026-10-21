@@ -9,6 +9,7 @@ import io.github.vitoosh.vitquest.core.data.local.VitQuestDatabase
 import io.github.vitoosh.vitquest.core.model.StepSource
 import io.github.vitoosh.vitquest.core.model.StepSourcePreference
 import io.github.vitoosh.vitquest.testing.FakeHealthConnectStepsSource
+import io.github.vitoosh.vitquest.testing.FakeMotionSensorSource
 import io.github.vitoosh.vitquest.testing.FakeStepSensorSource
 import io.github.vitoosh.vitquest.testing.FakeUserPreferencesRepository
 import io.github.vitoosh.vitquest.testing.FixedTimeSource
@@ -48,7 +49,7 @@ class StepsRepositoryTest {
         database = Room.inMemoryDatabaseBuilder(ApplicationProvider.getApplicationContext(), VitQuestDatabase::class.java)
             .allowMainThreadQueries()
             .build()
-        val tracker = StepSensorTracker(sensor, database.stepsDao(), preferences, time, scope)
+        val tracker = StepSensorTracker(sensor, FakeMotionSensorSource(), database.stepsDao(), preferences, time, scope)
         repository = OfflineFirstStepsRepository(database.stepsDao(), healthConnect, sensor, preferences, tracker, time)
     }
 

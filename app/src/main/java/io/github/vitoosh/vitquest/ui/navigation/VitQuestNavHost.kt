@@ -16,6 +16,7 @@ import io.github.vitoosh.vitquest.feature.workouts.generator.WorkoutRoutes
 import java.time.LocalDate
 import java.time.LocalTime
 import io.github.vitoosh.vitquest.feature.activity.ActivityRoute as ActivityScreenRoute
+import io.github.vitoosh.vitquest.feature.activity.StepDiagnosticsRoute as StepDiagnosticsScreenRoute
 import io.github.vitoosh.vitquest.feature.home.HomeRoute as HomeScreenRoute
 import io.github.vitoosh.vitquest.feature.habits.HabitsRoute as HabitsScreenRoute
 import io.github.vitoosh.vitquest.feature.hydration.HydrationRoute as HydrationScreenRoute
@@ -59,6 +60,8 @@ fun VitQuestNavHost(
         navController.navigate(AddFoodRoute(date.toString(), meal.name))
     }
 
+    val openStepDiagnostics: () -> Unit = { navController.navigate(StepDiagnosticsRoute) { launchSingleTop = true } }
+
     NavHost(navController = navController, startDestination = HomeRoute, modifier = modifier) {
         composable<HomeRoute> {
             HomeScreenRoute(
@@ -77,7 +80,7 @@ fun VitQuestNavHost(
             )
         }
         composable<ActivityRoute> {
-            ActivityScreenRoute(onOpenSettings = openSettings)
+            ActivityScreenRoute(onOpenSettings = openSettings, onOpenDiagnostics = openStepDiagnostics)
         }
         composable<NutritionRoute> {
             NutritionScreen(
@@ -103,6 +106,7 @@ fun VitQuestNavHost(
                 onNavigateBack = navController::navigateUp,
                 onEditProfile = editProfile,
                 onOpenReminders = { navController.navigate(RemindersRoute) { launchSingleTop = true } },
+                onOpenStepDiagnostics = openStepDiagnostics,
             )
         }
         composable<EditProfileRoute> {
@@ -131,6 +135,9 @@ fun VitQuestNavHost(
         }
         composable<HabitsRoute> {
             HabitsScreenRoute(onNavigateBack = navController::navigateUp)
+        }
+        composable<StepDiagnosticsRoute> {
+            StepDiagnosticsScreenRoute(onNavigateBack = navController::navigateUp)
         }
         composable<RemindersRoute> {
             RemindersScreenRoute(onNavigateBack = navController::navigateUp)

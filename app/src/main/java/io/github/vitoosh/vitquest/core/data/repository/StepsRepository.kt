@@ -6,6 +6,7 @@ import io.github.vitoosh.vitquest.core.data.health.HealthConnectStepsSource
 import io.github.vitoosh.vitquest.core.data.local.DailyStepsEntity
 import io.github.vitoosh.vitquest.core.data.local.StepsDao
 import io.github.vitoosh.vitquest.core.data.sensor.StepSensorSource
+import io.github.vitoosh.vitquest.core.domain.steps.SensorCheckpoint
 import io.github.vitoosh.vitquest.core.domain.steps.StepSourceResolver
 import io.github.vitoosh.vitquest.core.model.DailySteps
 import io.github.vitoosh.vitquest.core.model.StepRecord
@@ -46,6 +47,12 @@ interface StepsRepository {
     /** One resolved value per day that has data in [from]..[to]. */
     fun observeDailySteps(from: LocalDate, to: LocalDate): Flow<Map<LocalDate, DailySteps>>
 
+    /** Every stored value for [date], one per source, before choosing. For diagnostics. */
+    fun observeRecords(date: LocalDate): Flow<List<StepRecord>>
+
+    /** The last phone step counter value VitQuest stored, if any. */
+    val sensorCheckpoint: Flow<SensorCheckpoint?>
+
     /** Re-checks permissions and pulls recent Health Connect totals. Cheap to call on every resume. */
     suspend fun refresh(force: Boolean = false)
 
@@ -72,6 +79,13 @@ class OfflineFirstStepsRepository @Inject constructor(
 
     override val preference: Flow<StepSourcePreference> =
         preferencesRepository.userPreferences.map { it.stepSourcePreference }
+
+    override fun observeRecords(date: LocalDate): Flow<List<StepRecord>> =
+        stepsDao.observeRange(date.toString(), date.toString()).map { rows -> rows.mapNotNull { it.toRecord() } }
+
+    override val sensorCheckpoint: Flow<SensorCheckpoint?> = stepsDao.observeSensorState().map { state ->
+        state?.let { SensorCheckpoint(it.bootCount, it.counter, Instant.ofEpochMilli(it.recordedAtEpochMs)) }
+    }
 
     override fun observeDailySteps(from: LocalDate, to: LocalDate): Flow<Map<LocalDate, DailySteps>> =
         combine(stepsDao.observeRange(from.toString(), to.toString()), preference) { rows, pref ->

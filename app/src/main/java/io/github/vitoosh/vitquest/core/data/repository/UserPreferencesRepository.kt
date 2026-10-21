@@ -15,6 +15,8 @@ interface UserPreferencesRepository {
     suspend fun setOnboardingCompleted(completed: Boolean)
 
     suspend fun setStepSourcePreference(preference: StepSourcePreference)
+
+    suspend fun setBackgroundStepTracking(enabled: Boolean)
 }
 
 class DataStoreUserPreferencesRepository @Inject constructor(
@@ -30,4 +32,6 @@ class DataStoreUserPreferencesRepository @Inject constructor(
 
     override suspend fun setStepSourcePreference(preference: StepSourcePreference) =
         dataSource.setStepSourcePreference(preference)
+
+    override suspend fun setBackgroundStepTracking(enabled: Boolean) = dataSource.setBackgroundStepTracking(enabled)
 }

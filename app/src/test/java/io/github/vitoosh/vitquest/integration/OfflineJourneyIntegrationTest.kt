@@ -22,6 +22,7 @@ import io.github.vitoosh.vitquest.core.model.Goals
 import io.github.vitoosh.vitquest.core.model.ReminderType
 import io.github.vitoosh.vitquest.core.model.WorkoutIntensity
 import io.github.vitoosh.vitquest.testing.FakeHealthConnectStepsSource
+import io.github.vitoosh.vitquest.testing.FakeMotionSensorSource
 import io.github.vitoosh.vitquest.testing.FakeProfileRepository
 import io.github.vitoosh.vitquest.testing.FakeStepSensorSource
 import io.github.vitoosh.vitquest.testing.FakeUserPreferencesRepository
@@ -71,7 +72,7 @@ class OfflineJourneyIntegrationTest {
         database = Room.inMemoryDatabaseBuilder(context, VitQuestDatabase::class.java).allowMainThreadQueries().build()
         val sensor = FakeStepSensorSource()
         val userPrefs = FakeUserPreferencesRepository()
-        val tracker = StepSensorTracker(sensor, database.stepsDao(), userPrefs, time, scope)
+        val tracker = StepSensorTracker(sensor, FakeMotionSensorSource(), database.stepsDao(), userPrefs, time, scope)
         val steps = OfflineFirstStepsRepository(database.stepsDao(), FakeHealthConnectStepsSource(), sensor, userPrefs, tracker, time)
         val store = UserPreferencesDataSource(PreferenceDataStoreFactory.create(scope = scope) { prefsFile })
         workouts = OfflineWorkoutRepository(database.workoutDao(), time)

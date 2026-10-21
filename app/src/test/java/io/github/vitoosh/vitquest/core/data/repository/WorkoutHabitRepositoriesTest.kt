@@ -16,6 +16,7 @@ import io.github.vitoosh.vitquest.core.model.WorkoutLocation
 import io.github.vitoosh.vitquest.core.model.WorkoutRequest
 import io.github.vitoosh.vitquest.core.model.WorkoutSource
 import io.github.vitoosh.vitquest.testing.FakeHealthConnectStepsSource
+import io.github.vitoosh.vitquest.testing.FakeMotionSensorSource
 import io.github.vitoosh.vitquest.testing.FakeStepSensorSource
 import io.github.vitoosh.vitquest.testing.FakeUserPreferencesRepository
 import io.github.vitoosh.vitquest.testing.FixedTimeSource
@@ -56,7 +57,7 @@ class WorkoutHabitRepositoriesTest {
             .build()
         val preferences = FakeUserPreferencesRepository()
         val sensor = FakeStepSensorSource()
-        val tracker = StepSensorTracker(sensor, database.stepsDao(), preferences, time, scope)
+        val tracker = StepSensorTracker(sensor, FakeMotionSensorSource(), database.stepsDao(), preferences, time, scope)
         steps = OfflineFirstStepsRepository(database.stepsDao(), FakeHealthConnectStepsSource(), sensor, preferences, tracker, time)
         workouts = OfflineWorkoutRepository(database.workoutDao(), time)
         habits = OfflineHabitRepository(database.habitDao(), database.bodyDao(), database.foodDao(), database.workoutDao(), steps, time)

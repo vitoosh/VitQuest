@@ -3,8 +3,12 @@ package io.github.vitoosh.vitquest.core.model
 import java.time.Instant
 import java.time.LocalDate
 
-/** Where a daily step count came from. */
-enum class StepSource { HEALTH_CONNECT, PHONE_SENSOR, MANUAL }
+/**
+ * Where a daily step count came from. [PHONE_SENSOR] is the phone's built-in step
+ * counter; [MOTION] is VitQuest's own count from the accelerometer, for phones
+ * whose built-in counter misses steps.
+ */
+enum class StepSource { HEALTH_CONNECT, PHONE_SENSOR, MOTION, MANUAL }
 
 /** Which automatic source the user wants VitQuest to use. Manual entries always win for their day. */
 enum class StepSourcePreference { AUTOMATIC, HEALTH_CONNECT, PHONE_SENSOR, MANUAL_ONLY }

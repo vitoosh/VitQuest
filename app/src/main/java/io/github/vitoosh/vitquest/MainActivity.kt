@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -19,6 +20,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import io.github.vitoosh.vitquest.core.designsystem.theme.VitQuestTheme
 import io.github.vitoosh.vitquest.core.designsystem.theme.isDark
 import io.github.vitoosh.vitquest.core.model.ThemeMode
+import io.github.vitoosh.vitquest.core.steps.StepTrackingService
 import io.github.vitoosh.vitquest.ui.VitQuestApp
 
 /** AppCompatActivity is required for the per-app language API on Android 12 and lower. */
@@ -52,9 +54,12 @@ class MainActivity : AppCompatActivity() {
                         color = MaterialTheme.colorScheme.background,
                     ) { Box(Modifier.fillMaxSize()) }
 
-                    is MainActivityUiState.Ready -> VitQuestApp(
-                        onboardingCompleted = state.preferences.onboardingCompleted,
-                    )
+                    is MainActivityUiState.Ready -> {
+                        val backgroundSteps = state.preferences.backgroundStepTracking
+                        // Started from the visible app, which Android allows; it may have been stopped by the system.
+                        LaunchedEffect(backgroundSteps) { if (backgroundSteps) StepTrackingService.start(this@MainActivity) }
+                        VitQuestApp(onboardingCompleted = state.preferences.onboardingCompleted)
+                    }
                 }
             }
         }

@@ -10,6 +10,8 @@ import io.github.vitoosh.vitquest.core.model.BodyMeasurement
 import io.github.vitoosh.vitquest.core.model.WaterLog
 import io.github.vitoosh.vitquest.core.model.WeightEntry
 import kotlinx.coroutines.flow.map
+import io.github.vitoosh.vitquest.core.data.sensor.MotionSample
+import io.github.vitoosh.vitquest.core.data.sensor.MotionSensorSource
 import io.github.vitoosh.vitquest.core.data.sensor.StepSensorSource
 import io.github.vitoosh.vitquest.core.domain.steps.SensorReading
 import io.github.vitoosh.vitquest.core.model.StepSourcePreference
@@ -92,6 +94,9 @@ class FakeUserPreferencesRepository : UserPreferencesRepository {
 
     override suspend fun setStepSourcePreference(preference: StepSourcePreference) =
         state.update { it.copy(stepSourcePreference = preference) }
+
+    override suspend fun setBackgroundStepTracking(enabled: Boolean) =
+        state.update { it.copy(backgroundStepTracking = enabled) }
 }
 
 class FakeHealthConnectStepsSource(
@@ -116,6 +121,14 @@ class FakeStepSensorSource(
     val emitted = MutableSharedFlow<SensorReading>()
     override fun hasPermission() = permissionGranted
     override fun readings(): Flow<SensorReading> = emitted
+}
+
+class FakeMotionSensorSource(
+    override var isAvailable: Boolean = true,
+    override var hasWakeUpSensor: Boolean = false,
+) : MotionSensorSource {
+    val emitted = MutableSharedFlow<MotionSample>(extraBufferCapacity = 10_000)
+    override fun samples(preferWakeUp: Boolean): Flow<MotionSample> = emitted
 }
 
 class FixedTimeSource(var instant: Instant, private val zoneId: ZoneId = ZoneId.of("Asia/Jakarta")) : TimeSource {

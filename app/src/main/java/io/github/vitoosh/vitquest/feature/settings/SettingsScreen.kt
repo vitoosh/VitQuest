@@ -62,6 +62,7 @@ fun SettingsRoute(
     onNavigateBack: () -> Unit,
     onEditProfile: () -> Unit,
     onOpenReminders: () -> Unit = {},
+    onOpenStepDiagnostics: () -> Unit = {},
     viewModel: SettingsViewModel = hiltViewModel(),
 ) {
     val themeMode by viewModel.themeMode.collectAsStateWithLifecycle()
@@ -85,6 +86,7 @@ fun SettingsRoute(
         },
         onEditProfile = onEditProfile,
         onOpenReminders = onOpenReminders,
+        onOpenStepDiagnostics = onOpenStepDiagnostics,
         onDeleteAllData = viewModel::deleteAllData,
         onNavigateBack = onNavigateBack,
         backupState = backupState,
@@ -109,6 +111,7 @@ fun SettingsScreen(
     onDeleteAllData: () -> Unit,
     onNavigateBack: () -> Unit,
     onOpenReminders: () -> Unit = {},
+    onOpenStepDiagnostics: () -> Unit = {},
     backupState: BackupState = BackupState(),
     onExportBackup: () -> Unit = {},
     onRestoreBackup: () -> Unit = {},
@@ -150,6 +153,13 @@ fun SettingsScreen(
                     leadingContent = { Icon(Icons.Filled.Notifications, contentDescription = null) },
                     trailingContent = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null) },
                     modifier = Modifier.clickable(role = Role.Button, onClick = onOpenReminders),
+                )
+                ListItem(
+                    headlineContent = { Text(stringResource(R.string.diagnostics_title)) },
+                    supportingContent = { Text(stringResource(R.string.settings_diagnostics_description)) },
+                    leadingContent = { Icon(VqIcons.Walk, contentDescription = null) },
+                    trailingContent = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null) },
+                    modifier = Modifier.clickable(role = Role.Button, onClick = onOpenStepDiagnostics),
                 )
 
                 HorizontalDivider()

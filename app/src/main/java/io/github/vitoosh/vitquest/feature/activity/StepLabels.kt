@@ -15,6 +15,7 @@ val StepSource.labelRes: Int
     get() = when (this) {
         StepSource.HEALTH_CONNECT -> R.string.step_source_health_connect
         StepSource.PHONE_SENSOR -> R.string.step_source_phone_sensor
+        StepSource.MOTION -> R.string.step_source_motion
         StepSource.MANUAL -> R.string.step_source_manual
     }
 

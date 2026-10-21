@@ -5,13 +5,16 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.vitoosh.vitquest.core.data.repository.OfflineFirstStepsRepository
 import io.github.vitoosh.vitquest.core.data.repository.ProfileRepository
+import io.github.vitoosh.vitquest.core.data.repository.StepSensorTracker
 import io.github.vitoosh.vitquest.core.data.repository.StepSourcesStatus
 import io.github.vitoosh.vitquest.core.data.repository.StepsRepository
+import io.github.vitoosh.vitquest.core.data.repository.UserPreferencesRepository
 import io.github.vitoosh.vitquest.core.domain.FieldError
 import io.github.vitoosh.vitquest.core.domain.FieldResult
 import io.github.vitoosh.vitquest.core.domain.InputLimits
 import io.github.vitoosh.vitquest.core.domain.NumberInput
 import io.github.vitoosh.vitquest.core.domain.steps.StepDay
+import io.github.vitoosh.vitquest.core.domain.steps.StepDiagnostics
 import io.github.vitoosh.vitquest.core.domain.steps.StepStats
 import io.github.vitoosh.vitquest.core.domain.steps.StepSummary
 import io.github.vitoosh.vitquest.core.model.StepSourcePreference
@@ -41,6 +44,8 @@ sealed interface ActivityUiState {
         val history: List<StepDay>,
         val status: StepSourcesStatus?,
         val preference: StepSourcePreference,
+        val diagnostics: StepDiagnostics = StepDiagnostics(),
+        val backgroundTracking: Boolean = false,
     ) : ActivityUiState
 }
 
@@ -49,6 +54,8 @@ sealed interface ActivityUiState {
 class ActivityViewModel @Inject constructor(
     private val stepsRepository: StepsRepository,
     private val profileRepository: ProfileRepository,
+    private val preferencesRepository: UserPreferencesRepository,
+    tracker: StepSensorTracker,
     private val timeSource: TimeSource,
 ) : ViewModel() {
 
@@ -59,9 +66,10 @@ class ActivityViewModel @Inject constructor(
         combine(
             stepsRepository.observeDailySteps(from, date),
             profileRepository.goals.map { it?.dailyStepGoal },
-            stepsRepository.sourcesStatus,
-            stepsRepository.preference,
-        ) { byDate, goal, status, preference ->
+            combine(stepsRepository.sourcesStatus, stepsRepository.preference) { status, preference -> status to preference },
+            tracker.diagnostics,
+            preferencesRepository.userPreferences.map { it.backgroundStepTracking },
+        ) { byDate, goal, (status, preference), diagnostics, background ->
             val history = StepStats.days(from, date, byDate)
             val week = history.takeLast(WEEK_DAYS)
             ActivityUiState.Ready(
@@ -72,6 +80,8 @@ class ActivityViewModel @Inject constructor(
                 history = history.reversed(),
                 status = status,
                 preference = preference,
+                diagnostics = diagnostics,
+                backgroundTracking = background,
             )
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), ActivityUiState.Loading)
@@ -109,6 +119,11 @@ class ActivityViewModel @Inject constructor(
 
     fun setPreference(preference: StepSourcePreference) {
         viewModelScope.launch { stepsRepository.setPreference(preference) }
+    }
+
+    /** Only stores the choice; the screen starts or stops the service, which needs a visible activity. */
+    fun setBackgroundTracking(enabled: Boolean) {
+        viewModelScope.launch { preferencesRepository.setBackgroundStepTracking(enabled) }
     }
 
     private companion object {
