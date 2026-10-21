@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Stylised "V" that doubles as an upward progress check mark. -->
+    <path
+        android:pathData="M36,44 L52,70 L72,36"
+        android:strokeWidth="9"
+        android:strokeColor="#FFFFFF"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <!-- Quest spark. -->
+    <path
+        android:fillColor="#FFB781"
+        android:pathData="M74,26 m-5,0 a5,5 0,1 1,10 0 a5,5 0,1 1,-10 0" />
+</vector>

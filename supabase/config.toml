@@ -1,0 +1,6 @@
+# Only the parts VitQuest needs; see docs/AI_SETUP.md.
+
+[functions.food-photo]
+# The function checks the caller itself: it counts the request with the caller's own
+# token through `consume_food_photo_quota`, which fails without a valid sign-in.
+verify_jwt = false

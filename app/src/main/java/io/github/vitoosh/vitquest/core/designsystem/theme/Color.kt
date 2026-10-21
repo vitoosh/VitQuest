@@ -1,0 +1,78 @@
+package io.github.vitoosh.vitquest.core.designsystem.theme
+
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
+import androidx.compose.ui.graphics.Color
+
+// VitQuest palette: a calm "vitality" green as primary and a warm amber
+// tertiary reserved for accents such as achievements.
+
+internal val LightColors = lightColorScheme(
+    primary = Color(0xFF1A6B4F),
+    onPrimary = Color(0xFFFFFFFF),
+    primaryContainer = Color(0xFFA6F2CF),
+    onPrimaryContainer = Color(0xFF002116),
+    secondary = Color(0xFF4C6358),
+    onSecondary = Color(0xFFFFFFFF),
+    secondaryContainer = Color(0xFFCFE9DA),
+    onSecondaryContainer = Color(0xFF092016),
+    tertiary = Color(0xFF8F4C00),
+    onTertiary = Color(0xFFFFFFFF),
+    tertiaryContainer = Color(0xFFFFDCC4),
+    onTertiaryContainer = Color(0xFF2F1500),
+    error = Color(0xFFBA1A1A),
+    onError = Color(0xFFFFFFFF),
+    errorContainer = Color(0xFFFFDAD6),
+    onErrorContainer = Color(0xFF410002),
+    background = Color(0xFFF6FBF6),
+    onBackground = Color(0xFF171D1A),
+    surface = Color(0xFFF6FBF6),
+    onSurface = Color(0xFF171D1A),
+    surfaceVariant = Color(0xFFDBE5DE),
+    onSurfaceVariant = Color(0xFF404944),
+    outline = Color(0xFF707973),
+    outlineVariant = Color(0xFFBFC9C2),
+    inverseSurface = Color(0xFF2C322E),
+    inverseOnSurface = Color(0xFFEDF2ED),
+    inversePrimary = Color(0xFF8AD6B4),
+    surfaceContainerLowest = Color(0xFFFFFFFF),
+    surfaceContainerLow = Color(0xFFF0F5F0),
+    surfaceContainer = Color(0xFFEAEFEA),
+    surfaceContainerHigh = Color(0xFFE4EAE4),
+    surfaceContainerHighest = Color(0xFFDFE4DF),
+)
+
+internal val DarkColors = darkColorScheme(
+    primary = Color(0xFF8AD6B4),
+    onPrimary = Color(0xFF003827),
+    primaryContainer = Color(0xFF005139),
+    onPrimaryContainer = Color(0xFFA6F2CF),
+    secondary = Color(0xFFB3CCBE),
+    onSecondary = Color(0xFF1F352B),
+    secondaryContainer = Color(0xFF354B41),
+    onSecondaryContainer = Color(0xFFCFE9DA),
+    tertiary = Color(0xFFFFB781),
+    onTertiary = Color(0xFF4E2600),
+    tertiaryContainer = Color(0xFF6D3900),
+    onTertiaryContainer = Color(0xFFFFDCC4),
+    error = Color(0xFFFFB4AB),
+    onError = Color(0xFF690005),
+    errorContainer = Color(0xFF93000A),
+    onErrorContainer = Color(0xFFFFDAD6),
+    background = Color(0xFF0F1512),
+    onBackground = Color(0xFFDFE4DF),
+    surface = Color(0xFF0F1512),
+    onSurface = Color(0xFFDFE4DF),
+    surfaceVariant = Color(0xFF404944),
+    onSurfaceVariant = Color(0xFFBFC9C2),
+    outline = Color(0xFF89938C),
+    outlineVariant = Color(0xFF404944),
+    inverseSurface = Color(0xFFDFE4DF),
+    inverseOnSurface = Color(0xFF2C322E),
+    inversePrimary = Color(0xFF1A6B4F),
+    surfaceContainerLowest = Color(0xFF0A0F0D),
+    surfaceContainerLow = Color(0xFF171D1A),
+    surfaceContainer = Color(0xFF1B211E),
+    surfaceContainerHigh = Color(0xFF262B28),
+    surfaceContainerHighest = Color(0xFF303633),
+)

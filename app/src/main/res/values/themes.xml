@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Window-level theme. Compose draws the app with VitQuestTheme. -->
+    <style name="Theme.VitQuest" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <item name="android:windowBackground">@color/vq_window_background</item>
+    </style>
+</resources>
