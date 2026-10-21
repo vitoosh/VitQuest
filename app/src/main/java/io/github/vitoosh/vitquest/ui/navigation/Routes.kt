@@ -19,8 +19,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable data object WorkoutsRoute
 
-@Serializable data object RewardsRoute
-
 @Serializable data object SettingsRoute
 
 @Serializable data object EditProfileRoute
@@ -55,7 +53,7 @@ data class WorkoutPlayerRoute(
 
 @Serializable data object RemindersRoute
 
-/** The five bottom-navigation destinations. */
+/** The four bottom-navigation destinations. */
 enum class TopLevelDestination(
     val route: Any,
     val routeClass: KClass<*>,
@@ -66,7 +64,6 @@ enum class TopLevelDestination(
     ACTIVITY(ActivityRoute, ActivityRoute::class, R.string.nav_activity, VqIcons.Walk),
     NUTRITION(NutritionRoute, NutritionRoute::class, R.string.nav_nutrition, VqIcons.Restaurant),
     WORKOUTS(WorkoutsRoute, WorkoutsRoute::class, R.string.nav_workouts, VqIcons.FitnessCenter),
-    REWARDS(RewardsRoute, RewardsRoute::class, R.string.nav_rewards, VqIcons.Trophy),
 }
 
 /** Switches tabs while keeping each tab's own back stack and scroll state. */

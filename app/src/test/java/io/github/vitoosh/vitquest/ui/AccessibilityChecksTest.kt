@@ -17,14 +17,11 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import io.github.vitoosh.vitquest.core.designsystem.theme.VitQuestTheme
-import io.github.vitoosh.vitquest.core.domain.rewards.Leveling
 import io.github.vitoosh.vitquest.core.locale.AppLanguage
 import io.github.vitoosh.vitquest.core.model.Goals
 import io.github.vitoosh.vitquest.core.model.ReminderSetting
 import io.github.vitoosh.vitquest.core.model.ReminderType
 import io.github.vitoosh.vitquest.core.model.ReminderWindow
-import io.github.vitoosh.vitquest.core.model.Reward
-import io.github.vitoosh.vitquest.core.model.RewardType
 import io.github.vitoosh.vitquest.core.model.ThemeMode
 import io.github.vitoosh.vitquest.core.model.UserProfile
 import io.github.vitoosh.vitquest.feature.home.HomeActions
@@ -36,9 +33,6 @@ import io.github.vitoosh.vitquest.feature.onboarding.OnboardingUiState
 import io.github.vitoosh.vitquest.feature.reminders.ReminderActions
 import io.github.vitoosh.vitquest.feature.reminders.RemindersScreen
 import io.github.vitoosh.vitquest.feature.reminders.RemindersUiState
-import io.github.vitoosh.vitquest.feature.rewards.RewardActions
-import io.github.vitoosh.vitquest.feature.rewards.RewardsScreen
-import io.github.vitoosh.vitquest.feature.rewards.RewardsUiState
 import io.github.vitoosh.vitquest.feature.settings.SettingsScreen
 import io.github.vitoosh.vitquest.testing.accessibilityProblems
 import java.time.LocalDate
@@ -92,7 +86,6 @@ class AccessibilityChecksTest {
             uiState = HomeUiState.Ready(
                 profile = UserProfile(currentWeightKg = 80.0),
                 goals = Goals(targetWeightKg = 75.0, dailyStepGoal = 8_000, dailyWaterTargetMl = 2_400, waterServingMl = 250),
-                level = Leveling.progress(320),
                 today = today,
             ),
             actions = HomeActions(),
@@ -111,22 +104,6 @@ class AccessibilityChecksTest {
         )
     }
 
-    private val rewards: @Composable () -> Unit = {
-        RewardsScreen(
-            RewardsUiState(
-                today = today,
-                level = Leveling.progress(260),
-                transactions = emptyList(),
-                rewards = listOf(Reward(1, "Botol minum", null, RewardType.PHYSICAL, 85_000, wishlist = true)),
-                history = emptyList(),
-                budgetEntries = emptyList(),
-                monthlyBudget = null,
-            ),
-            RewardActions(),
-            onOpenSettings = {},
-        )
-    }
-
     private val reminders: @Composable () -> Unit = {
         val settings = ReminderType.entries.associateWith { ReminderSetting(it) }
         RemindersScreen(RemindersUiState(settings, ReminderWindow(), settings.mapValues { null }), canNotify = false, actions = ReminderActions(), onNavigateBack = {})
@@ -135,8 +112,6 @@ class AccessibilityChecksTest {
     @Test fun home() = check(content = home)
 
     @Test fun settings() = check(content = settings)
-
-    @Test fun rewards() = check(content = rewards)
 
     @Test fun reminders() = check(content = reminders)
 

@@ -6,7 +6,6 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.intPreferencesKey
-import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import io.github.vitoosh.vitquest.core.model.StepSourcePreference
 import io.github.vitoosh.vitquest.core.model.ThemeMode
@@ -63,24 +62,12 @@ class UserPreferencesDataSource @Inject constructor(
         dataStore.edit { it[Keys.SEED_VERSION] = version }
     }
 
-    /** Optional monthly real-money budget for rewards, in rupiah. */
-    val monthlyRewardBudget: Flow<Long?> = dataStore.data
-        .catch { if (it is IOException) emit(emptyPreferences()) else throw it }
-        .map { it[Keys.MONTHLY_REWARD_BUDGET] }
-
-    suspend fun setMonthlyRewardBudget(rupiah: Long?) {
-        dataStore.edit { prefs ->
-            if (rupiah == null) prefs.remove(Keys.MONTHLY_REWARD_BUDGET) else prefs[Keys.MONTHLY_REWARD_BUDGET] = rupiah
-        }
-    }
-
     /** The settings worth carrying to another phone. The UI language is kept by Android, not here. */
     suspend fun backup(): PreferencesBackup {
         val prefs = dataStore.data.catch { if (it is IOException) emit(emptyPreferences()) else throw it }.first()
         return PreferencesBackup(
             themeMode = prefs[Keys.THEME_MODE],
             stepSource = prefs[Keys.STEP_SOURCE],
-            monthlyRewardBudget = prefs[Keys.MONTHLY_REWARD_BUDGET],
             onboardingCompleted = prefs[Keys.ONBOARDING_COMPLETED] ?: false,
             seedDataVersion = prefs[Keys.SEED_VERSION] ?: 0,
         )
@@ -92,7 +79,6 @@ class UserPreferencesDataSource @Inject constructor(
             prefs.clear()
             backup.themeMode?.takeIf { stored -> ThemeMode.entries.any { it.name == stored } }?.let { prefs[Keys.THEME_MODE] = it }
             backup.stepSource?.takeIf { stored -> StepSourcePreference.entries.any { it.name == stored } }?.let { prefs[Keys.STEP_SOURCE] = it }
-            backup.monthlyRewardBudget?.takeIf { it > 0 }?.let { prefs[Keys.MONTHLY_REWARD_BUDGET] = it }
             prefs[Keys.ONBOARDING_COMPLETED] = backup.onboardingCompleted
             prefs[Keys.SEED_VERSION] = backup.seedDataVersion
         }
@@ -107,14 +93,12 @@ class UserPreferencesDataSource @Inject constructor(
         val ONBOARDING_COMPLETED = booleanPreferencesKey("onboarding_completed")
         val STEP_SOURCE = stringPreferencesKey("step_source_preference")
         val SEED_VERSION = intPreferencesKey("seed_data_version")
-        val MONTHLY_REWARD_BUDGET = longPreferencesKey("monthly_reward_budget_rupiah")
     }
 }
 
 data class PreferencesBackup(
     val themeMode: String?,
     val stepSource: String?,
-    val monthlyRewardBudget: Long?,
     val onboardingCompleted: Boolean,
     val seedDataVersion: Int,
 )

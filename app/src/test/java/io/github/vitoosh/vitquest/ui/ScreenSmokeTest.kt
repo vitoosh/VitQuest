@@ -103,9 +103,6 @@ class ScreenSmokeTest {
         composeRule.onNode(hasScrollToNodeAction()).performScrollToNode(hasText(string(R.string.home_weight_to_lose, "5")))
         composeRule.onNodeWithText(string(R.string.home_weight_to_lose, "5")).assertIsDisplayed()
         composeRule.onNodeWithText(string(R.string.data_source_manual)).assertIsDisplayed()
-        // The rewards card is a lazy item below the fold and starts at level 1.
-        composeRule.onNode(hasScrollToNodeAction()).performScrollToNode(hasText(string(R.string.home_rewards_title)))
-        composeRule.onNodeWithText(string(R.string.rewards_level, "1")).assertIsDisplayed()
     }
 
     @Test

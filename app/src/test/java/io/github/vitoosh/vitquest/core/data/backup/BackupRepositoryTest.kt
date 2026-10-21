@@ -55,7 +55,7 @@ class BackupRepositoryTest {
     fun setUp() {
         database = Room.inMemoryDatabaseBuilder(context, VitQuestDatabase::class.java).allowMainThreadQueries().build()
         preferences = UserPreferencesDataSource(PreferenceDataStoreFactory.create(scope = scope) { prefsFile })
-        val seeds = SeedDataLoader(context, database.foodDao(), database.recipeDao(), database.rewardDao(), preferences, time)
+        val seeds = SeedDataLoader(context, database.foodDao(), database.recipeDao(), preferences, time)
         val scheduler = object : ReminderScheduler {
             override suspend fun reschedule(type: ReminderType) = Unit
             override suspend fun rescheduleAll() {
@@ -82,13 +82,11 @@ class BackupRepositoryTest {
             "INSERT INTO weight_entries (id, date, weight_kg, note, updated_at_epoch_ms) VALUES (1, '2026-10-20', 80.5, 'pagi', 1)",
             "INSERT INTO habits (id, name, target_days_per_week, created_at_epoch_ms) VALUES (3, 'Tidur 7 jam', 5, 1)",
             "INSERT INTO habit_check_ins (habit_id, date) VALUES (3, '2026-10-20')",
-            "INSERT INTO reward_transactions (currency, amount, reason, source_key, date, created_at_epoch_ms) VALUES ('XP', 50, 'WORKOUT', 'g:workout:1#1', '2026-10-20', 1)",
-            "INSERT INTO budget_entries (id, date, kind, amount_rupiah, reward_id, note, created_at_epoch_ms) VALUES (1, '2026-10-20', 'SAVING', 25000, 1, NULL, 1)",
+            "INSERT INTO water_logs (date, amount_ml, logged_at_epoch_ms) VALUES ('2026-10-20', 250, 1)",
             "INSERT INTO reminder_settings (type, enabled, interval_minutes, time_minutes, days) VALUES ('WATER', 1, 30, NULL, '')",
             "INSERT INTO step_sensor_state (id, boot_count, counter, recorded_at_epoch_ms) VALUES (1, 4, 12000, 1)",
         ).forEach(db::execSQL)
         preferences.setThemeMode(ThemeMode.DARK)
-        preferences.setMonthlyRewardBudget(300_000)
         preferences.setOnboardingCompleted(true)
     }
 
@@ -114,7 +112,6 @@ class BackupRepositoryTest {
         assertEquals(RestoreResult.Restored, backups.restore(ByteArrayInputStream(file)))
         assertEquals(before, backupTables())
         assertEquals(ThemeMode.DARK, preferences.userPreferences.first().themeMode)
-        assertEquals(300_000L, preferences.monthlyRewardBudget.first())
         assertTrue(preferences.userPreferences.first().onboardingCompleted)
         assertEquals(1, rescheduled)
         // The step counter checkpoint belongs to this phone and is neither exported nor replaced.
@@ -153,7 +150,7 @@ class BackupRepositoryTest {
 
     @Test
     fun backupFromAnOlderVersionIsMigratedOnRestore() = runTest {
-        // A version 5 backup still has Reward Credits, the old rewards table and redemptions.
+        // A version 5 backup still has Reward Credits, the old rewards table and redemptions; all of it migrates away.
         val v5 = """
             {"app":"VitQuest","format":1,"databaseVersion":5,"exportedAt":"2026-10-01T00:00:00Z",
              "preferences":{"themeMode":"LIGHT","onboardingCompleted":true,"seedDataVersion":2},
@@ -168,10 +165,9 @@ class BackupRepositoryTest {
         """.trimIndent()
 
         assertEquals(RestoreResult.Restored, restore(v5))
-        val dao = database.rewardDao()
-        assertEquals(50, dao.observeXp().first())
-        assertEquals(listOf("Buku"), dao.observeRewards().first().map { it.name })
-        assertEquals(listOf("a"), dao.observeHistory().first().map { it.requestId })
+        // Rewards were dropped by later versions; the rest of the data is kept.
+        val tables = BackupTables.read(db)
+        assertTrue(listOf("reward_transactions", "rewards", "reward_items", "reward_history").none { it in tables })
         assertEquals("Jalan pagi", database.habitDao().observeHabits().first().single().habit.name)
         assertEquals(ThemeMode.LIGHT, preferences.userPreferences.first().themeMode)
         // The scratch database used for migrating is cleaned up.

@@ -5,9 +5,6 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.vitoosh.vitquest.core.data.repository.BodyRepository
 import io.github.vitoosh.vitquest.core.data.repository.HabitRepository
-import io.github.vitoosh.vitquest.core.data.repository.RewardRepository
-import io.github.vitoosh.vitquest.core.domain.rewards.LevelProgress
-import io.github.vitoosh.vitquest.core.domain.rewards.Leveling
 import io.github.vitoosh.vitquest.core.data.repository.WorkoutRepository
 import io.github.vitoosh.vitquest.core.domain.habits.HabitStats
 import io.github.vitoosh.vitquest.feature.habits.HabitsOverview
@@ -64,7 +61,6 @@ sealed interface HomeUiState {
         val weekWorkoutDays: Int = 0,
         /** Null until loaded; Home then shows how many habits are done today. */
         val habits: HabitsUiState? = null,
-        val level: LevelProgress = Leveling.progress(0),
         val energy: EnergyEstimate = EnergyEstimate.Missing(emptySet()),
         val calorieTarget: CalorieTarget? = null,
         val weight: WeightSummary? = null,
@@ -81,7 +77,6 @@ class HomeViewModel @Inject constructor(
     private val bodyRepository: BodyRepository,
     workoutRepository: WorkoutRepository,
     habitRepository: HabitRepository,
-    private val rewardRepository: RewardRepository,
     private val timeSource: TimeSource,
 ) : ViewModel() {
 
@@ -114,8 +109,7 @@ class HomeViewModel @Inject constructor(
             snapshot,
             bodyRepository.weights(),
             today,
-            rewardRepository.xp,
-        ) { (profile, goals), todayData, weights, date, xp ->
+        ) { (profile, goals), todayData, weights, date ->
             val energy = EnergyCalculator.estimate(
                 EnergyInputs(
                     age = profile?.age,
@@ -140,7 +134,6 @@ class HomeViewModel @Inject constructor(
                 calorieTarget = CalorieTarget.resolve(goals?.dailyCalorieTarget, energy),
                 weight = if (weights.isEmpty()) null else WeightStats.summarize(weights, goals?.targetWeightKg, date),
                 today = date,
-                level = Leveling.progress(xp),
             )
         }.stateIn(
             scope = viewModelScope,
@@ -150,11 +143,7 @@ class HomeViewModel @Inject constructor(
 
     fun refresh() {
         today.value = timeSource.today()
-        viewModelScope.launch {
-            stepsRepository.refresh()
-            // Grants XP for anything recorded since the last visit.
-            rewardRepository.sync()
-        }
+        viewModelScope.launch { stepsRepository.refresh() }
     }
 
     fun addWater(amountMl: Int) {

@@ -4,7 +4,6 @@ import android.content.Context
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.vitoosh.vitquest.core.data.local.FoodDao
 import io.github.vitoosh.vitquest.core.data.local.RecipeDao
-import io.github.vitoosh.vitquest.core.data.local.RewardDao
 import io.github.vitoosh.vitquest.core.data.preferences.UserPreferencesDataSource
 import io.github.vitoosh.vitquest.core.time.TimeSource
 import javax.inject.Inject
@@ -24,7 +23,6 @@ class SeedDataLoader @Inject constructor(
     @ApplicationContext private val context: Context,
     private val foodDao: FoodDao,
     private val recipeDao: RecipeDao,
-    private val rewardDao: RewardDao,
     private val preferences: UserPreferencesDataSource,
     private val timeSource: TimeSource,
 ) {
@@ -42,11 +40,6 @@ class SeedDataLoader @Inject constructor(
             SeedImporter.recipeRows(recipes, foods).forEach { (recipe, ingredients) ->
                 recipeDao.upsertRecipe(recipe, ingredients)
             }
-            // Reward suggestions are added once; after that the catalog belongs to the user,
-            // so a reward they deleted never comes back with an app update.
-            if (loaded < REWARDS_SEED_VERSION) {
-                rewardDao.insertRewards(RewardSuggestions.entities(context, timeSource.now().toEpochMilli()))
-            }
         }
         preferences.setSeedDataVersion(SEED_VERSION)
     }
@@ -56,8 +49,5 @@ class SeedDataLoader @Inject constructor(
     companion object {
         /** Raise when assets/seed changes so existing installs pick up the new values. */
         const val SEED_VERSION = 2
-
-        /** First seed version that included the reward suggestions. */
-        const val REWARDS_SEED_VERSION = 2
     }
 }

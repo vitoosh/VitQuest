@@ -13,11 +13,11 @@ import io.github.vitoosh.vitquest.core.data.repository.ManualWorkoutInput
 import io.github.vitoosh.vitquest.core.data.repository.OfflineBodyRepository
 import io.github.vitoosh.vitquest.core.data.repository.OfflineFirstStepsRepository
 import io.github.vitoosh.vitquest.core.data.repository.OfflineHabitRepository
-import io.github.vitoosh.vitquest.core.data.repository.OfflineRewardRepository
 import io.github.vitoosh.vitquest.core.data.repository.OfflineWorkoutRepository
 import io.github.vitoosh.vitquest.core.data.repository.ReminderScheduler
 import io.github.vitoosh.vitquest.core.data.repository.StepSensorTracker
 import io.github.vitoosh.vitquest.core.data.seed.SeedDataLoader
+import io.github.vitoosh.vitquest.core.domain.habits.Achievements
 import io.github.vitoosh.vitquest.core.model.Goals
 import io.github.vitoosh.vitquest.core.model.ReminderType
 import io.github.vitoosh.vitquest.core.model.WorkoutIntensity
@@ -47,7 +47,7 @@ import org.junit.runner.RunWith
 
 /**
  * A day of use through the real repositories and database, then a move to a
- * "new phone" with a backup: nothing is lost and no XP is granted twice.
+ * "new phone" with a backup: nothing is lost.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(AndroidJUnit4::class)
@@ -64,7 +64,6 @@ class OfflineJourneyIntegrationTest {
     private lateinit var workouts: OfflineWorkoutRepository
     private lateinit var body: OfflineBodyRepository
     private lateinit var habits: OfflineHabitRepository
-    private lateinit var rewards: OfflineRewardRepository
     private lateinit var backups: LocalBackupRepository
 
     @Before
@@ -79,8 +78,7 @@ class OfflineJourneyIntegrationTest {
         body = OfflineBodyRepository(database.bodyDao(), database.profileDao(), time)
         habits = OfflineHabitRepository(database.habitDao(), database.bodyDao(), database.foodDao(), database.workoutDao(), steps, time)
         profiles.goalsState.value = Goals(dailyStepGoal = 6_000, dailyWaterTargetMl = 2_000, waterServingMl = 250)
-        rewards = OfflineRewardRepository(database.rewardDao(), habits, workouts, body, profiles, store, time)
-        val seeds = SeedDataLoader(context, database.foodDao(), database.recipeDao(), database.rewardDao(), store, time)
+        val seeds = SeedDataLoader(context, database.foodDao(), database.recipeDao(), store, time)
         val scheduler = object : ReminderScheduler {
             override suspend fun reschedule(type: ReminderType) = Unit
             override suspend fun rescheduleAll() = Unit
@@ -102,23 +100,16 @@ class OfflineJourneyIntegrationTest {
         body.logWeight(today, 79.4, null)
         val habit = habits.addHabit("Tidur 7 jam", 5)
         habits.setCheckIn(habit, today, done = true)
-        rewards.sync()
-
-        val xp = rewards.xp.first()
-        val lines = rewards.transactions().first().size
-        // Workout, water target, weigh-in, habit check-in and the first-workout achievement.
-        assertTrue("XP was $xp", xp >= 50 + 20 + 10 + 5 + 100)
-
         val file = ByteArrayOutputStream().also { backups.export(it) }.toByteArray()
         database.clearAllTables()
-        assertEquals(0, rewards.xp.first())
+        assertTrue(workouts.sessions().first().isEmpty())
 
         assertEquals(RestoreResult.Restored, backups.restore(ByteArrayInputStream(file)))
-        rewards.sync()
-        rewards.sync()
 
-        assertEquals(xp, rewards.xp.first())
-        assertEquals(lines, rewards.transactions().first().size)
+        assertEquals(listOf(25 * 60), workouts.sessions().first().map { it.activeSeconds })
+        // Achievements are worked out from the restored records.
+        val records = habits.dayRecords(today.minusDays(30), today).first()
+        assertTrue(Achievements.evaluate(records.values, workouts.sessions().first(), profiles.goalsState.value, habits.customHabits().first()).any { it.earnedOn != null })
         assertEquals(2_000, habits.dayRecords(today, today).first().getValue(today).waterMl)
         assertEquals(listOf(79.4), body.weights().first().map { it.weightKg })
         assertEquals(listOf(today), habits.customHabits().first().single().checkIns.toList())

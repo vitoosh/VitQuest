@@ -7,14 +7,12 @@ import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.tryPerformAccessibilityChecks
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import io.github.vitoosh.vitquest.core.designsystem.theme.VitQuestTheme
-import io.github.vitoosh.vitquest.core.domain.rewards.Leveling
+import io.github.vitoosh.vitquest.core.domain.habits.Achievements
+import io.github.vitoosh.vitquest.core.domain.habits.ProgressStats
 import io.github.vitoosh.vitquest.core.locale.AppLanguage
-import io.github.vitoosh.vitquest.core.model.Reward
-import io.github.vitoosh.vitquest.core.model.RewardType
 import io.github.vitoosh.vitquest.core.model.ThemeMode
-import io.github.vitoosh.vitquest.feature.rewards.RewardActions
-import io.github.vitoosh.vitquest.feature.rewards.RewardsScreen
-import io.github.vitoosh.vitquest.feature.rewards.RewardsUiState
+import io.github.vitoosh.vitquest.feature.progress.ProgressScreen
+import io.github.vitoosh.vitquest.feature.progress.ProgressUiState
 import io.github.vitoosh.vitquest.feature.settings.SettingsScreen
 import java.time.LocalDate
 import org.junit.Before
@@ -55,19 +53,18 @@ class AccessibilityInstrumentedTest {
         )
     }
 
-    private val rewards: @Composable () -> Unit = {
-        RewardsScreen(
-            RewardsUiState(
-                today = LocalDate.of(2026, 10, 21),
-                level = Leveling.progress(260),
-                transactions = emptyList(),
-                rewards = listOf(Reward(1, "Botol minum", null, RewardType.PHYSICAL, 85_000, wishlist = true)),
-                history = emptyList(),
-                budgetEntries = emptyList(),
-                monthlyBudget = null,
+    private val progress: @Composable () -> Unit = {
+        val today = LocalDate.of(2026, 10, 21)
+        ProgressScreen(
+            ProgressUiState(
+                today = today,
+                weeks = ProgressStats.weeks(today, 8, emptyMap(), null),
+                weights = emptyList(),
+                targetWeightKg = null,
+                achievements = Achievements.evaluate(emptyList(), emptyList(), null, emptyList()),
             ),
-            RewardActions(),
-            onOpenSettings = {},
+            onNavigateBack = {},
+            onOpenWeight = {},
         )
     }
 
@@ -75,7 +72,7 @@ class AccessibilityInstrumentedTest {
 
     @Test fun settingsDark() = check(dark = true, content = settings)
 
-    @Test fun rewardsLight() = check(dark = false, content = rewards)
+    @Test fun progressLight() = check(dark = false, content = progress)
 
-    @Test fun rewardsDark() = check(dark = true, content = rewards)
+    @Test fun progressDark() = check(dark = true, content = progress)
 }

@@ -28,7 +28,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.ui.res.pluralStringResource
-import io.github.vitoosh.vitquest.feature.rewards.xpText
 import io.github.vitoosh.vitquest.feature.workouts.minutesText
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -75,7 +74,6 @@ data class HomeActions(
     val openWorkouts: () -> Unit = {},
     val openHabits: () -> Unit = {},
     val openProgress: () -> Unit = {},
-    val openRewards: () -> Unit = {},
 )
 
 @Composable
@@ -141,7 +139,6 @@ private fun HomeContent(state: HomeUiState.Ready, actions: HomeActions, onAddWat
         item { WorkoutCard(state = state, onOpen = actions.openWorkouts) }
         item { HabitsCard(state = state, onOpenHabits = actions.openHabits, onOpenProgress = actions.openProgress) }
         item { WeightCard(state = state, onOpen = actions.openWeight) }
-        item { RewardsCard(state = state, onOpen = actions.openRewards) }
         item {
             Text(
                 text = stringResource(R.string.home_local_data_note),
@@ -393,21 +390,4 @@ private fun signed(value: Double): String {
 @Composable
 private fun HintText(text: String) {
     Text(text = text, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-}
-
-@Composable
-private fun RewardsCard(state: HomeUiState.Ready, onOpen: () -> Unit) {
-    val level = state.level
-    HomeCard(icon = VqIcons.Trophy, title = stringResource(R.string.home_rewards_title), onClick = onOpen) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                text = stringResource(R.string.rewards_level, formatInteger(level.level)),
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.weight(1f),
-            )
-            Text(xpText(level.totalXp), style = MaterialTheme.typography.titleMedium)
-        }
-        LinearProgressIndicator(progress = { level.fraction }, modifier = Modifier.fillMaxWidth())
-        HintText(stringResource(R.string.rewards_level_progress, formatInteger(level.xpIntoLevel), formatInteger(level.xpForNext), formatInteger(level.level + 1)))
-    }
 }

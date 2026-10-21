@@ -23,7 +23,6 @@ import io.github.vitoosh.vitquest.core.data.local.HabitDao
 import io.github.vitoosh.vitquest.core.data.local.ProfileDao
 import io.github.vitoosh.vitquest.core.data.local.RecipeDao
 import io.github.vitoosh.vitquest.core.data.local.ReminderDao
-import io.github.vitoosh.vitquest.core.data.local.RewardDao
 import io.github.vitoosh.vitquest.core.data.local.StepsDao
 import io.github.vitoosh.vitquest.core.data.local.VitQuestDatabase
 import io.github.vitoosh.vitquest.core.data.local.WorkoutDao
@@ -39,13 +38,11 @@ import io.github.vitoosh.vitquest.core.data.repository.OfflineNutritionRepositor
 import io.github.vitoosh.vitquest.core.data.repository.OfflineProfileRepository
 import io.github.vitoosh.vitquest.core.data.repository.OfflineRecipeRepository
 import io.github.vitoosh.vitquest.core.data.repository.OfflineReminderRepository
-import io.github.vitoosh.vitquest.core.data.repository.OfflineRewardRepository
 import io.github.vitoosh.vitquest.core.data.repository.OfflineWorkoutRepository
 import io.github.vitoosh.vitquest.core.data.repository.ProfileRepository
 import io.github.vitoosh.vitquest.core.data.repository.RecipeRepository
 import io.github.vitoosh.vitquest.core.data.repository.ReminderRepository
 import io.github.vitoosh.vitquest.core.data.repository.ReminderScheduler
-import io.github.vitoosh.vitquest.core.data.repository.RewardRepository
 import io.github.vitoosh.vitquest.core.data.repository.StepsRepository
 import io.github.vitoosh.vitquest.core.data.repository.UserDataRepository
 import io.github.vitoosh.vitquest.core.data.repository.UserPreferencesRepository
@@ -90,8 +87,6 @@ object DataProvidersModule {
     @Provides
     fun provideHabitDao(database: VitQuestDatabase): HabitDao = database.habitDao()
 
-    @Provides
-    fun provideRewardDao(database: VitQuestDatabase): RewardDao = database.rewardDao()
 
     @Provides
     fun provideReminderDao(database: VitQuestDatabase): ReminderDao = database.reminderDao()
@@ -152,8 +147,6 @@ abstract class DataBindingsModule {
     @Binds
     abstract fun bindHabitRepository(impl: OfflineHabitRepository): HabitRepository
 
-    @Binds
-    abstract fun bindRewardRepository(impl: OfflineRewardRepository): RewardRepository
 
     @Binds
     abstract fun bindReminderRepository(impl: OfflineReminderRepository): ReminderRepository

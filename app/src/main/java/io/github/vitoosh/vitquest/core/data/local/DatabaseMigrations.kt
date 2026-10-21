@@ -131,5 +131,14 @@ object DatabaseMigrations {
         }
     }
 
-    val ALL: Array<Migration> = arrayOf(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
+    /** v7: XP, rewards and the reward budget were removed. Achievements are computed from records, so nothing else changes. */
+    val MIGRATION_6_7 = object : Migration(6, 7) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            // Children before parents, so no foreign key is left pointing at a dropped table.
+            listOf("reward_history", "budget_entries", "reward_items", "reward_transactions")
+                .forEach { db.execSQL("DROP TABLE IF EXISTS `$it`") }
+        }
+    }
+
+    val ALL: Array<Migration> = arrayOf(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7)
 }

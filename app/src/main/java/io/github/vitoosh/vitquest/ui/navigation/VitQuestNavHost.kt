@@ -21,7 +21,6 @@ import io.github.vitoosh.vitquest.feature.habits.HabitsRoute as HabitsScreenRout
 import io.github.vitoosh.vitquest.feature.hydration.HydrationRoute as HydrationScreenRoute
 import io.github.vitoosh.vitquest.feature.progress.ProgressRoute as ProgressScreenRoute
 import io.github.vitoosh.vitquest.feature.reminders.RemindersRoute as RemindersScreenRoute
-import io.github.vitoosh.vitquest.feature.rewards.RewardsRoute as RewardsScreenRoute
 import io.github.vitoosh.vitquest.feature.workouts.library.ExerciseDetailRoute as ExerciseDetailScreenRoute
 import io.github.vitoosh.vitquest.feature.workouts.player.WorkoutPlayerRoute as WorkoutPlayerScreenRoute
 import io.github.vitoosh.vitquest.feature.nutrition.food.AddFoodRoute as AddFoodScreenRoute
@@ -74,7 +73,6 @@ fun VitQuestNavHost(
                     openWorkouts = { navController.navigateToTopLevel(TopLevelDestination.WORKOUTS) },
                     openHabits = openHabits,
                     openProgress = openProgress,
-                    openRewards = { navController.navigateToTopLevel(TopLevelDestination.REWARDS) },
                 ),
             )
         }
@@ -99,9 +97,6 @@ fun VitQuestNavHost(
                 onStartWorkout = startWorkout,
                 onOpenExercise = openExercise,
             )
-        }
-        composable<RewardsRoute> {
-            RewardsScreenRoute(onOpenSettings = openSettings)
         }
         composable<SettingsRoute> {
             SettingsScreenRoute(

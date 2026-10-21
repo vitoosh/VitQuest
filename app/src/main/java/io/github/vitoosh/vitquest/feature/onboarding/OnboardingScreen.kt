@@ -209,8 +209,8 @@ private fun WelcomeStep() {
             )
             FeaturePreviewRow(
                 icon = VqIcons.Trophy,
-                title = stringResource(R.string.onboarding_welcome_point_reward_title),
-                description = stringResource(R.string.onboarding_welcome_point_reward_description),
+                title = stringResource(R.string.onboarding_welcome_point_progress_title),
+                description = stringResource(R.string.onboarding_welcome_point_progress_description),
                 trailing = null,
             )
         }

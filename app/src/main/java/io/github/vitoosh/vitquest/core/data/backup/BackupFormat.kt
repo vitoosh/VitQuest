@@ -101,7 +101,6 @@ object BackupFormat {
     private fun encodePreferences(preferences: PreferencesBackup) = buildJsonObject {
         preferences.themeMode?.let { put("themeMode", it) }
         preferences.stepSource?.let { put("stepSource", it) }
-        preferences.monthlyRewardBudget?.let { put("monthlyRewardBudget", it) }
         put("onboardingCompleted", preferences.onboardingCompleted)
         put("seedDataVersion", preferences.seedDataVersion)
     }
@@ -111,7 +110,6 @@ object BackupFormat {
         return PreferencesBackup(
             themeMode = primitive("themeMode")?.contentOrNull,
             stepSource = primitive("stepSource")?.contentOrNull,
-            monthlyRewardBudget = primitive("monthlyRewardBudget")?.longOrNull,
             onboardingCompleted = primitive("onboardingCompleted")?.booleanOrNull ?: false,
             seedDataVersion = primitive("seedDataVersion")?.intOrNull ?: 0,
         )

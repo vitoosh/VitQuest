@@ -5,7 +5,7 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.ui.graphics.Color
 
 // VitQuest palette: a calm "vitality" green as primary and a warm amber
-// tertiary reserved for quest and reward accents.
+// tertiary reserved for accents such as achievements.
 
 internal val LightColors = lightColorScheme(
     primary = Color(0xFF1A6B4F),
